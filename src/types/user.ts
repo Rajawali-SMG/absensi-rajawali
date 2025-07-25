@@ -2,7 +2,8 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import z from "zod";
 import type { user } from "../server/db/schema";
 
-export type UserSelect = InferSelectModel<typeof user>;
+export type UserSelectDirty = InferSelectModel<typeof user>;
+export type UserSelect = Omit<UserSelectDirty, "password">;
 export type UserInsert = InferInsertModel<typeof user>;
 
 export const userCreateSchema = z.object({

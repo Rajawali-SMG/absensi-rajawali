@@ -30,15 +30,19 @@ async function main() {
 		"SHD",
 	];
 	await reset(db, { desa, kelompok, generus, log, presence, user, event });
-	await seed(db, {
-		desa,
-		kelompok,
-		generus,
-		log,
-		presence,
-		user,
-		event,
-	}).refine((f) => ({
+	await seed(
+		db,
+		{
+			desa,
+			kelompok,
+			generus,
+			log,
+			presence,
+			user,
+			event,
+		},
+		{ count: 25 },
+	).refine((f) => ({
 		desa: {
 			columns: {
 				nama: f.valuesFromArray({
