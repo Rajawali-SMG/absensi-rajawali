@@ -4,9 +4,8 @@ import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import { roleOptions } from "@/constants";
-import type { User } from "@/generated/client/client";
 import { api } from "@/trpc/react";
-import { userUpdateSchema } from "@/types/user";
+import { type UserSelect, userUpdateSchema } from "@/types/user";
 import { useAlert } from "@/utils/useAlert";
 
 export default function SheetUpdateUser({
@@ -14,7 +13,7 @@ export default function SheetUpdateUser({
 	selectedData,
 }: {
 	closeSheet: () => void;
-	selectedData: User;
+	selectedData: UserSelect;
 }) {
 	const { setAlert } = useAlert();
 	const queryClient = useQueryClient();

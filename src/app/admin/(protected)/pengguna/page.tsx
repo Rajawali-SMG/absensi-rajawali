@@ -16,8 +16,8 @@ import SearchBar from "@/components/SearchBar";
 import SheetCreateUser from "@/components/Sheet/Create/User";
 import SheetUpdateUser from "@/components/Sheet/Update/User";
 import Button from "@/components/ui/Button";
-import type { User } from "@/generated/client/client";
 import { api } from "@/trpc/react";
+import type { UserSelect } from "@/types/user";
 import { useAlert } from "@/utils/useAlert";
 
 export default function PenggunaPage() {
@@ -33,7 +33,7 @@ export default function PenggunaPage() {
 	});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
-	const [selectedData, setSelectedData] = useState<User | null>(null);
+	const [selectedData, setSelectedData] = useState<UserSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
 	const queryClient = useQueryClient();
@@ -45,9 +45,9 @@ export default function PenggunaPage() {
 		},
 	});
 
-	const columnHelper = createColumnHelper<User>();
+	const columnHelper = createColumnHelper<UserSelect>();
 
-	const handleEdit = (row: User) => {
+	const handleEdit = (row: UserSelect) => {
 		setSelectedData(row);
 		setSheetUpdate(true);
 	};
@@ -66,7 +66,7 @@ export default function PenggunaPage() {
 		setDeleteId("");
 	};
 
-	const handleDelete = (row: User) => {
+	const handleDelete = (row: UserSelect) => {
 		setDeleteId(row.id);
 		setDialog(true);
 	};

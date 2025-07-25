@@ -25,8 +25,8 @@ import {
 	pendidikanTerakhirOptions,
 	sambungOptions,
 } from "@/constants/generus";
-import type { Generus } from "@/generated/client/client";
 import { api } from "@/trpc/react";
+import type { GenerusSelect } from "@/types/generus";
 import { useAlert } from "@/utils/useAlert";
 
 export default function GenerusPage() {
@@ -79,7 +79,7 @@ export default function GenerusPage() {
 		},
 	});
 
-	const columnHelper = createColumnHelper<Generus>();
+	const columnHelper = createColumnHelper<GenerusSelect>();
 
 	const handleDeleteConfirm = () => {
 		mutation.mutate(
@@ -95,7 +95,7 @@ export default function GenerusPage() {
 		setDeleteId("");
 	};
 
-	const handleDelete = (row: Generus) => {
+	const handleDelete = (row: GenerusSelect) => {
 		setDeleteId(row.id);
 		setDialog(true);
 	};

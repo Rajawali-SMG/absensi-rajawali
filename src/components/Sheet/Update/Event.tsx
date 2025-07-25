@@ -2,8 +2,12 @@ import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
-import type { Event } from "@/generated/client/client";
-import { type EventRequest, eventSchema } from "@/types/event";
+import { api } from "@/trpc/react";
+import {
+	type EventSelect,
+	eventDefaultUpdate,
+	eventUpdateSchema,
+} from "@/types/event";
 import { useAlert } from "@/utils/useAlert";
 
 export default function SheetUpdateEvent({
@@ -11,7 +15,7 @@ export default function SheetUpdateEvent({
 	selectedData,
 }: {
 	closeSheet: () => void;
-	selectedData: Event;
+	selectedData: EventSelect;
 }) {
 	const { setAlert } = useAlert();
 	const queryClient = useQueryClient();
@@ -23,26 +27,19 @@ export default function SheetUpdateEvent({
 	});
 
 	const form = useForm({
-		defaultValues: {
-			title: selectedData.title,
-			start_date: new Date(selectedData.start_date),
-			end_date: new Date(selectedData.end_date),
-			description: selectedData.description,
-			latitude: selectedData.latitude,
-			longitude: selectedData.longitude,
-		},
+		defaultValues: eventDefaultUpdate,
 		onSubmit: ({ value }) => {
 			mutate(value, {
 				onSuccess: (data) => {
 					queryClient.invalidateQueries({ queryKey: ["eventData"] });
-					setAlert(data.data.message, "success");
+					setAlert(data.message, "success");
 					closeSheet();
 				},
 			});
 			closeSheet();
 		},
 		validators: {
-			onSubmit: eventSchema,
+			onSubmit: eventUpdateSchema,
 		},
 	});
 
@@ -70,7 +67,7 @@ export default function SheetUpdateEvent({
 										type="text"
 										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										value={selectedData.title}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
@@ -92,15 +89,9 @@ export default function SheetUpdateEvent({
 										type="date"
 										name={field.name}
 										id={field.name}
-										value={
-											field.state.value instanceof Date
-												? field.state.value.toISOString().split("T")[0]
-												: ""
-										}
+										value={selectedData.start_date}
 										onBlur={field.handleBlur}
-										onChange={(e) =>
-											field.handleChange(new Date(e.target.value))
-										}
+										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
 										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -120,15 +111,9 @@ export default function SheetUpdateEvent({
 										type="date"
 										name={field.name}
 										id={field.name}
-										value={
-											field.state.value instanceof Date
-												? field.state.value.toISOString().split("T")[0]
-												: ""
-										}
+										value={selectedData.end_date || ""}
 										onBlur={field.handleBlur}
-										onChange={(e) =>
-											field.handleChange(new Date(e.target.value))
-										}
+										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
 										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -147,7 +132,7 @@ export default function SheetUpdateEvent({
 										type="number"
 										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										value={selectedData.latitude || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
@@ -169,7 +154,7 @@ export default function SheetUpdateEvent({
 										type="number"
 										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										value={selectedData.longitude || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"

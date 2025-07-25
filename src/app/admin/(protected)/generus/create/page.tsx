@@ -16,9 +16,16 @@ import {
 	sambungOptions,
 } from "@/constants/generus";
 import { api } from "@/trpc/react";
-import { defaultGenerus, generusCreateSchema, type generusCreateInput } from "@/types/generus";
+import {
+	defaultGenerus,
+	generusCreateSchema,
+	type JenisKelaminType,
+	type JenjangType,
+	type KeteranganType,
+	type PendidikanTerakhirType,
+	type SambungType,
+} from "@/types/generus";
 import { useAlert } from "@/utils/useAlert";
-import type { JenisKelamin, Jenjang, Keterangan, PendidikanTerakhir, Sambung } from "../../../../../generated/client/enums";
 
 export default function GenerusCreatePage() {
 	const { data } = api.kelompok.getAll.useQuery();
@@ -53,7 +60,6 @@ export default function GenerusCreatePage() {
 		validators: {
 			onSubmit: generusCreateSchema,
 		},
-
 	});
 
 	return (
@@ -103,7 +109,9 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Jenis Kelamin"
 									required={true}
 									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value as JenisKelamin)}
+									onChange={(e) =>
+										field.handleChange(e.target.value as JenisKelaminType)
+									}
 								/>
 							</div>
 						)}
@@ -139,13 +147,9 @@ export default function GenerusCreatePage() {
 									type="date"
 									name={field.name}
 									id={field.name}
-									value={
-										field.state.value instanceof Date
-											? field.state.value.toISOString().split("T")[0]
-											: ""
-									}
+									value={field.state.value}
 									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(new Date(e.target.value))}
+									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -165,7 +169,9 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Jenjang"
 									required={true}
 									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value as Jenjang)}
+									onChange={(e) =>
+										field.handleChange(e.target.value as JenjangType)
+									}
 								/>
 							</div>
 						)}
@@ -180,7 +186,7 @@ export default function GenerusCreatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="08123456789"
@@ -202,7 +208,9 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Pendidikan Terakhir"
 									required={true}
 									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value as PendidikanTerakhir)}
+									onChange={(e) =>
+										field.handleChange(e.target.value as PendidikanTerakhirType)
+									}
 								/>
 							</div>
 						)}
@@ -217,7 +225,7 @@ export default function GenerusCreatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
@@ -238,7 +246,7 @@ export default function GenerusCreatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="08123456789"
@@ -260,7 +268,9 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Sambung"
 									required={true}
 									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value as Sambung)}
+									onChange={(e) =>
+										field.handleChange(e.target.value as SambungType)
+									}
 								/>
 							</div>
 						)}
@@ -275,7 +285,7 @@ export default function GenerusCreatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
@@ -296,7 +306,9 @@ export default function GenerusCreatePage() {
 									options={keteranganOptions}
 									placeholder="Pilih Keterangan"
 									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value as Keterangan)}
+									onChange={(e) =>
+										field.handleChange(e.target.value as KeteranganType)
+									}
 									required={true}
 								/>
 							</div>
@@ -312,7 +324,7 @@ export default function GenerusCreatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"

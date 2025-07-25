@@ -2,8 +2,8 @@ import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import TextError from "@/components/TextError";
 import ThemedInput from "@/components/ui/Input";
-import type { EventCreateInput } from "@/generated/client/models";
-import { defaultValueEvent, eventSchema } from "@/types/event";
+import { api } from "@/trpc/react";
+import { eventCreateSchema, eventDefaultValue } from "@/types/event";
 import { useAlert } from "@/utils/useAlert";
 
 export default function SheetCreateEvent({
@@ -21,9 +21,9 @@ export default function SheetCreateEvent({
 	});
 
 	const form = useForm({
-		defaultValues: defaultValueEvent,
+		defaultValues: eventDefaultValue,
 		onSubmit: ({ value }) => {
-			mutate(value as EventCreateInput, {
+			mutate(value, {
 				onSuccess: (data) => {
 					setAlert("Data berhasil ditambahkan", "success");
 					queryClient.invalidateQueries({ queryKey: ["eventData"] });
@@ -32,7 +32,7 @@ export default function SheetCreateEvent({
 			});
 		},
 		validators: {
-			onSubmit: eventSchema,
+			onSubmit: eventCreateSchema,
 		},
 	});
 
@@ -84,11 +84,9 @@ export default function SheetCreateEvent({
 										type="date"
 										name={field.name}
 										id={field.name}
-										value={field.state.value.toISOString().split("T")[0]}
+										value={field.state.value}
 										onBlur={field.handleBlur}
-										onChange={(e) =>
-											field.handleChange(new Date(e.target.value))
-										}
+										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
 										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -108,11 +106,9 @@ export default function SheetCreateEvent({
 										type="date"
 										name={field.name}
 										id={field.name}
-										value={field.state.value.toISOString().split("T")[0]}
+										value={field.state.value || ""}
 										onBlur={field.handleBlur}
-										onChange={(e) =>
-											field.handleChange(new Date(e.target.value))
-										}
+										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
 										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -131,7 +127,7 @@ export default function SheetCreateEvent({
 										type="number"
 										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										value={field.state.value || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
@@ -153,7 +149,7 @@ export default function SheetCreateEvent({
 										type="number"
 										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										value={field.state.value || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
@@ -175,7 +171,7 @@ export default function SheetCreateEvent({
 										type="text"
 										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										value={field.state.value || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"

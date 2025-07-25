@@ -2,8 +2,8 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import z from "zod";
 import type { presence } from "../server/db/schema";
 
-type presenceSelect = InferSelectModel<typeof presence>;
-type presenceInsert = InferInsertModel<typeof presence>;
+export type PresenceSelect = InferSelectModel<typeof presence>;
+export type PresenceInsert = InferInsertModel<typeof presence>;
 
 export const presenceCreateSchema = z.object({
 	status: z

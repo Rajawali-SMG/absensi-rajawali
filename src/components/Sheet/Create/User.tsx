@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import TextError from "@/components/TextError";
 import ThemedInput from "@/components/ui/Input";
 import { roleOptions } from "@/constants";
-import type { UserCreateInput } from "@/generated/client/models";
+import { api } from "@/trpc/react";
 import { defaultValueUser, userCreateSchema } from "@/types/user";
 import { useAlert } from "@/utils/useAlert";
 import Button from "../../ui/Button";
@@ -29,7 +29,7 @@ export default function SheetCreateUser({
 			mutate(value, {
 				onSuccess: (data) => {
 					queryClient.invalidateQueries({ queryKey: ["userData"] });
-					setAlert(data.data.message, "success");
+					setAlert(data.message, "success");
 				},
 			});
 			closeSheet();

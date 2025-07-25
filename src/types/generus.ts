@@ -1,48 +1,55 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
-import type { generus } from "../server/db/schema";
+import {
+	generus,
+	jenisKelamin,
+	jenjang,
+	keterangan,
+	pendidikanTerakhir,
+	sambung,
+} from "../server/db/schema";
 import { filterBase } from "./api";
 
-type generusSelect = InferSelectModel<typeof generus>;
-type generusInsert = InferInsertModel<typeof generus>;
+export type GenerusSelect = InferSelectModel<typeof generus>;
+export type GenerusInsert = InferInsertModel<typeof generus>;
+
+const jenisKelaminSchema = createSelectSchema(jenisKelamin);
+const jenjangSchema = createSelectSchema(jenjang);
+const pendidikanTerakhirSchema = createSelectSchema(pendidikanTerakhir);
+const sambungSchema = createSelectSchema(sambung);
+const keteranganSchema = createSelectSchema(keterangan);
+
+export type JenisKelaminType = z.infer<typeof jenisKelaminSchema>;
+export type JenjangType = z.infer<typeof jenjangSchema>;
+export type PendidikanTerakhirType = z.infer<typeof pendidikanTerakhirSchema>;
+export type SambungType = z.infer<typeof sambungSchema>;
+export type KeteranganType = z.infer<typeof keteranganSchema>;
 
 export const generusCreateSchema = z.object({
 	nama: z
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(255, "Nama maksimal 255 karakter"),
-	jenis_kelamin: z.enum(["Laki-laki", "Perempuan"], {
-		error: "Jenis Kelamin tidak boleh kosong",
-	}),
+	jenis_kelamin: jenisKelaminSchema,
 	tempat_lahir: z
 		.string()
 		.nonempty("Tempat Lahir tidak boleh kosong")
 		.max(50, "Tempat Lahir maksimal 50 karakter"),
 	tanggal_lahir: z.iso.date(),
-	jenjang: z.enum(["Paud", "Caberawit", "Pra Remaja", "Remaja", "Pra Nikah"], {
-		error: "Jenjang tidak boleh kosong",
-	}),
+	jenjang: jenjangSchema,
 	nomer_whatsapp: z
 		.string()
 		.max(15, "Nomor WhatsApp maksimal 15 karakter")
-		.optional(),
-	pendidikan_terakhir: z.enum(
-		["PAUD", "TK", "SD", "SMP", "SMA/SMK", "D1-D3", "S1/D4", "S2", "S3"],
-		{
-			error: "Pendidikan Terakhir tidak boleh kosong",
-		},
-	),
-	nama_orang_tua: z.string().optional(),
-	nomer_whatsapp_orang_tua: z.string().optional(),
-	sambung: z.enum(["Aktif", "Tidak Aktif"], {
-		error: "Sambung tidak boleh kosong",
-	}),
-	// .default("Tidak_Aktif"),
+		.optional()
+		.nullable(),
+	pendidikan_terakhir: pendidikanTerakhirSchema,
+	nama_orang_tua: z.string().optional().nullable(),
+	nomer_whatsapp_orang_tua: z.string().optional().nullable(),
+	sambung: sambungSchema,
 	alamat_tempat_tinggal: z.string().nonempty("Alamat tidak boleh kosong"),
-	keterangan: z.enum(["Pendatang", "Pribumi"], {
-		error: "Keterangan tidak boleh kosong",
-	}),
-	alamat_asal: z.string().optional(),
+	keterangan: keteranganSchema,
+	alamat_asal: z.string().optional().nullable(),
 	kelompok_id: z.string().nonempty("Kelompok tidak boleh kosong"),
 });
 
@@ -55,19 +62,15 @@ export const generusDeleteSchema = generusUpdateSchema.pick({
 });
 
 export const generusFilter = filterBase.extend({
-	jenis_kelamin: z.enum(["Laki-laki", "Perempuan"]).optional(),
-	jenjang: z
-		.enum(["Paud", "Caberawit", "Pra Remaja", "Remaja", "Pra Nikah"])
-		.optional(),
-	pendidikan_terakhir: z
-		.enum(["PAUD", "TK", "SD", "SMP", "SMA/SMK", "D1-D3", "S1/D4", "S2", "S3"])
-		.optional(),
-	sambung: z.enum(["Aktif", "Tidak Aktif"]).optional(),
-	keterangan: z.enum(["Pendatang", "Pribumi"]).optional(),
+	jenis_kelamin: jenisKelaminSchema.optional(),
+	jenjang: jenjangSchema.optional(),
+	pendidikan_terakhir: pendidikanTerakhirSchema.optional(),
+	sambung: sambungSchema.optional(),
+	keterangan: keteranganSchema.optional(),
 	kelompok_id: z.string().optional(),
 });
 
-export const defaultGenerus: generusInsert = {
+export const defaultGenerus: GenerusInsert = {
 	nama: "",
 	jenis_kelamin: "Laki-laki",
 	tempat_lahir: "",
@@ -82,4 +85,9 @@ export const defaultGenerus: generusInsert = {
 	keterangan: "Pendatang",
 	alamat_asal: "",
 	kelompok_id: "",
+};
+
+export const defaultGenerusUpdate: z.infer<typeof generusUpdateSchema> = {
+	id: "",
+	...defaultGenerus,
 };

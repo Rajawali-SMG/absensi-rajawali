@@ -16,7 +16,15 @@ import {
 	sambungOptions,
 } from "@/constants/generus";
 import { api } from "@/trpc/react";
-import { defaultGenerus, generusUpdateSchema } from "@/types/generus";
+import {
+	defaultGenerusUpdate,
+	generusUpdateSchema,
+	type JenisKelaminType,
+	type JenjangType,
+	type KeteranganType,
+	type PendidikanTerakhirType,
+	type SambungType,
+} from "@/types/generus";
 import { useAlert } from "@/utils/useAlert";
 
 export default function GenerusUpdatePage() {
@@ -32,7 +40,7 @@ export default function GenerusUpdatePage() {
 	});
 
 	const form = useForm({
-		defaultValues: defaultGenerus,
+		defaultValues: defaultGenerusUpdate,
 		onSubmit: ({ value }) => {
 			mutate(value, {
 				onSuccess: (data) => {
@@ -99,9 +107,7 @@ export default function GenerusUpdatePage() {
 									required={true}
 									value={field.state.value}
 									onChange={(e) =>
-										field.handleChange(
-											e.target.value as typeof field.state.value,
-										)
+										field.handleChange(e.target.value as JenisKelaminType)
 									}
 								/>
 							</div>
@@ -138,13 +144,9 @@ export default function GenerusUpdatePage() {
 									type="date"
 									name={field.name}
 									id={field.name}
-									value={
-										field.state.value instanceof Date
-											? field.state.value.toISOString().split("T")[0]
-											: ""
-									}
+									value={field.state.value}
 									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(new Date(e.target.value))}
+									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
 									required={false}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -165,9 +167,7 @@ export default function GenerusUpdatePage() {
 									required={true}
 									value={field.state.value}
 									onChange={(e) =>
-										field.handleChange(
-											e.target.value as typeof field.state.value,
-										)
+										field.handleChange(e.target.value as JenjangType)
 									}
 								/>
 							</div>
@@ -183,7 +183,7 @@ export default function GenerusUpdatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="08123456789"
@@ -206,9 +206,7 @@ export default function GenerusUpdatePage() {
 									required={true}
 									value={field.state.value}
 									onChange={(e) =>
-										field.handleChange(
-											e.target.value as typeof field.state.value,
-										)
+										field.handleChange(e.target.value as PendidikanTerakhirType)
 									}
 								/>
 							</div>
@@ -224,7 +222,7 @@ export default function GenerusUpdatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
@@ -245,7 +243,7 @@ export default function GenerusUpdatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="08123456789"
@@ -268,9 +266,7 @@ export default function GenerusUpdatePage() {
 									required={true}
 									value={field.state.value}
 									onChange={(e) =>
-										field.handleChange(
-											e.target.value as typeof field.state.value,
-										)
+										field.handleChange(e.target.value as SambungType)
 									}
 								/>
 							</div>
@@ -307,11 +303,9 @@ export default function GenerusUpdatePage() {
 									options={keteranganOptions}
 									placeholder="Pilih Keterangan"
 									required={true}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onChange={(e) =>
-										field.handleChange(
-											e.target.value as typeof field.state.value,
-										)
+										field.handleChange(e.target.value as KeteranganType)
 									}
 								/>
 							</div>
@@ -327,7 +321,7 @@ export default function GenerusUpdatePage() {
 									type="text"
 									name={field.name}
 									id={field.name}
-									value={field.state.value}
+									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
