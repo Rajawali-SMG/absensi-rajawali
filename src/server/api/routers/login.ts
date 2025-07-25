@@ -14,7 +14,7 @@ export const loginRouter = createTRPCRouter({
 		if (!data || !(await verify(data.password!, input.password))) {
 			throw new TRPCError({
 				code: "UNAUTHORIZED",
-				message: "User tidak ditemukan",
+				message: "Username atau kata sandi salah",
 			});
 		}
 

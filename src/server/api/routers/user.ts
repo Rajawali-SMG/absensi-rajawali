@@ -1,3 +1,4 @@
+import { hash } from "argon2";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
@@ -11,7 +12,11 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
 	getAll: publicProcedure.query(async ({ ctx }) => {
-		const data = await ctx.db.query.user.findMany();
+		const data = await ctx.db.query.user.findMany({
+			columns: {
+				password: false,
+			},
+		});
 
 		return formatResponseArray(
 			true,
@@ -35,6 +40,9 @@ export const userRouter = createTRPCRouter({
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.user.findMany({
+				columns: {
+					password: false,
+				},
 				limit,
 				offset: page * limit,
 				where: or(
@@ -59,7 +67,10 @@ export const userRouter = createTRPCRouter({
 	createUser: publicProcedure
 		.input(userCreateSchema)
 		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(user).values(input);
+			const data = await ctx.db.insert(user).values({
+				...input,
+				password: await hash(input.password),
+			});
 
 			return formatResponse(true, "Berhasil menambahkan data User", data, null);
 		}),

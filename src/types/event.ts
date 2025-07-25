@@ -11,8 +11,8 @@ export const eventCreateSchema = z.object({
 		.string()
 		.nonempty("Judul tidak boleh kosong")
 		.max(255, "Judul maksimal 255 karakter"),
-	start_date: z.iso.datetime(),
-	end_date: z.iso.datetime().nullable().optional(),
+	start_date: z.iso.datetime({ local: true }),
+	end_date: z.iso.datetime({ local: true }).nullable().optional(),
 	latitude: z
 		.number()
 		.min(-90, "Latitude minimal -90")

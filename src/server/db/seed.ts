@@ -1,10 +1,34 @@
+import { hash } from "argon2";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { reset, seed } from "drizzle-seed";
-import { env } from "../../env";
+import { env } from "@/env";
 import { desa, event, generus, kelompok, log, presence, user } from "./schema";
 
 async function main() {
+	console.log("Seeding started⏳");
+	const hashedPassword = await hash(env.USER_PASSWORD);
 	const db = drizzle(env.DATABASE_URL);
+	const kelompok_id = [
+		"SML",
+		"SRT",
+		"FTM",
+		"ZBR",
+		"KKS",
+		"SGW",
+		"PSR",
+		"LMP",
+		"KGR",
+		"KRA",
+		"PDS",
+		"SRJ",
+		"MJG",
+		"GRH",
+		"GNS",
+		"BGA",
+		"BNK",
+		"MKT",
+		"SHD",
+	];
 	await reset(db, { desa, kelompok, generus, log, presence, user, event });
 	await seed(db, {
 		desa,
@@ -26,27 +50,7 @@ async function main() {
 		kelompok: {
 			columns: {
 				id: f.valuesFromArray({
-					values: [
-						"SML",
-						"SRT",
-						"FTM",
-						"ZBR",
-						"KKS",
-						"SGW",
-						"PSR",
-						"LMP",
-						"KGR",
-						"KRA",
-						"PDS",
-						"SRJ",
-						"MJG",
-						"GRH",
-						"GNS",
-						"BGA",
-						"BNK",
-						"MKT",
-						"SHD",
-					],
+					values: kelompok_id,
 				}),
 				nama: f.valuesFromArray({
 					values: [
@@ -84,38 +88,24 @@ async function main() {
 				tempat_lahir: f.city(),
 				nomer_whatsapp: f.phoneNumber({ template: "+628##########" }),
 				nama_orang_tua: f.fullName(),
-				nomer_whatsapp_orang_tua: f.phoneNumber({ template: "+628##########" }),
+				nomer_whatsapp_orang_tua: f.phoneNumber({
+					template: "+628##########",
+				}),
 				alamat_tempat_tinggal: f.streetAddress(),
 				alamat_asal: f.streetAddress(),
 				kelompok_id: f.valuesFromArray({
-					values: [
-						"SML",
-						"SRT",
-						"FTM",
-						"ZBR",
-						"KKS",
-						"SGW",
-						"PSR",
-						"LMP",
-						"KGR",
-						"KRA",
-						"PDS",
-						"SRJ",
-						"MJG",
-						"GRH",
-						"GNS",
-						"BGA",
-						"BNK",
-						"MKT",
-						"SHD",
-					],
+					values: kelompok_id,
 				}),
 			},
 		},
 		user: {
 			columns: {
 				id: f.uuid(),
+				username: f.default({ defaultValue: "admin" }),
+				password: f.default({ defaultValue: hashedPassword }),
+				role: f.default({ defaultValue: "Super Admin" }),
 			},
+			count: 1,
 		},
 		log: {
 			columns: {
@@ -145,4 +135,12 @@ async function main() {
 		},
 	}));
 }
-main();
+main()
+	.catch((error) => {
+		console.log(`There was an Error❌: ${error}`);
+		process.exit(1);
+	})
+	.then(() => {
+		console.log("Seeding success✅");
+		process.exit(0);
+	});

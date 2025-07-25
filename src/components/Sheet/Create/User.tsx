@@ -30,9 +30,9 @@ export default function SheetCreateUser({
 				onSuccess: (data) => {
 					queryClient.invalidateQueries({ queryKey: ["userData"] });
 					setAlert(data.message, "success");
+					closeSheet();
 				},
 			});
-			closeSheet();
 		},
 		validators: {
 			onSubmit: userCreateSchema,

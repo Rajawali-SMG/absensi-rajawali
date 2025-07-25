@@ -52,6 +52,7 @@ export const jenjang = pgEnum("jenjang", [
 const timestamps = {
 	created_at: timestamp().defaultNow().notNull(),
 	updated_at: timestamp()
+		.defaultNow()
 		.$onUpdateFn(() => new Date())
 		.notNull(),
 };
@@ -63,7 +64,7 @@ export const desa = createTable(
 		...timestamps,
 		nama: varchar({ length: 256 }).unique().notNull(),
 	},
-	(table) => [index("nama_idx").on(table.nama)],
+	(table) => [index("nama_desa_idx").on(table.nama)],
 );
 
 export const kelompok = createTable(
@@ -75,7 +76,7 @@ export const kelompok = createTable(
 		desa_id: integer().notNull(),
 	},
 	(table) => [
-		index("nama_idx").on(table.nama),
+		index("nama_kelompok_idx").on(table.nama),
 		index("desa_id_idx").on(table.desa_id),
 	],
 );
@@ -105,12 +106,12 @@ export const generus = createTable(
 		kelompok_id: varchar({ length: 3 }).notNull(),
 	},
 	(table) => [
-		index("nama_idx").on(table.nama),
-		index("jenis_kelamin_idx").on(table.jenis_kelamin),
-		index("jenjang_idx").on(table.jenjang),
-		index("pendidikan_terakhir_idx").on(table.pendidikan_terakhir),
-		index("sambung_idx").on(table.sambung),
-		index("keterangan_idx").on(table.keterangan),
+		index("nama_generus_idx").on(table.nama),
+		index("jenis_kelamin_generus_idx").on(table.jenis_kelamin),
+		index("jenjang_generus_idx").on(table.jenjang),
+		index("pendidikan_terakhir_generus_idx").on(table.pendidikan_terakhir),
+		index("sambung_generus_idx").on(table.sambung),
+		index("keterangan_generus_idx").on(table.keterangan),
 		index("kelompok_id_idx").on(table.kelompok_id),
 	],
 );
@@ -125,12 +126,12 @@ export const user = createTable(
 			.unique(),
 		...timestamps,
 		username: varchar({ length: 50 }).unique().notNull(),
-		password: varchar({ length: 255 }).notNull(),
+		password: text().notNull(),
 		role: role().notNull(),
 	},
 	(table) => [
-		index("username_idx").on(table.username),
-		index("role_idx").on(table.role),
+		index("username_user_idx").on(table.username),
+		index("role_user_idx").on(table.role),
 	],
 );
 
@@ -148,8 +149,8 @@ export const log = createTable(
 		user_id: varchar().unique().notNull(),
 	},
 	(table) => [
-		index("event_idx").on(table.event),
-		index("user_id_idx").on(table.user_id),
+		index("event_log_idx").on(table.event),
+		index("user_id_log_idx").on(table.user_id),
 	],
 );
 
@@ -169,7 +170,7 @@ export const event = createTable(
 		longitude: doublePrecision().default(110.46708185437986),
 		description: varchar(),
 	},
-	(table) => [index("title_idx").on(table.title)],
+	(table) => [index("title_event_idx").on(table.title)],
 );
 
 export const presence = createTable("presence", {

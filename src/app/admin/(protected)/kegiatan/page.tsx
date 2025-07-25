@@ -151,7 +151,7 @@ export default function KegiatanPage() {
 					placeholder="Search by Name"
 				/>
 				<Button typeof="button" onClick={() => setSheetCreate(true)}>
-					Create Generus
+					Buat Kegiatan
 				</Button>
 			</div>
 			<table className="w-full text-left text-sm text-gray-500">
