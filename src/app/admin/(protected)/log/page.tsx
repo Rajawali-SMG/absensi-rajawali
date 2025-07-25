@@ -10,8 +10,8 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import SearchBar from "@/components/SearchBar";
-import type { Log } from "@/generated/client/client";
 import { api } from "@/trpc/react";
+import type { LogSelect } from "@/types/log";
 import { useAlert } from "@/utils/useAlert";
 
 export default function LogPage() {
@@ -27,7 +27,7 @@ export default function LogPage() {
 	});
 	const { setAlert } = useAlert();
 
-	const columnHelper = createColumnHelper<Log>();
+	const columnHelper = createColumnHelper<LogSelect>();
 
 	const columns = [
 		columnHelper.accessor("id", { header: "ID" }),

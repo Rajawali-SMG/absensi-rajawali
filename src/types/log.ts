@@ -2,8 +2,8 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import z from "zod";
 import type { log } from "../server/db/schema";
 
-type logInsert = InferInsertModel<typeof log>;
-type logSelect = InferSelectModel<typeof log>;
+export type LogInsert = InferInsertModel<typeof log>;
+export type LogSelect = InferSelectModel<typeof log>;
 
 export const logCreateSchema = z.object({
 	event: z

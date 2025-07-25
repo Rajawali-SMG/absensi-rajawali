@@ -2,8 +2,8 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import z from "zod";
 import type { kelompok } from "../server/db/schema";
 
-type kelompokSelect = InferSelectModel<typeof kelompok>;
-type kelompokInsert = InferInsertModel<typeof kelompok>;
+export type KelompokSelect = InferSelectModel<typeof kelompok>;
+export type KelompokInsert = InferInsertModel<typeof kelompok>;
 
 export const kelompokCreateSchema = z.object({
 	id: z

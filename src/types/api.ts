@@ -1,4 +1,3 @@
-import { type } from "arktype";
 import z from "zod";
 
 export type ErrorResponse = {
@@ -9,7 +8,7 @@ export type ErrorResponse = {
 export type ResponseBase<T> = {
 	success: boolean;
 	message: string;
-	data: { items: T; meta: Pagination } | null;
+	data: T | null;
 	error: ErrorResponse | null;
 };
 

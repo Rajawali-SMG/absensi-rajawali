@@ -2,12 +2,12 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
-import { api } from "@/trpc/react";
-import { loginSchema } from "@/types/auth";
-import { useAlert } from "@/utils/useAlert";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { api } from "@/trpc/react";
+import { loginSchema } from "@/types/auth";
+import { useAlert } from "@/utils/useAlert";
 
 export default function LoginPage() {
 	const navigate = useRouter();

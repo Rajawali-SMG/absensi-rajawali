@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import { api } from "@/trpc/react";
-import type { DesaBase } from "@/types/desa";
+import type { DesaSelect } from "@/types/desa";
 import { useAlert } from "@/utils/useAlert";
 
 export default function DesaPage() {
@@ -27,7 +27,7 @@ export default function DesaPage() {
 	});
 	const { setAlert } = useAlert();
 
-	const columnHelper = createColumnHelper<DesaBase>();
+	const columnHelper = createColumnHelper<DesaSelect>();
 
 	const columns = [
 		columnHelper.accessor("id", { header: "ID" }),

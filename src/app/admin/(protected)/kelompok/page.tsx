@@ -13,8 +13,8 @@ import SearchBar from "@/components/SearchBar";
 import Skeleton from "@/components/Skeleton";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
-import type { Kelompok } from "@/generated/client/client";
 import { api } from "@/trpc/react";
+import type { KelompokSelect } from "@/types/kelompok";
 import { useAlert } from "@/utils/useAlert";
 
 export default function KelompokPage() {
@@ -33,7 +33,7 @@ export default function KelompokPage() {
 	});
 	const { setAlert } = useAlert();
 
-	const columnHelper = createColumnHelper<Kelompok>();
+	const columnHelper = createColumnHelper<KelompokSelect>();
 
 	const columns = [
 		columnHelper.accessor("id", { header: "ID" }),

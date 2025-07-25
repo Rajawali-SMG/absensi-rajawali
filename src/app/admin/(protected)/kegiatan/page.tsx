@@ -16,8 +16,8 @@ import SearchBar from "@/components/SearchBar";
 import SheetCreateEvent from "@/components/Sheet/Create/Event";
 import SheetUpdateEvent from "@/components/Sheet/Update/Event";
 import Button from "@/components/ui/Button";
-import type { Event } from "@/generated/client/client";
 import { api } from "@/trpc/react";
+import type { EventSelect } from "@/types/event";
 import { useAlert } from "@/utils/useAlert";
 
 export default function KegiatanPage() {
@@ -34,7 +34,7 @@ export default function KegiatanPage() {
 	});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
-	const [selectedData, setSelectedData] = useState<Event | null>(null);
+	const [selectedData, setSelectedData] = useState<EventSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
 	const queryClient = useQueryClient();
@@ -46,9 +46,9 @@ export default function KegiatanPage() {
 		},
 	});
 
-	const columnHelper = createColumnHelper<Event>();
+	const columnHelper = createColumnHelper<EventSelect>();
 
-	const handleEdit = (row: Event) => {
+	const handleEdit = (row: EventSelect) => {
 		setSelectedData(row);
 		setSheetUpdate(true);
 	};
@@ -67,7 +67,7 @@ export default function KegiatanPage() {
 		setDeleteId("");
 	};
 
-	const handleDelete = (row: Event) => {
+	const handleDelete = (row: EventSelect) => {
 		setDeleteId(row.id);
 		setDialog(true);
 	};

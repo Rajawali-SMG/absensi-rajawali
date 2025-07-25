@@ -1,7 +1,10 @@
-import type { InferSelectModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import z from "zod";
 import type { desa } from "../server/db/schema";
 import { filterBase } from "./api";
+
+export type DesaSelect = InferSelectModel<typeof desa>;
+export type DesaInsert = InferInsertModel<typeof desa>;
 
 export const desaCreateSchema = z.object({
 	nama: z
@@ -19,5 +22,3 @@ export const desaDeleteSchema = desaUpdateSchema.pick({
 });
 
 export const desaFilter = filterBase;
-
-export type DesaBase = InferSelectModel<typeof desa>;
