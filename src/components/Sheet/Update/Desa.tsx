@@ -1,47 +1,41 @@
 import { useForm } from "@tanstack/react-form";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
-import { roleOptions } from "@/constants";
 import { api } from "@/trpc/react";
-import { type UserSelect, userUpdateSchema } from "@/types/user";
+import { type DesaSelect, desaUpdateSchema } from "@/types/desa";
 import { useAlert } from "@/utils/useAlert";
 
-export default function SheetUpdateUser({
+export default function SheetUpdateDesa({
 	closeSheet,
 	selectedData,
 }: {
 	closeSheet: () => void;
-	selectedData: UserSelect;
+	selectedData: DesaSelect;
 }) {
 	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
-	const { mutate } = api.user.updateUser.useMutation({
-		onError: (error) => {
-			setAlert(error.message, "error");
+	const { mutate } = api.desa.updateDesa.useMutation({
+		onError: ({ message }) => {
+			setAlert(message, "error");
 		},
-
-		onSuccess: (data) => {
-			utils.user.getAllPaginated.invalidate();
-			setAlert(data.message, "success");
-			closeSheet();
+		onSuccess: ({ message }) => {
+			utils.desa.getAllPaginated.invalidate();
+			setAlert(message, "success");
 		},
 	});
 
 	const form = useForm({
 		defaultValues: {
 			id: selectedData.id,
-			username: selectedData.username,
-			password: "",
-			role: selectedData.role,
+			nama: selectedData.nama,
 		},
 		onSubmit: ({ value }) => {
 			mutate(value);
 			closeSheet();
 		},
 		validators: {
-			onSubmit: userUpdateSchema,
+			onSubmit: desaUpdateSchema,
 		},
 	});
 
@@ -59,11 +53,11 @@ export default function SheetUpdateUser({
 					className="space-y-4"
 				>
 					<div className="space-y-4">
-						<form.Field name="username">
+						<form.Field name="nama">
 							{(field) => (
 								<>
 									<Input
-										label="Username"
+										label="Title"
 										variant="secondary"
 										htmlFor={field.name}
 										type="text"
@@ -78,47 +72,6 @@ export default function SheetUpdateUser({
 									/>
 									<TextError field={field} />
 								</>
-							)}
-						</form.Field>
-
-						<form.Field name="password">
-							{(field) => (
-								<>
-									<Input
-										label="Password"
-										htmlFor={field.name}
-										type="text"
-										name={field.name}
-										id={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
-
-						<form.Field name="role">
-							{(field) => (
-								<div className="space-y-1">
-									<Select
-										name={field.name}
-										label="Role"
-										options={roleOptions}
-										placeholder="Pilih Role"
-										value={field.state.value}
-										onChange={(e) =>
-											field.handleChange(
-												e.target.value as typeof field.state.value,
-											)
-										}
-										required={true}
-									/>
-								</div>
 							)}
 						</form.Field>
 					</div>

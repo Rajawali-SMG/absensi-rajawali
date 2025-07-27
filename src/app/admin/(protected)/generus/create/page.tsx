@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TextError from "@/components/TextError";
@@ -30,13 +29,17 @@ import { useAlert } from "@/utils/useAlert";
 export default function GenerusCreatePage() {
 	const { data } = api.kelompok.getAll.useQuery();
 	const { setAlert } = useAlert();
-	const queryClient = useQueryClient();
 	const router = useRouter();
+	const utils = api.useUtils();
 
 	const { mutate } = api.generus.createGenerus.useMutation({
-		onError: (error) => {
-			console.log(error);
-			setAlert(error.message, "error");
+		onError: ({ message }) => {
+			setAlert(message, "error");
+		},
+		onSuccess: ({ message }) => {
+			utils.generus.getAllPaginated.invalidate();
+			setAlert(message, "success");
+			router.push("/admin/generus");
 		},
 	});
 
@@ -49,13 +52,7 @@ export default function GenerusCreatePage() {
 	const form = useForm({
 		defaultValues: defaultGenerus,
 		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					router.push("/admin/generus");
-					setAlert(data.message, "success");
-					queryClient.invalidateQueries({ queryKey: ["generusData"] });
-				},
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: generusCreateSchema,

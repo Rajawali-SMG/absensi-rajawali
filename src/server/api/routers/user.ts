@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { hash } from "argon2";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
@@ -7,6 +8,7 @@ import {
 	userFilter,
 	userUpdateSchema,
 } from "@/types/user";
+import { idBase } from "../../../types/api";
 import { user } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -63,6 +65,21 @@ export const userRouter = createTRPCRouter({
 				null,
 			);
 		}),
+
+	getOneUser: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const data = await ctx.db.query.user.findFirst({
+			where: eq(user.id, input.id),
+		});
+
+		if (!data) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Data User tidak ditemukan",
+			});
+		}
+
+		return formatResponse(true, "Berhasil mendapatkan data User", data, null);
+	}),
 
 	createUser: publicProcedure
 		.input(userCreateSchema)

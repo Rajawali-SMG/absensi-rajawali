@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
@@ -6,6 +7,7 @@ import {
 	kelompokFilter,
 	kelompokUpdateSchema,
 } from "@/types/kelompok";
+import { idBase } from "../../../types/api";
 import { kelompok } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -52,6 +54,28 @@ export const kelompokRouter = createTRPCRouter({
 				true,
 				"Berhasil mendapatkan data Kelompok",
 				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				null,
+			);
+		}),
+
+	getOneKelompok: publicProcedure
+		.input(idBase)
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.kelompok.findFirst({
+				where: eq(kelompok.id, input.id),
+			});
+
+			if (!data) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Data Kelompok tidak ditemukan",
+				});
+			}
+
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Kelompok",
+				data,
 				null,
 			);
 		}),

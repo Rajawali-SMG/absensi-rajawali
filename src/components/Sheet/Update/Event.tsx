@@ -1,5 +1,4 @@
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
@@ -18,24 +17,24 @@ export default function SheetUpdateEvent({
 	selectedData: EventSelect;
 }) {
 	const { setAlert } = useAlert();
-	const queryClient = useQueryClient();
+	const utils = api.useUtils();
 
 	const { mutate } = api.event.updateEvent.useMutation({
-		onError: (error) => {
-			setAlert(error.message, "error");
+		onError: ({ message }) => {
+			setAlert(message, "error");
+		},
+
+		onSuccess: ({ message }) => {
+			utils.event.getAllPaginated.invalidate();
+			setAlert(message, "success");
+			closeSheet();
 		},
 	});
 
 	const form = useForm({
 		defaultValues: eventDefaultUpdate,
 		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["eventData"] });
-					setAlert(data.message, "success");
-					closeSheet();
-				},
-			});
+			mutate(value);
 			closeSheet();
 		},
 		validators: {
@@ -67,7 +66,7 @@ export default function SheetUpdateEvent({
 										type="text"
 										name={field.name}
 										id={field.name}
-										value={selectedData.title}
+										value={field.state.value}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
@@ -89,7 +88,7 @@ export default function SheetUpdateEvent({
 										type="date"
 										name={field.name}
 										id={field.name}
-										value={selectedData.start_date}
+										value={field.state.value}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
@@ -111,7 +110,7 @@ export default function SheetUpdateEvent({
 										type="date"
 										name={field.name}
 										id={field.name}
-										value={selectedData.end_date || ""}
+										value={field.state.value || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
@@ -132,7 +131,7 @@ export default function SheetUpdateEvent({
 										type="number"
 										name={field.name}
 										id={field.name}
-										value={selectedData.latitude || ""}
+										value={field.state.value || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
@@ -154,7 +153,7 @@ export default function SheetUpdateEvent({
 										type="number"
 										name={field.name}
 										id={field.name}
-										value={selectedData.longitude || ""}
+										value={field.state.value || ""}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"

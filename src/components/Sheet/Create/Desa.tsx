@@ -1,54 +1,45 @@
 import { useForm } from "@tanstack/react-form";
 import TextError from "@/components/TextError";
-import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
-import { roleOptions } from "@/constants";
+import ThemedInput from "@/components/ui/Input";
 import { api } from "@/trpc/react";
-import { type UserSelect, userUpdateSchema } from "@/types/user";
+import { desaCreateSchema, desaDefaultValue } from "@/types/desa";
 import { useAlert } from "@/utils/useAlert";
 
-export default function SheetUpdateUser({
+export default function SheetCreateDesa({
 	closeSheet,
-	selectedData,
 }: {
 	closeSheet: () => void;
-	selectedData: UserSelect;
 }) {
 	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
-	const { mutate } = api.user.updateUser.useMutation({
-		onError: (error) => {
-			setAlert(error.message, "error");
+	const { mutate } = api.desa.createDesa.useMutation({
+		onError: ({ message }) => {
+			setAlert(message, "error");
 		},
-
-		onSuccess: (data) => {
-			utils.user.getAllPaginated.invalidate();
-			setAlert(data.message, "success");
+		onSuccess: ({ message }) => {
+			utils.desa.getAllPaginated.invalidate();
+			setAlert(message, "success");
 			closeSheet();
 		},
 	});
 
 	const form = useForm({
-		defaultValues: {
-			id: selectedData.id,
-			username: selectedData.username,
-			password: "",
-			role: selectedData.role,
-		},
+		defaultValues: desaDefaultValue,
 		onSubmit: ({ value }) => {
 			mutate(value);
-			closeSheet();
 		},
 		validators: {
-			onSubmit: userUpdateSchema,
+			onSubmit: desaCreateSchema,
 		},
 	});
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-				<h1 className="text-2xl font-bold mb-6 text-gray-800">Update User</h1>
+				<h1 className="text-2xl font-bold mb-6 text-gray-800">
+					Buat Data Desa
+				</h1>
 
 				<form
 					onSubmit={(e) => {
@@ -59,11 +50,11 @@ export default function SheetUpdateUser({
 					className="space-y-4"
 				>
 					<div className="space-y-4">
-						<form.Field name="username">
+						<form.Field name="nama">
 							{(field) => (
 								<>
-									<Input
-										label="Username"
+									<ThemedInput
+										label="Nama"
 										variant="secondary"
 										htmlFor={field.name}
 										type="text"
@@ -78,47 +69,6 @@ export default function SheetUpdateUser({
 									/>
 									<TextError field={field} />
 								</>
-							)}
-						</form.Field>
-
-						<form.Field name="password">
-							{(field) => (
-								<>
-									<Input
-										label="Password"
-										htmlFor={field.name}
-										type="text"
-										name={field.name}
-										id={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
-
-						<form.Field name="role">
-							{(field) => (
-								<div className="space-y-1">
-									<Select
-										name={field.name}
-										label="Role"
-										options={roleOptions}
-										placeholder="Pilih Role"
-										value={field.state.value}
-										onChange={(e) =>
-											field.handleChange(
-												e.target.value as typeof field.state.value,
-											)
-										}
-										required={true}
-									/>
-								</div>
 							)}
 						</form.Field>
 					</div>

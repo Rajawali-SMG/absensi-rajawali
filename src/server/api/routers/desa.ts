@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq, ilike } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
@@ -6,6 +7,7 @@ import {
 	desaFilter,
 	desaUpdateSchema,
 } from "@/types/desa";
+import { idBase } from "../../../types/api";
 import { desa } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -52,6 +54,21 @@ export const desaRouter = createTRPCRouter({
 				null,
 			);
 		}),
+
+	getOneDesa: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const data = await ctx.db.query.desa.findFirst({
+			where: eq(desa.id, Number(input.id)),
+		});
+
+		if (!data) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Data Desa tidak ditemukan",
+			});
+		}
+
+		return formatResponse(true, "Berhasil mendapatkan data Desa", data, null);
+	}),
 
 	createDesa: publicProcedure
 		.input(desaCreateSchema)

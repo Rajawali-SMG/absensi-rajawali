@@ -1,5 +1,4 @@
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
 import TextError from "@/components/TextError";
 import ThemedInput from "@/components/ui/Input";
 import { api } from "@/trpc/react";
@@ -12,24 +11,24 @@ export default function SheetCreateEvent({
 	closeSheet: () => void;
 }) {
 	const { setAlert } = useAlert();
-	const queryClient = useQueryClient();
+	const utils = api.useUtils();
 
 	const { mutate } = api.event.createEvent.useMutation({
-		onError: (error) => {
-			setAlert(error.message, "error");
+		onError: ({ message }) => {
+			setAlert(message, "error");
+		},
+
+		onSuccess: ({ message }) => {
+			setAlert(message, "success");
+			utils.event.getAllPaginated.invalidate();
+			closeSheet();
 		},
 	});
 
 	const form = useForm({
 		defaultValues: eventDefaultValue,
 		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					setAlert("Data berhasil ditambahkan", "success");
-					queryClient.invalidateQueries({ queryKey: ["eventData"] });
-					closeSheet();
-				},
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: eventCreateSchema,

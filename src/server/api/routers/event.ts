@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
@@ -6,6 +7,7 @@ import {
 	eventFilter,
 	eventUpdateSchema,
 } from "@/types/event";
+import { idBase } from "../../../types/api";
 import { event } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -52,6 +54,21 @@ export const eventRouter = createTRPCRouter({
 			);
 		}),
 
+	getOneEvent: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const data = await ctx.db.query.event.findFirst({
+			where: eq(event.id, input.id),
+		});
+
+		if (!data) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Data Event tidak ditemukan",
+			});
+		}
+
+		return formatResponse(true, "Berhasil mendapatkan data Event", data, null);
+	}),
+
 	createEvent: publicProcedure
 		.input(eventCreateSchema)
 		.mutation(async ({ ctx, input }) => {
@@ -68,6 +85,12 @@ export const eventRouter = createTRPCRouter({
 	updateEvent: publicProcedure
 		.input(eventUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
 			const data = await ctx.db
 				.update(event)
 				.set(input)
@@ -79,6 +102,12 @@ export const eventRouter = createTRPCRouter({
 	deleteEvent: publicProcedure
 		.input(eventDeleteSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
 			const data = await ctx.db.delete(event).where(eq(event.id, input.id));
 
 			return formatResponse(true, "Berhasil menghapus data Event", data, null);

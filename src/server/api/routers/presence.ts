@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
@@ -6,6 +7,7 @@ import {
 	presenceFilter,
 	presenceUpdateSchema,
 } from "@/types/presence";
+import { idBase } from "../../../types/api";
 import { presence } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -56,6 +58,28 @@ export const presenceRouter = createTRPCRouter({
 						totalPages,
 					},
 				},
+				null,
+			);
+		}),
+
+	getOnePresence: publicProcedure
+		.input(idBase)
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.presence.findFirst({
+				where: eq(presence.id, input.id),
+			});
+
+			if (!data) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Data Presensi tidak ditemukan",
+				});
+			}
+
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Presensi",
+				data,
 				null,
 			);
 		}),

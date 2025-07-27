@@ -1,7 +1,6 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -31,12 +30,16 @@ export default function PenggunaPage() {
 	const [selectedData, setSelectedData] = useState<UserSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	const queryClient = useQueryClient();
+	const utils = api.useUtils();
 	const { setAlert } = useAlert();
 
 	const mutation = api.user.deleteUser.useMutation({
 		onError: (error) => {
 			setAlert(error.message, "error");
+		},
+		onSuccess: (data) => {
+			utils.user.getAllPaginated.invalidate();
+			setAlert(data.message, "success");
 		},
 	});
 
@@ -46,15 +49,7 @@ export default function PenggunaPage() {
 	};
 
 	const handleDeleteConfirm = () => {
-		mutation.mutate(
-			{ id: deleteId },
-			{
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["userData"] });
-					setAlert(data.message, "success");
-				},
-			},
-		);
+		mutation.mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};

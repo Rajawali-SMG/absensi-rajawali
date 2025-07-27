@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import navigation from "next/navigation";
 import { useRouter } from "next/router";
@@ -51,24 +50,23 @@ export default function GenerusUpdatePage({
 		},
 	);
 	const { data: kelompokData } = api.kelompok.getAll.useQuery();
-	const queryClient = useQueryClient();
+	const utils = api.useUtils();
 
 	const { mutate } = api.generus.updateGenerus.useMutation({
 		onError: ({ message }) => {
 			setAlert(message, "error");
+		},
+		onSuccess: ({ message }) => {
+			utils.generus.getAllPaginated.invalidate();
+			setAlert(message, "success");
+			router.push("/admin/generus");
 		},
 	});
 
 	const form = useForm({
 		defaultValues: generusData?.data || defaultGenerusUpdate,
 		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["generusData"] });
-					setAlert(data.message, "success");
-					router.push("/admin/generus");
-				},
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: generusUpdateSchema,

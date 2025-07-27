@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
@@ -6,6 +7,7 @@ import {
 	logFilter,
 	logUpdateSchema,
 } from "@/types/log";
+import { idBase } from "../../../types/api";
 import { log } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -55,6 +57,21 @@ export const logRouter = createTRPCRouter({
 				null,
 			);
 		}),
+
+	getOneLog: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const data = await ctx.db.query.log.findFirst({
+			where: eq(log.id, input.id),
+		});
+
+		if (!data) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Data Log tidak ditemukan",
+			});
+		}
+
+		return formatResponse(true, "Berhasil mendapatkan data Log", data, null);
+	}),
 
 	createLog: publicProcedure
 		.input(logCreateSchema)

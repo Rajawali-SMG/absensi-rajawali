@@ -1,7 +1,6 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -32,8 +31,8 @@ export default function KegiatanPage() {
 	const [selectedData, setSelectedData] = useState<EventSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	const queryClient = useQueryClient();
 	const { setAlert } = useAlert();
+	const utils = api.useUtils();
 
 	const mutation = api.event.deleteEvent.useMutation({
 		onError: (error) => {
@@ -51,7 +50,7 @@ export default function KegiatanPage() {
 			{ id: deleteId },
 			{
 				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["eventData"] });
+					utils.event.getAllPaginated.invalidate();
 					setAlert(data.message, "success");
 				},
 			},

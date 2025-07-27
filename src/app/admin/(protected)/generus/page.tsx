@@ -1,7 +1,6 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -34,7 +33,6 @@ export default function GenerusPage() {
 	const [dialog, setDialog] = useState(false);
 	const [sheetFilter, setSheetFilter] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	const queryClient = useQueryClient();
 	// const [jenisKelaminParam, setJenisKelaminParam] = useQueryState(
 	// 	"jenis_kelamin",
 	// 	{
@@ -67,23 +65,20 @@ export default function GenerusPage() {
 		// keterangan: keteranganParam,
 	});
 	const { setAlert } = useAlert();
+	const utils = api.useUtils();
 
 	const mutation = api.generus.deleteGenerus.useMutation({
-		onError: (error) => {
-			setAlert(error.message, "error");
+		onError: ({ message }) => {
+			setAlert(message, "error");
+		},
+		onSuccess: ({ message }) => {
+			utils.generus.getAllPaginated.invalidate();
+			setAlert(message, "success");
 		},
 	});
 
 	const handleDeleteConfirm = () => {
-		mutation.mutate(
-			{ id: deleteId },
-			{
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["generusData"] });
-					setAlert(data.message, "success");
-				},
-			},
-		);
+		mutation.mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};

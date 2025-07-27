@@ -1,5 +1,4 @@
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
 import TextError from "@/components/TextError";
 import ThemedInput from "@/components/ui/Input";
 import { roleOptions } from "@/constants";
@@ -15,24 +14,23 @@ export default function SheetCreateUser({
 	closeSheet: () => void;
 }) {
 	const { setAlert } = useAlert();
-	const queryClient = useQueryClient();
+	const utils = api.useUtils();
 
 	const { mutate } = api.user.createUser.useMutation({
 		onError: (error) => {
 			setAlert(error.message, "error");
+		},
+		onSuccess: ({ message }) => {
+			setAlert(message, "success");
+			utils.user.getAllPaginated.invalidate();
+			closeSheet();
 		},
 	});
 
 	const form = useForm({
 		defaultValues: defaultValueUser,
 		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["userData"] });
-					setAlert(data.message, "success");
-					closeSheet();
-				},
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: userCreateSchema,

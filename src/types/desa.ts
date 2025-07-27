@@ -22,3 +22,7 @@ export const desaDeleteSchema = desaUpdateSchema.pick({
 });
 
 export const desaFilter = filterBase;
+
+export const desaDefaultValue: DesaInsert = {
+	nama: "",
+};

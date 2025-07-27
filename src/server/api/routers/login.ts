@@ -11,7 +11,7 @@ export const loginRouter = createTRPCRouter({
 		const data = await ctx.db.query.user.findFirst({
 			where: eq(user.username, input.username),
 		});
-		if (!data || !(await verify(data.password!, input.password))) {
+		if (!data || !(await verify(data.password, input.password))) {
 			throw new TRPCError({
 				code: "UNAUTHORIZED",
 				message: "Username atau kata sandi salah",
