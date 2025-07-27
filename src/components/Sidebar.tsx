@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,9 +17,11 @@ export default function Sidebar() {
 	};
 
 	return (
-		<div className="bg-gray-50 h-screen w-64 flex flex-col shadow-md sticky top-0">
-			<img
+		<div className="bg-gray-50 h-screen w-fit flex flex-col shadow-md sticky top-0">
+			<Image
 				src="/logo-rajawali.png"
+				width={500}
+				height={500}
 				alt="Logo Rajawali"
 				className="w-28 self-center py-5"
 			/>
@@ -88,7 +91,7 @@ export default function Sidebar() {
 					</Link>
 				</li>
 			</ul>
-			<div className="py-4 px-8 border-t mt-auto">
+			<div className="py-4 px-8 mt-auto">
 				<Button
 					type="button"
 					onClick={() => setLogoutDialog(true)}

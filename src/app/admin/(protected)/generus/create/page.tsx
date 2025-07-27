@@ -36,7 +36,7 @@ export default function GenerusCreatePage() {
 	const { mutate } = api.generus.createGenerus.useMutation({
 		onError: (error) => {
 			console.log(error);
-			setAlert(error.message || "Internal Server Error", "error");
+			setAlert(error.message, "error");
 		},
 	});
 
@@ -129,7 +129,7 @@ export default function GenerusCreatePage() {
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="John Doe"
+									placeholder="Kota Semarang"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -150,7 +150,7 @@ export default function GenerusCreatePage() {
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="John Doe"
+									placeholder="2000-01-01"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -189,7 +189,7 @@ export default function GenerusCreatePage() {
 									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="08123456789"
+									placeholder="+628123456789"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -249,7 +249,7 @@ export default function GenerusCreatePage() {
 									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="08123456789"
+									placeholder="+628123456789"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -328,7 +328,7 @@ export default function GenerusCreatePage() {
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
-									required={true}
+									required={false}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
 								<TextError field={field} />
@@ -360,7 +360,7 @@ export default function GenerusCreatePage() {
 					>
 						{([canSubmit, isSubmitting]) => (
 							<Button type="submit" disabled={!canSubmit}>
-								{isSubmitting ? "Memproses..." : "Submit"}
+								{isSubmitting ? "Memproses..." : "Kirim"}
 							</Button>
 						)}
 					</form.Subscribe>

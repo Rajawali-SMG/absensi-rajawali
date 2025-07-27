@@ -38,3 +38,7 @@ export const filterBase = z.object({
 	page: z.number().optional().default(0),
 	limit: z.number().optional().default(9),
 });
+
+export const idBase = z.object({
+	id: z.string().nonempty("ID tidak boleh kosong"),
+});

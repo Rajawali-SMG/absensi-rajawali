@@ -1,18 +1,10 @@
 "use client";
 
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import SearchBar from "@/components/SearchBar";
-import Skeleton from "@/components/Skeleton";
-import Button from "@/components/ui/Button";
-import Select from "@/components/ui/Select";
+import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { LogSelect } from "@/types/log";
 import { useAlert } from "@/utils/useAlert";
@@ -30,28 +22,24 @@ export default function LogPage() {
 	});
 	const { setAlert } = useAlert();
 
-	const columnHelper = createColumnHelper<LogSelect>();
-
-	const columns = [
-		columnHelper.accessor("id", { header: "ID" }),
-		columnHelper.accessor("event", { header: "Event" }),
-		columnHelper.accessor("description", { header: "Description" }),
-		columnHelper.accessor("user_id", { header: "User ID" }),
-	];
-
-	const table = useReactTable({
-		data: data?.data?.items || [],
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		manualPagination: true,
-		rowCount: data?.data?.meta?.total || 0,
-		onPaginationChange: setPagination,
-		state: {
-			pagination,
+	const columns: ColumnDef<LogSelect>[] = [
+		{
+			accessorKey: "id",
+			header: "ID",
 		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
-	});
+		{
+			accessorKey: "event",
+			header: "Event",
+		},
+		{
+			accessorKey: "description",
+			header: "Description",
+		},
+		{
+			accessorKey: "user_id",
+			header: "User ID",
+		},
+	];
 
 	return (
 		<>
@@ -60,75 +48,17 @@ export default function LogPage() {
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
-					placeholder="Search by Event or Description"
+					placeholder="Cari Event atau Deskripsi..."
 				/>
 			</div>
-			<table className="w-full text-left text-sm text-gray-500">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
-									{flexRender(
-										header.column.columnDef.header,
-										header.getContext(),
-									)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{isPending
-						? Skeleton(table)
-						: table.getRowModel().rows.map((row) => (
-								<tr key={row.id} className="border-b">
-									{row.getVisibleCells().map((cell) => (
-										<td key={cell.id} className="px-6 py-4">
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</td>
-									))}
-								</tr>
-							))}
-				</tbody>
-				<tfoot>
-					<tr>
-						<td>
-							<Button
-								type="button"
-								onClick={() => table.previousPage()}
-								disabled={!table.getCanPreviousPage()}
-							>
-								Previous
-							</Button>
-							<Button
-								type="button"
-								onClick={() => table.nextPage()}
-								disabled={!table.getCanNextPage()}
-							>
-								Next
-							</Button>
-							<Select
-								name="pageSize"
-								options={[
-									{ value: 10, label: "10" },
-									{ value: 20, label: "20" },
-									{ value: 50, label: "50" },
-									{ value: 100, label: "100" },
-								]}
-								placeholder="Select Page Size"
-								value={table.getState().pagination.pageSize}
-								onChange={(e) => table.setPageSize(Number(e.target.value))}
-							/>
-							<p>Total Page: {table.getPageCount()}</p>
-							<p>Total Row: {table.getRowCount()}</p>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
+			<Table
+				isPending={isPending}
+				data={data?.data?.items || []}
+				columns={columns}
+				rowCount={data?.data?.meta?.total || 0}
+				onPaginationChange={setPagination}
+				pagination={pagination}
+			/>
 		</>
 	);
 }

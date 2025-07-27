@@ -1,9 +1,11 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import navigation from "next/navigation";
+import { useRouter } from "next/router";
+import { use } from "react";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -27,20 +29,38 @@ import {
 } from "@/types/generus";
 import { useAlert } from "@/utils/useAlert";
 
-export default function GenerusUpdatePage() {
-	const router = useRouter();
-	const { data } = api.kelompok.getAll.useQuery();
+export default function GenerusUpdatePage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { setAlert } = useAlert();
+	const { id } = use(params);
+	const router = navigation.useRouter();
+	const { data: generusData } = api.generus.getOneGenerus.useQuery(
+		{
+			id: id,
+		},
+		{
+			enabled: !!id,
+			throwOnError({ message }) {
+				setAlert(message, "error");
+				navigation.notFound();
+				return false;
+			},
+		},
+	);
+	const { data: kelompokData } = api.kelompok.getAll.useQuery();
 	const queryClient = useQueryClient();
 
 	const { mutate } = api.generus.updateGenerus.useMutation({
-		onError: (error) => {
-			setAlert(error.message || "Internal Server Error", "error");
+		onError: ({ message }) => {
+			setAlert(message, "error");
 		},
 	});
 
 	const form = useForm({
-		defaultValues: defaultGenerusUpdate,
+		defaultValues: generusData?.data || defaultGenerusUpdate,
 		onSubmit: ({ value }) => {
 			mutate(value, {
 				onSuccess: (data) => {
@@ -56,14 +76,16 @@ export default function GenerusUpdatePage() {
 	});
 
 	const kelompokOptions =
-		data?.data?.items.map((item) => ({
+		kelompokData?.data?.items.map((item) => ({
 			value: item.id,
 			label: item.nama,
 		})) || [];
 
 	return (
 		<div className="w-full">
-			<h1 className="text-2xl font-bold mb-6 text-gray-800">Update Data</h1>
+			<h1 className="text-2xl font-bold mb-6 text-gray-800">
+				Perbarui Data Generus
+			</h1>
 
 			<form
 				onSubmit={(e) => {
@@ -126,7 +148,7 @@ export default function GenerusUpdatePage() {
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="John Doe"
+									placeholder="Kota Semarang"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -147,7 +169,7 @@ export default function GenerusUpdatePage() {
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="John Doe"
+									placeholder="2000-01-01"
 									required={false}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -186,7 +208,7 @@ export default function GenerusUpdatePage() {
 									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="08123456789"
+									placeholder="+628123456789"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -246,7 +268,7 @@ export default function GenerusUpdatePage() {
 									value={field.state.value || ""}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="08123456789"
+									placeholder="+628123456789"
 									required={true}
 									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 								/>
@@ -357,7 +379,7 @@ export default function GenerusUpdatePage() {
 					>
 						{([canSubmit, isSubmitting]) => (
 							<Button type="submit" disabled={!canSubmit}>
-								{isSubmitting ? "Memproses..." : "Submit"}
+								{isSubmitting ? "Memproses..." : "Perbarui"}
 							</Button>
 						)}
 					</form.Subscribe>

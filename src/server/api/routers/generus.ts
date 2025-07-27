@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
@@ -6,6 +7,7 @@ import {
 	generusFilter,
 	generusUpdateSchema,
 } from "@/types/generus";
+import { idBase } from "../../../types/api";
 import { generus } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -65,6 +67,26 @@ export const generusRouter = createTRPCRouter({
 				null,
 			);
 		}),
+
+	getOneGenerus: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const data = await ctx.db.query.generus.findFirst({
+			where: eq(generus.id, input.id),
+		});
+
+		if (!data) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Data Generus tidak ditemukan",
+			});
+		}
+
+		return formatResponse(
+			true,
+			"Berhasil mendapatkan data Generus",
+			data,
+			null,
+		);
+	}),
 
 	createGenerus: publicProcedure
 		.input(generusCreateSchema)

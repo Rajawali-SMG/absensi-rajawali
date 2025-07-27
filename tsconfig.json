@@ -9,6 +9,7 @@
     "moduleDetection": "force",
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "strictNullChecks": true,
 
     /* Strictness */
     "strict": true,
