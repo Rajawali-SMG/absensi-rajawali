@@ -58,11 +58,15 @@ export const generusUpdateSchema = generusCreateSchema.extend({
 });
 
 export const generusFilter = filterBase.extend({
-	jenis_kelamin: jenisKelaminSchema.optional(),
-	jenjang: jenjangSchema.optional(),
-	pendidikan_terakhir: pendidikanTerakhirSchema.optional(),
-	sambung: sambungSchema.optional(),
-	keterangan: keteranganSchema.optional(),
+	jenis_kelamin: z.union([jenisKelaminSchema, z.literal(""), z.undefined()]),
+	jenjang: z.union([jenjangSchema, z.literal(""), z.undefined()]),
+	pendidikan_terakhir: z.union([
+		pendidikanTerakhirSchema,
+		z.literal(""),
+		z.undefined(),
+	]),
+	sambung: z.union([sambungSchema, z.literal(""), z.undefined()]),
+	keterangan: z.union([keteranganSchema, z.literal(""), z.undefined()]),
 	kelompok_id: z.string().optional(),
 });
 

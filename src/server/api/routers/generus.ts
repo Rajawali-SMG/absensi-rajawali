@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq, ilike, or } from "drizzle-orm";
+import { and, count, eq, ilike } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
@@ -38,8 +38,8 @@ export const generusRouter = createTRPCRouter({
 			const data = await ctx.db.query.generus.findMany({
 				limit,
 				offset: page * limit,
-				where: or(
-					input.q ? ilike(generus.nama, `%${input.q}%`) : undefined,
+				where: and(
+					ilike(generus.nama, `%${input.q}%`),
 					input.jenis_kelamin
 						? eq(generus.jenis_kelamin, input.jenis_kelamin)
 						: undefined,

@@ -8,13 +8,17 @@ import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateKelompok from "@/components/Sheet/Create/Kelompok";
 import SheetUpdateKelompok from "@/components/Sheet/Update/Kelompok";
+import SheetFilter from "@/components/SheetFilter";
 import Button from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { KelompokSelect } from "@/types/kelompok";
 import { useAlert } from "@/utils/useAlert";
 
 export default function KelompokPage() {
+	const [desaParam, setDesaParam] = useState("");
+	const [sheetFilter, setSheetFilter] = useState(false);
 	const searchParams = useSearchParams();
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
@@ -27,11 +31,13 @@ export default function KelompokPage() {
 	const [deleteId, setDeleteId] = useState("");
 	const searchQuery = searchParams.get("q") || "";
 
-	const { data, isPending } = api.kelompok.getAllPaginated.useQuery({
-		q: searchQuery,
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-	});
+	const { data: kelompokData, isPending } =
+		api.kelompok.getAllPaginated.useQuery({
+			q: searchQuery,
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+			desa_id: Number(desaParam),
+		});
 	const { setAlert } = useAlert();
 	const mutation = api.kelompok.deleteKelompok.useMutation({
 		onError: ({ message }) => {
@@ -96,6 +102,13 @@ export default function KelompokPage() {
 			},
 		},
 	];
+	const { data: desaData } = api.desa.getAll.useQuery();
+
+	const desaOptions =
+		desaData?.data?.items.map((item) => ({
+			value: item.id,
+			label: item.nama,
+		})) || [];
 
 	return (
 		<>
@@ -118,6 +131,26 @@ export default function KelompokPage() {
 					selectedData={selectedData}
 				/>
 			)}
+			{sheetFilter && (
+				<SheetFilter
+					closeSheet={() => setSheetFilter(false)}
+					submitFilter={() => setSheetFilter(false)}
+					resetFilter={() => {
+						setDesaParam("");
+						setSheetFilter(false);
+					}}
+				>
+					<Select
+						placeHolderEnabled={true}
+						name="desa_id"
+						label="Desa"
+						options={desaOptions}
+						placeholder="Pilih Desa"
+						value={desaParam}
+						onChange={(e) => setDesaParam(e.target.value)}
+					/>
+				</SheetFilter>
+			)}
 			<div className="flex justify-between mb-4">
 				<SearchBar
 					placeholder="Cari kelompok..."
@@ -126,15 +159,16 @@ export default function KelompokPage() {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
 				/>
+				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
 				<Button type="button" onClick={() => setSheetCreate(true)}>
 					Tambah Kelompok
 				</Button>
 			</div>
 			<Table
 				isPending={isPending}
-				data={data?.data?.items || []}
+				data={kelompokData?.data?.items || []}
 				columns={columns}
-				rowCount={data?.data?.meta?.total || 0}
+				rowCount={kelompokData?.data?.meta?.total || 0}
 				onPaginationChange={setPagination}
 				pagination={pagination}
 			/>

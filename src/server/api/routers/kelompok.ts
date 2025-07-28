@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq, ilike, or } from "drizzle-orm";
+import { and, count, eq, ilike } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
@@ -38,7 +38,7 @@ export const kelompokRouter = createTRPCRouter({
 			const data = await ctx.db.query.kelompok.findMany({
 				limit,
 				offset: page * limit,
-				where: or(
+				where: and(
 					input.q ? ilike(kelompok.nama, `%${input.q}%`) : undefined,
 					input.desa_id ? eq(kelompok.desa_id, input.desa_id) : undefined,
 				),

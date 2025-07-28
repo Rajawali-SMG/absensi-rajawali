@@ -8,13 +8,18 @@ import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateUser from "@/components/Sheet/Create/User";
 import SheetUpdateUser from "@/components/Sheet/Update/User";
+import SheetFilter from "@/components/SheetFilter";
 import Button from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
 import Table from "@/components/ui/Table";
+import { roleOptions } from "@/constants";
 import { api } from "@/trpc/react";
-import type { UserSelect } from "@/types/user";
+import type { RoleType, UserSelect } from "@/types/user";
 import { useAlert } from "@/utils/useAlert";
 
 export default function PenggunaPage() {
+	const [sheetFilter, setSheetFilter] = useState(false);
+	const [roleParam, setRoleParam] = useState<RoleType>();
 	const searchParams = useSearchParams();
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
@@ -24,6 +29,7 @@ export default function PenggunaPage() {
 		q: searchParams.get("q") || "",
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
+		role: roleParam,
 	});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
@@ -117,6 +123,26 @@ export default function PenggunaPage() {
 					selectedData={selectedData}
 				/>
 			)}
+			{sheetFilter && (
+				<SheetFilter
+					closeSheet={() => setSheetFilter(false)}
+					submitFilter={() => setSheetFilter(false)}
+					resetFilter={() => {
+						setRoleParam(undefined);
+						setSheetFilter(false);
+					}}
+				>
+					<Select
+						placeHolderEnabled={true}
+						name="role"
+						label="Role"
+						options={roleOptions}
+						placeholder="Pilih Role"
+						value={roleParam}
+						onChange={(e) => setRoleParam(e.target.value as RoleType)}
+					/>
+				</SheetFilter>
+			)}
 			<div className="flex justify-between">
 				<SearchBar
 					onSearchChange={() => {
@@ -124,6 +150,7 @@ export default function PenggunaPage() {
 					}}
 					placeholder="Cari nama pengguna..."
 				/>
+				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
 				<Button type="button" onClick={() => setSheetCreate(true)}>
 					Tambah Pengguna
 				</Button>

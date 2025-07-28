@@ -20,7 +20,14 @@ import {
 	sambungOptions,
 } from "@/constants/generus";
 import { api } from "@/trpc/react";
-import type { GenerusSelect } from "@/types/generus";
+import type {
+	GenerusSelect,
+	JenisKelaminType,
+	JenjangType,
+	KeteranganType,
+	PendidikanTerakhirType,
+	SambungType,
+} from "@/types/generus";
 import { useAlert } from "@/utils/useAlert";
 
 export default function GenerusPage() {
@@ -33,37 +40,30 @@ export default function GenerusPage() {
 	const [dialog, setDialog] = useState(false);
 	const [sheetFilter, setSheetFilter] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	// const [jenisKelaminParam, setJenisKelaminParam] = useQueryState(
-	// 	"jenis_kelamin",
-	// 	{
-	// 		defaultValue: "",
-	// 	},
-	// );
-	// const [jenjangParam, setJenjangParam] = useQueryState("jenjang", {
-	// 	defaultValue: "",
-	// });
-	// const [pendidikanTerakhirParam, setPendidikanTerakhirParam] = useQueryState(
-	// 	"pendidikan_terakhir",
-	// 	{
-	// 		defaultValue: "",
-	// 	},
-	// );
-	// const [sambungParam, setSambungParam] = useQueryState("sambung", {
-	// 	defaultValue: "",
-	// });
-	// const [keteranganParam, setKeteranganParam] = useQueryState("keterangan", {
-	// 	defaultValue: "",
-	// });
+	const [jenisKelaminParam, setJenisKelaminParam] =
+		useState<JenisKelaminType>();
+	const [jenjangParam, setJenjangParam] = useState<JenjangType>();
+	const [pendidikanTerakhirParam, setPendidikanTerakhirParam] =
+		useState<PendidikanTerakhirType>();
+	const [sambungParam, setSambungParam] = useState<SambungType>();
+	const [keteranganParam, setKeteranganParam] = useState<KeteranganType>();
 	const { data, isPending } = api.generus.getAllPaginated.useQuery({
 		q: searchQuery,
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
-		// jenis_kelamin: jenisKelaminParam,
-		// jenjang: jenjangParam,
-		// pendidikan_terakhir: pendidikanTerakhirParam,
-		// sambung: sambungParam,
-		// keterangan: keteranganParam,
+		jenis_kelamin: jenisKelaminParam,
+		jenjang: jenjangParam,
+		pendidikan_terakhir: pendidikanTerakhirParam,
+		sambung: sambungParam,
+		keterangan: keteranganParam,
 	});
+	console.log(
+		jenisKelaminParam,
+		jenjangParam,
+		pendidikanTerakhirParam,
+		sambungParam,
+		keteranganParam,
+	);
 	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
@@ -150,7 +150,7 @@ export default function GenerusPage() {
 	// 	}
 	// }, [isError, error]);
 
-	// const handleFilter = (value) => {
+	// const handleFilter = (value: any) => {
 	// 	setJenisKelaminParam(value.value);
 	// 	setJenjangParam(value.value);
 	// 	setPendidikanTerakhirParam(value.value);
@@ -171,53 +171,74 @@ export default function GenerusPage() {
 					description="Tindakan ini tidak dapat dibatalkan."
 				/>
 			)}
-			{/* {sheetFilter && (
+			{sheetFilter && (
 				<SheetFilter
 					closeSheet={() => setSheetFilter(false)}
 					submitFilter={() => setSheetFilter(false)}
-				> */}
-			{/* <Select
+					resetFilter={() => {
+						setJenisKelaminParam(undefined);
+						setJenjangParam(undefined);
+						setPendidikanTerakhirParam(undefined);
+						setSambungParam(undefined);
+						setKeteranganParam(undefined);
+						setSheetFilter(false);
+					}}
+				>
+					<Select
+						placeHolderEnabled={true}
 						name="jenis_kelamin"
 						label="Jenis Kelamin"
 						options={jenisKelaminOptions}
 						placeholder="Pilih Jenis Kelamin"
 						value={jenisKelaminParam}
-						onChange={(e) => setJenisKelaminParam(e.target.value)}
+						onChange={(e) =>
+							setJenisKelaminParam(e.target.value as JenisKelaminType)
+						}
 					/>
 					<Select
+						placeHolderEnabled={true}
 						name="jenjang"
 						label="Jenjang"
 						options={jenjangOptions}
 						placeholder="Pilih Jenjang"
 						value={jenjangParam}
-						onChange={(e) => setJenjangParam(e.target.value)}
+						onChange={(e) => setJenjangParam(e.target.value as JenjangType)}
 					/>
 					<Select
+						placeHolderEnabled={true}
 						name="pendidikan_terakhir"
 						label="Pendidikan Terakhir"
 						options={pendidikanTerakhirOptions}
 						placeholder="Pilih Pendidikan Terakhir"
 						value={pendidikanTerakhirParam}
-						onChange={(e) => setPendidikanTerakhirParam(e.target.value)}
+						onChange={(e) =>
+							setPendidikanTerakhirParam(
+								e.target.value as PendidikanTerakhirType,
+							)
+						}
 					/>
 					<Select
+						placeHolderEnabled={true}
 						name="sambung"
 						label="Sambung"
 						options={sambungOptions}
 						placeholder="Pilih Sambung"
 						value={sambungParam}
-						onChange={(e) => setSambungParam(e.target.value)}
+						onChange={(e) => setSambungParam(e.target.value as SambungType)}
 					/>
 					<Select
+						placeHolderEnabled={true}
 						name="keterangan"
 						label="Keterangan"
 						options={keteranganOptions}
 						placeholder="Pilih Keterangan"
 						value={keteranganParam}
-						onChange={(e) => setKeteranganParam(e.target.value)}
-					/> */}
-			{/* </SheetFilter>
-			)} */}
+						onChange={(e) =>
+							setKeteranganParam(e.target.value as KeteranganType)
+						}
+					/>
+				</SheetFilter>
+			)}
 			<div className="flex justify-between">
 				<SearchBar
 					placeholder="Cari Nama Generus"

@@ -12,6 +12,7 @@ type SelectProps = DetailedHTMLProps<
 	name: string;
 	label?: string;
 	options: SelectOption[];
+	placeHolderEnabled?: boolean;
 	placeholder: string;
 };
 
@@ -19,6 +20,7 @@ export default function Select({
 	name,
 	label,
 	options,
+	placeHolderEnabled,
 	placeholder,
 	...props
 }: SelectProps) {
@@ -34,7 +36,7 @@ export default function Select({
 				{...props}
 				className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 			>
-				<option value="" disabled>
+				<option value="" disabled={!placeHolderEnabled}>
 					{placeholder}
 				</option>
 				{options.map((option) => (

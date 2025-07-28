@@ -67,6 +67,10 @@ export const desa = createTable(
 	(table) => [index("nama_desa_idx").on(table.nama)],
 );
 
+export const desaRelations = relations(desa, ({ many }) => ({
+	kelompok: many(kelompok),
+}));
+
 export const kelompok = createTable(
 	"kelompok",
 	{
@@ -80,6 +84,14 @@ export const kelompok = createTable(
 		index("desa_id_idx").on(table.desa_id),
 	],
 );
+
+export const kelompokRelations = relations(kelompok, ({ one, many }) => ({
+	desa: one(desa, {
+		fields: [kelompok.desa_id],
+		references: [desa.id],
+	}),
+	generus: many(generus),
+}));
 
 export const generus = createTable(
 	"generus",
@@ -116,6 +128,14 @@ export const generus = createTable(
 	],
 );
 
+export const generusRelations = relations(generus, ({ one, many }) => ({
+	kelompok: one(kelompok, {
+		fields: [generus.kelompok_id],
+		references: [kelompok.id],
+	}),
+	presence: many(presence),
+}));
+
 export const user = createTable(
 	"user",
 	{
@@ -134,6 +154,10 @@ export const user = createTable(
 		index("role_user_idx").on(table.role),
 	],
 );
+
+export const userRelations = relations(user, ({ many }) => ({
+	log: many(log),
+}));
 
 export const log = createTable(
 	"log",
@@ -154,6 +178,13 @@ export const log = createTable(
 	],
 );
 
+export const logRelations = relations(log, ({ one }) => ({
+	user: one(user, {
+		fields: [log.user_id],
+		references: [user.id],
+	}),
+}));
+
 export const event = createTable(
 	"event",
 	{
@@ -172,6 +203,10 @@ export const event = createTable(
 	},
 	(table) => [index("title_event_idx").on(table.title)],
 );
+
+export const eventRelations = relations(event, ({ many }) => ({
+	presence: many(presence),
+}));
 
 export const presence = createTable("presence", {
 	id: varchar()

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq, ilike, or } from "drizzle-orm";
+import { and, count, eq, ilike } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import { logCreateSchema, logFilter, logUpdateSchema } from "@/types/log";
@@ -34,7 +34,7 @@ export const logRouter = createTRPCRouter({
 			const data = await ctx.db.query.log.findMany({
 				limit,
 				offset: page * limit,
-				where: or(
+				where: and(
 					input.q ? ilike(log.event, `%${input.q}%`) : undefined,
 					input.q ? ilike(log.description, `%${input.q}%`) : undefined,
 				),

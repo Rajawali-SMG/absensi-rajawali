@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { hash } from "argon2";
-import { count, eq, ilike, or } from "drizzle-orm";
+import { and, count, eq, ilike } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import { userCreateSchema, userFilter, userUpdateSchema } from "@/types/user";
@@ -42,7 +42,7 @@ export const userRouter = createTRPCRouter({
 				},
 				limit,
 				offset: page * limit,
-				where: or(
+				where: and(
 					input.role ? eq(user.role, input.role) : undefined,
 					input.q ? ilike(user.username, `%${input.q}%`) : undefined,
 				),
