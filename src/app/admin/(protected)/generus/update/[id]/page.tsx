@@ -18,7 +18,7 @@ import {
 } from "@/constants/generus";
 import { api } from "@/trpc/react";
 import {
-	defaultGenerusUpdate,
+	defaultGenerus,
 	generusUpdateSchema,
 	type JenisKelaminType,
 	type JenjangType,
@@ -42,7 +42,7 @@ export default function GenerusUpdatePage({
 		},
 		{
 			enabled: !!id,
-			throwOnError({ message }) {
+			throwOnError: ({ message }) => {
 				setAlert(message, "error");
 				navigation.notFound();
 				return false;
@@ -64,10 +64,11 @@ export default function GenerusUpdatePage({
 	});
 
 	const form = useForm({
-		defaultValues: generusData?.data || defaultGenerusUpdate,
+		defaultValues: generusData?.data || defaultGenerus,
 		onSubmit: ({ value }) => {
 			mutate(value);
 		},
+
 		validators: {
 			onSubmit: generusUpdateSchema,
 		},

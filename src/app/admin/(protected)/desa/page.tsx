@@ -1,7 +1,6 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -9,11 +8,11 @@ import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateDesa from "@/components/Sheet/Create/Desa";
 import SheetUpdateDesa from "@/components/Sheet/Update/Desa";
+import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { DesaSelect } from "@/types/desa";
 import { useAlert } from "@/utils/useAlert";
-import Button from "../../../../components/ui/Button";
 
 export default function DesaPage() {
 	const [pagination, setPagination] = useState({

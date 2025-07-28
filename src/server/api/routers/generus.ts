@@ -1,13 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import { idBase } from "@/types";
 import {
 	generusCreateSchema,
-	generusDeleteSchema,
 	generusFilter,
 	generusUpdateSchema,
 } from "@/types/generus";
-import { idBase } from "../../../types/api";
 import { generus } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -104,6 +103,12 @@ export const generusRouter = createTRPCRouter({
 	updateGenerus: publicProcedure
 		.input(generusUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
 			const data = await ctx.db
 				.update(generus)
 				.set(input)
@@ -113,7 +118,7 @@ export const generusRouter = createTRPCRouter({
 		}),
 
 	deleteGenerus: publicProcedure
-		.input(generusDeleteSchema)
+		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.delete(generus).where(eq(generus.id, input.id));
 

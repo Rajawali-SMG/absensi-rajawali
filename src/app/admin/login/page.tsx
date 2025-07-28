@@ -21,14 +21,12 @@ export default function LoginPage() {
 		},
 		onSubmit: ({ value }) => {
 			mutate(value, {
-				onSuccess: (data) => {
-					console.log(`berhasil: ${data}`);
-					setAlert(data.message, "success");
+				onSuccess: ({ message }) => {
+					setAlert(message, "success");
 					navigate.push("/admin/dashboard");
 				},
-				onError: (error) => {
-					console.log(`gagal: ${error}`);
-					setAlert(error.message, "error");
+				onError: ({ message }) => {
+					setAlert(message, "error");
 				},
 			});
 		},

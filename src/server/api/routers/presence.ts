@@ -1,13 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { count, eq } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import { idBase } from "@/types";
 import {
 	presenceCreateSchema,
-	presenceDeleteSchema,
 	presenceFilter,
 	presenceUpdateSchema,
 } from "@/types/presence";
-import { idBase } from "../../../types/api";
 import { presence } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -100,6 +99,13 @@ export const presenceRouter = createTRPCRouter({
 	updatePresence: publicProcedure
 		.input(presenceUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
+
 			const data = await ctx.db
 				.update(presence)
 				.set(input)
@@ -114,7 +120,7 @@ export const presenceRouter = createTRPCRouter({
 		}),
 
 	deletePresence: publicProcedure
-		.input(presenceDeleteSchema)
+		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db
 				.delete(presence)

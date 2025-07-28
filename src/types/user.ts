@@ -1,6 +1,7 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import z from "zod";
 import type { user } from "../server/db/schema";
+import { filterBase } from ".";
 
 export type UserSelectDirty = InferSelectModel<typeof user>;
 export type UserSelect = Omit<UserSelectDirty, "password">;
@@ -24,19 +25,12 @@ export const userUpdateSchema = userCreateSchema.extend({
 	id: z.uuid().nonempty("ID tidak boleh kosong"),
 });
 
-export const userDeleteSchema = userUpdateSchema.pick({
-	id: true,
-});
-
 export const defaultValueUser: UserInsert = {
 	username: "",
 	password: "",
 	role: "User",
 };
 
-export const userFilter = z.object({
-	q: z.string().optional(),
-	page: z.number().optional(),
-	limit: z.number().optional(),
+export const userFilter = filterBase.extend({
 	role: z.enum(["Super Admin", "Admin", "User"]).optional(),
 });

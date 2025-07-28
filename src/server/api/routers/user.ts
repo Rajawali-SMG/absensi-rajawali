@@ -2,13 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { hash } from "argon2";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
-import {
-	userCreateSchema,
-	userDeleteSchema,
-	userFilter,
-	userUpdateSchema,
-} from "@/types/user";
-import { idBase } from "../../../types/api";
+import { idBase } from "@/types";
+import { userCreateSchema, userFilter, userUpdateSchema } from "@/types/user";
 import { user } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -95,6 +90,13 @@ export const userRouter = createTRPCRouter({
 	updateUser: publicProcedure
 		.input(userUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
+
 			const data = await ctx.db
 				.update(user)
 				.set(input)
@@ -103,11 +105,9 @@ export const userRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil mengubah data User", data, null);
 		}),
 
-	deleteUser: publicProcedure
-		.input(userDeleteSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.delete(user).where(eq(user.id, input.id));
+	deleteUser: publicProcedure.input(idBase).mutation(async ({ ctx, input }) => {
+		const data = await ctx.db.delete(user).where(eq(user.id, input.id));
 
-			return formatResponse(true, "Berhasil menghapus data User", data, null);
-		}),
+		return formatResponse(true, "Berhasil menghapus data User", data, null);
+	}),
 });

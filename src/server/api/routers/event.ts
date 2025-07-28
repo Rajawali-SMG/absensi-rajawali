@@ -1,13 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { count, eq } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import { idBase } from "@/types";
 import {
 	eventCreateSchema,
-	eventDeleteSchema,
 	eventFilter,
 	eventUpdateSchema,
 } from "@/types/event";
-import { idBase } from "../../../types/api";
 import { event } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -100,7 +99,7 @@ export const eventRouter = createTRPCRouter({
 		}),
 
 	deleteEvent: publicProcedure
-		.input(eventDeleteSchema)
+		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {
 				throw new TRPCError({

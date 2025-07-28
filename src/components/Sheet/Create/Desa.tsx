@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import TextError from "@/components/TextError";
-import ThemedInput from "@/components/ui/Input";
+import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { desaCreateSchema, desaDefaultValue } from "@/types/desa";
 import { useAlert } from "@/utils/useAlert";
@@ -53,7 +53,7 @@ export default function SheetCreateDesa({
 						<form.Field name="nama">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
 										label="Nama"
 										variant="secondary"
 										htmlFor={field.name}
@@ -83,7 +83,7 @@ export default function SheetCreateDesa({
 									disabled={!canSubmit}
 									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
 								>
-									{isSubmitting ? "Memproses..." : "Update"}
+									{isSubmitting ? "Memproses..." : "Buat"}
 								</button>
 							)}
 						</form.Subscribe>

@@ -1,13 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
-import {
-	logCreateSchema,
-	logDeleteSchema,
-	logFilter,
-	logUpdateSchema,
-} from "@/types/log";
-import { idBase } from "../../../types/api";
+import { idBase } from "@/types";
+import { logCreateSchema, logFilter, logUpdateSchema } from "@/types/log";
 import { log } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -84,6 +79,13 @@ export const logRouter = createTRPCRouter({
 	updateLog: publicProcedure
 		.input(logUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
+
 			const data = await ctx.db
 				.update(log)
 				.set(input)
@@ -92,11 +94,9 @@ export const logRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil mengubah data Log", data, null);
 		}),
 
-	deleteLog: publicProcedure
-		.input(logDeleteSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.delete(log).where(eq(log.id, input.id));
+	deleteLog: publicProcedure.input(idBase).mutation(async ({ ctx, input }) => {
+		const data = await ctx.db.delete(log).where(eq(log.id, input.id));
 
-			return formatResponse(true, "Berhasil menghapus data Log", data, null);
-		}),
+		return formatResponse(true, "Berhasil menghapus data Log", data, null);
+	}),
 });

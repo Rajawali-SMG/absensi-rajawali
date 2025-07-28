@@ -2,11 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
-import {
-	type EventSelect,
-	eventDefaultUpdate,
-	eventUpdateSchema,
-} from "@/types/event";
+import { type EventSelect, eventUpdateSchema } from "@/types/event";
 import { useAlert } from "@/utils/useAlert";
 
 export default function SheetUpdateEvent({
@@ -32,7 +28,15 @@ export default function SheetUpdateEvent({
 	});
 
 	const form = useForm({
-		defaultValues: eventDefaultUpdate,
+		defaultValues: {
+			id: selectedData.id,
+			title: selectedData.title,
+			start_date: selectedData.start_date,
+			end_date: selectedData.end_date,
+			latitude: selectedData.latitude,
+			longitude: selectedData.longitude,
+			description: selectedData.description,
+		},
 		onSubmit: ({ value }) => {
 			mutate(value);
 			closeSheet();

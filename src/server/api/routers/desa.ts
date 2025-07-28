@@ -1,13 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { count, eq, ilike } from "drizzle-orm";
+import z from "zod";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
-import {
-	desaCreateSchema,
-	desaDeleteSchema,
-	desaFilter,
-	desaUpdateSchema,
-} from "@/types/desa";
-import { idBase } from "../../../types/api";
+import { idBase } from "@/types";
+import { desaCreateSchema, desaFilter, desaUpdateSchema } from "@/types/desa";
 import { desa } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -81,6 +77,13 @@ export const desaRouter = createTRPCRouter({
 	updateDesa: publicProcedure
 		.input(desaUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
+
 			const data = await ctx.db
 				.update(desa)
 				.set(input)
@@ -90,7 +93,14 @@ export const desaRouter = createTRPCRouter({
 		}),
 
 	deleteDesa: publicProcedure
-		.input(desaDeleteSchema)
+		.input(
+			z.object({
+				id: z
+					.int()
+					.min(1, "ID tidak boleh kosong")
+					.max(32767, "ID maksimal 32767"),
+			}),
+		)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.delete(desa).where(eq(desa.id, input.id));
 

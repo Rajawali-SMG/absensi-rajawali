@@ -2,14 +2,14 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
 import {
-	generus,
+	type generus,
 	jenisKelamin,
 	jenjang,
 	keterangan,
 	pendidikanTerakhir,
 	sambung,
 } from "../server/db/schema";
-import { filterBase } from "./api";
+import { filterBase } from ".";
 
 export type GenerusSelect = InferSelectModel<typeof generus>;
 export type GenerusInsert = InferInsertModel<typeof generus>;
@@ -57,10 +57,6 @@ export const generusUpdateSchema = generusCreateSchema.extend({
 	id: z.uuid().nonempty("ID tidak boleh kosong"),
 });
 
-export const generusDeleteSchema = generusUpdateSchema.pick({
-	id: true,
-});
-
 export const generusFilter = filterBase.extend({
 	jenis_kelamin: jenisKelaminSchema.optional(),
 	jenjang: jenjangSchema.optional(),
@@ -71,6 +67,7 @@ export const generusFilter = filterBase.extend({
 });
 
 export const defaultGenerus: GenerusInsert = {
+	id: "",
 	nama: "",
 	jenis_kelamin: "Laki-laki",
 	tempat_lahir: "",
@@ -85,9 +82,4 @@ export const defaultGenerus: GenerusInsert = {
 	keterangan: "Pendatang",
 	alamat_asal: "",
 	kelompok_id: "",
-};
-
-export const defaultGenerusUpdate: z.infer<typeof generusUpdateSchema> = {
-	id: "",
-	...defaultGenerus,
 };

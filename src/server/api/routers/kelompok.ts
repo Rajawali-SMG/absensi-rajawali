@@ -1,13 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { count, eq, ilike, or } from "drizzle-orm";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import { idBase } from "@/types";
 import {
 	kelompokCreateSchema,
-	kelompokDeleteSchema,
 	kelompokFilter,
 	kelompokUpdateSchema,
 } from "@/types/kelompok";
-import { idBase } from "../../../types/api";
 import { kelompok } from "../../db/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -110,7 +109,7 @@ export const kelompokRouter = createTRPCRouter({
 		}),
 
 	deleteKelompok: publicProcedure
-		.input(kelompokDeleteSchema)
+		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db
 				.delete(kelompok)

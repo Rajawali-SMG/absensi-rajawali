@@ -1,6 +1,7 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import z from "zod";
 import type { presence } from "../server/db/schema";
+import { filterBase } from ".";
 
 export type PresenceSelect = InferSelectModel<typeof presence>;
 export type PresenceInsert = InferInsertModel<typeof presence>;
@@ -19,11 +20,6 @@ export const presenceUpdateSchema = presenceCreateSchema.extend({
 	id: z.uuid().nonempty("ID tidak boleh kosong"),
 });
 
-export const presenceDeleteSchema = presenceUpdateSchema.pick({
-	id: true,
-});
-
-export const presenceFilter = z.object({
-	limit: z.number().optional().default(9),
-	page: z.number().optional().default(0),
+export const presenceFilter = filterBase.omit({
+	q: true,
 });

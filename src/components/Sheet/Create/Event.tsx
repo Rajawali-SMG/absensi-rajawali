@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import TextError from "@/components/TextError";
-import ThemedInput from "@/components/ui/Input";
+import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { eventCreateSchema, eventDefaultValue } from "@/types/event";
 import { useAlert } from "@/utils/useAlert";
@@ -54,7 +54,7 @@ export default function SheetCreateEvent({
 						<form.Field name="title">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
 										label="Title"
 										variant="secondary"
 										htmlFor={field.name}
@@ -76,7 +76,7 @@ export default function SheetCreateEvent({
 						<form.Field name="start_date">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
 										label="Start Date"
 										variant="secondary"
 										htmlFor={field.name}
@@ -98,7 +98,7 @@ export default function SheetCreateEvent({
 						<form.Field name="end_date">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
 										label="End Date"
 										variant="secondary"
 										htmlFor={field.name}
@@ -119,7 +119,7 @@ export default function SheetCreateEvent({
 						<form.Field name="latitude">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
 										label="Latitude"
 										variant="secondary"
 										htmlFor={field.name}
@@ -141,7 +141,7 @@ export default function SheetCreateEvent({
 						<form.Field name="longitude">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
 										label="Longitude"
 										variant="secondary"
 										htmlFor={field.name}
@@ -163,7 +163,7 @@ export default function SheetCreateEvent({
 						<form.Field name="description">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
 										label="Deskripsi"
 										variant="secondary"
 										htmlFor={field.name}
