@@ -1,13 +1,20 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import { useSession } from "@/server/auth/client";
 
 export default function ProtectedLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
+	const session = useSession;
+
+	if (!session) {
+		redirect("/admin/login");
+	}
+
 	const pathname = usePathname();
 	return (
 		<div className="flex">

@@ -6,14 +6,27 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Dialog from "@/components/Dialog";
 import Button from "@/components/ui/Button";
+import { useAlert } from "@/utils/useAlert";
+import { signOut } from "../server/auth/client";
 
 export default function Sidebar() {
 	const [logoutDialog, setLogoutDialog] = useState(false);
 	const navigate = useRouter();
+	const { setAlert } = useAlert();
 
-	const handleLogout = () => {
+	const handleLogout = async () => {
 		setLogoutDialog(false);
-		navigate.push("/admin/login");
+		await signOut({
+			fetchOptions: {
+				onSuccess(context) {
+					setAlert(context.data.message || "Berhasil logout", "success");
+					navigate.push("/admin/login");
+				},
+				onError(context) {
+					setAlert(context.error.message || "Gagal logout", "error");
+				},
+			},
+		});
 	};
 
 	return (

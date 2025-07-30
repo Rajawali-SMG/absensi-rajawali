@@ -8,7 +8,6 @@ import { useState } from "react";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetFilter from "@/components/SheetFilter";
-import Skeleton from "@/components/Skeleton";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import Table from "@/components/ui/Table";

@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const loginSchema = z.object({
-	username: z.string().nonempty("Username tidak boleh kosong"),
+	email: z.email().nonempty("Email tidak boleh kosong"),
 	password: z.string().nonempty("Password tidak boleh kosong"),
 });
 

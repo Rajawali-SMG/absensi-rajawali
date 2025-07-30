@@ -2,12 +2,23 @@ import { hash } from "argon2";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { reset, seed } from "drizzle-seed";
 import { env } from "@/env";
-import { desa, event, generus, kelompok, log, presence, user } from "./schema";
+import {
+	account,
+	desa,
+	event,
+	generus,
+	kelompok,
+	log,
+	presence,
+	session,
+	user,
+	verification,
+} from "./schema";
 
 async function main() {
 	console.log("Seeding started⏳");
 	const hashedPassword = await hash(env.USER_PASSWORD);
-	const db = drizzle(env.DATABASE_URL);
+	const db = drizzle(env.DATABASE_URL, { casing: "snake_case" });
 	const kelompok_id = [
 		"SML",
 		"SRT",
@@ -29,7 +40,18 @@ async function main() {
 		"MKT",
 		"SHD",
 	];
-	await reset(db, { desa, kelompok, generus, log, presence, user, event });
+	await reset(db, {
+		desa,
+		kelompok,
+		generus,
+		log,
+		presence,
+		user,
+		event,
+		account,
+		session,
+		verification,
+	});
 	await seed(
 		db,
 		{
@@ -38,8 +60,11 @@ async function main() {
 			generus,
 			log,
 			presence,
-			user,
+			// user,
 			event,
+			// account,
+			// session,
+			// verification,
 		},
 		{ count: 25 },
 	).refine((f) => ({
@@ -79,7 +104,7 @@ async function main() {
 						"Syuhada",
 					],
 				}),
-				desa_id: f.valuesFromArray({
+				desaId: f.valuesFromArray({
 					values: [1, 2, 3, 4],
 				}),
 			},
@@ -89,28 +114,30 @@ async function main() {
 			columns: {
 				id: f.uuid(),
 				nama: f.fullName(),
-				tempat_lahir: f.city(),
-				nomer_whatsapp: f.phoneNumber({ template: "+628##########" }),
-				nama_orang_tua: f.fullName(),
-				nomer_whatsapp_orang_tua: f.phoneNumber({
+				tempatLahir: f.city(),
+				nomerWhatsapp: f.phoneNumber({ template: "+628##########" }),
+				namaOrangTua: f.fullName(),
+				nomerWhatsappOrangTua: f.phoneNumber({
 					template: "+628##########",
 				}),
-				alamat_tempat_tinggal: f.streetAddress(),
-				alamat_asal: f.streetAddress(),
-				kelompok_id: f.valuesFromArray({
+				alamatTempatTinggal: f.streetAddress(),
+				alamatAsal: f.streetAddress(),
+				kelompokId: f.valuesFromArray({
 					values: kelompok_id,
 				}),
 			},
 		},
-		user: {
-			columns: {
-				id: f.uuid(),
-				username: f.default({ defaultValue: "admin" }),
-				password: f.default({ defaultValue: hashedPassword }),
-				role: f.default({ defaultValue: "Super Admin" }),
-			},
-			count: 1,
-		},
+		// user: {
+		// 	columns: {
+		// 		id: f.uuid(),
+		// 		name: f.default({ defaultValue: "admin" }),
+		// 		email: f.default({ defaultValue: "admin@admin.com" }),
+		// 		emailVerified: f.default({ defaultValue: true }),
+		// 		password: f.default({ defaultValue: hashedPassword }),
+		// 		role: f.default({ defaultValue: "Super Admin" }),
+		// 	},
+		// 	count: 1,
+		// },
 		log: {
 			columns: {
 				id: f.uuid(),
@@ -118,7 +145,7 @@ async function main() {
 					values: ["Login", "Logout", "Register", "Update", "Delete"],
 				}),
 				description: f.loremIpsum(),
-				user_id: f.uuid(),
+				userId: f.uuid(),
 			},
 		},
 		event: {
@@ -133,10 +160,39 @@ async function main() {
 				status: f.valuesFromArray({
 					values: ["Hadir", "Izin", "Tidak Hadir"],
 				}),
-				generus_id: f.uuid(),
-				event_id: f.uuid(),
+				generusId: f.uuid(),
+				eventId: f.uuid(),
 			},
 		},
+		// account: {
+		// 	columns: {
+		// 		id: f.uuid(),
+		// 		account_id: f.uuid(),
+		// 		provider_id: f.uuid(),
+		// 		user_id: f.uuid(),
+		// 		id_token: f.uuid(),
+		// 		access_token_expires_at: f.timestamp(),
+		// 		refresh_token_expires_at: f.timestamp(),
+		// 		password: f.default({ defaultValue: hashedPassword }),
+		// 		created_at: f.timestamp(),
+		// 		updated_at: f.timestamp(),
+		// 	},
+		// },
+		// session: {
+		// 	columns: {
+		// 		id: f.uuid(),
+		// 		expires_at: f.timestamp(),
+		// 		created_at: f.timestamp(),
+		// 		updated_at: f.timestamp(),
+		// 		user_id: f.uuid(),
+		// 	},
+		// },
+		// verification: {
+		// 	columns: {
+		// 		id: f.uuid(),
+		// 		expires_at: f.timestamp(),
+		// 	},
+		// },
 	}));
 }
 main()

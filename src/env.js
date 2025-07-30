@@ -12,6 +12,8 @@ export const env = createEnv({
 			.enum(["development", "test", "production"])
 			.default("development"),
 		USER_PASSWORD: z.string(),
+		BETTER_AUTH_SECRET: z.string(),
+		BETTER_AUTH_URL: z.string(),
 	},
 
 	/**
@@ -31,6 +33,8 @@ export const env = createEnv({
 		DATABASE_URL: process.env.DATABASE_URL,
 		NODE_ENV: process.env.NODE_ENV,
 		USER_PASSWORD: process.env.USER_PASSWORD,
+		BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 	},
 	/**
