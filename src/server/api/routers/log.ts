@@ -4,10 +4,10 @@ import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import { logCreateSchema, logFilter, logUpdateSchema } from "@/types/log";
 import { log } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const logRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.log.findMany();
 
 		return formatResponseArray(
@@ -26,7 +26,7 @@ export const logRouter = createTRPCRouter({
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(logFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
@@ -53,7 +53,7 @@ export const logRouter = createTRPCRouter({
 			);
 		}),
 
-	getOneLog: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+	getOneLog: protectedProcedure.input(idBase).query(async ({ ctx, input }) => {
 		const data = await ctx.db.query.log.findFirst({
 			where: eq(log.id, input.id),
 		});
@@ -68,7 +68,7 @@ export const logRouter = createTRPCRouter({
 		return formatResponse(true, "Berhasil mendapatkan data Log", data, null);
 	}),
 
-	createLog: publicProcedure
+	createLog: protectedProcedure
 		.input(logCreateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.insert(log).values(input);
@@ -76,7 +76,7 @@ export const logRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil menambahkan data Log", data, null);
 		}),
 
-	updateLog: publicProcedure
+	updateLog: protectedProcedure
 		.input(logUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {
@@ -94,9 +94,11 @@ export const logRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil mengubah data Log", data, null);
 		}),
 
-	deleteLog: publicProcedure.input(idBase).mutation(async ({ ctx, input }) => {
-		const data = await ctx.db.delete(log).where(eq(log.id, input.id));
+	deleteLog: protectedProcedure
+		.input(idBase)
+		.mutation(async ({ ctx, input }) => {
+			const data = await ctx.db.delete(log).where(eq(log.id, input.id));
 
-		return formatResponse(true, "Berhasil menghapus data Log", data, null);
-	}),
+			return formatResponse(true, "Berhasil menghapus data Log", data, null);
+		}),
 });

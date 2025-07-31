@@ -8,10 +8,10 @@ import {
 	kelompokUpdateSchema,
 } from "@/types/kelompok";
 import { kelompok } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const kelompokRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.kelompok.findMany();
 
 		return formatResponseArray(
@@ -30,7 +30,7 @@ export const kelompokRouter = createTRPCRouter({
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(kelompokFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
@@ -40,7 +40,7 @@ export const kelompokRouter = createTRPCRouter({
 				offset: page * limit,
 				where: and(
 					input.q ? ilike(kelompok.nama, `%${input.q}%`) : undefined,
-					input.desa_id ? eq(kelompok.desa_id, input.desa_id) : undefined,
+					input.desaId ? eq(kelompok.desaId, input.desaId) : undefined,
 				),
 			});
 
@@ -57,7 +57,7 @@ export const kelompokRouter = createTRPCRouter({
 			);
 		}),
 
-	getOneKelompok: publicProcedure
+	getOneKelompok: protectedProcedure
 		.input(idBase)
 		.query(async ({ ctx, input }) => {
 			const data = await ctx.db.query.kelompok.findFirst({
@@ -79,7 +79,7 @@ export const kelompokRouter = createTRPCRouter({
 			);
 		}),
 
-	createKelompok: publicProcedure
+	createKelompok: protectedProcedure
 		.input(kelompokCreateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.insert(kelompok).values(input);
@@ -92,7 +92,7 @@ export const kelompokRouter = createTRPCRouter({
 			);
 		}),
 
-	updateKelompok: publicProcedure
+	updateKelompok: protectedProcedure
 		.input(kelompokUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db
@@ -108,7 +108,7 @@ export const kelompokRouter = createTRPCRouter({
 			);
 		}),
 
-	deleteKelompok: publicProcedure
+	deleteKelompok: protectedProcedure
 		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db

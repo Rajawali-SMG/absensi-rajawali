@@ -5,10 +5,10 @@ import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import { desaCreateSchema, desaFilter, desaUpdateSchema } from "@/types/desa";
 import { desa } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const desaRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.desa.findMany();
 
 		return formatResponseArray(
@@ -27,7 +27,7 @@ export const desaRouter = createTRPCRouter({
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(desaFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
@@ -51,7 +51,7 @@ export const desaRouter = createTRPCRouter({
 			);
 		}),
 
-	getOneDesa: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+	getOneDesa: protectedProcedure.input(idBase).query(async ({ ctx, input }) => {
 		const data = await ctx.db.query.desa.findFirst({
 			where: eq(desa.id, Number(input.id)),
 		});
@@ -66,7 +66,7 @@ export const desaRouter = createTRPCRouter({
 		return formatResponse(true, "Berhasil mendapatkan data Desa", data, null);
 	}),
 
-	createDesa: publicProcedure
+	createDesa: protectedProcedure
 		.input(desaCreateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.insert(desa).values(input);
@@ -74,7 +74,7 @@ export const desaRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil menambahkan data Desa", data, null);
 		}),
 
-	updateDesa: publicProcedure
+	updateDesa: protectedProcedure
 		.input(desaUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {
@@ -92,7 +92,7 @@ export const desaRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil mengubah data Desa", data, null);
 		}),
 
-	deleteDesa: publicProcedure
+	deleteDesa: protectedProcedure
 		.input(
 			z.object({
 				id: z

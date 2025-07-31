@@ -12,8 +12,8 @@ export const presenceCreateSchema = z.object({
 			error: "Status tidak boleh kosong",
 		})
 		.default("Tidak Hadir"),
-	event_id: z.string().nonempty("Event tidak boleh kosong"),
-	generus_id: z.string().nonempty("Generus tidak boleh kosong"),
+	eventId: z.string().nonempty("Event tidak boleh kosong"),
+	generusId: z.string().nonempty("Generus tidak boleh kosong"),
 });
 
 export const presenceUpdateSchema = presenceCreateSchema.extend({

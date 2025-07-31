@@ -8,10 +8,10 @@ import {
 	eventUpdateSchema,
 } from "@/types/event";
 import { event } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const eventRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.event.findMany();
 
 		return formatResponseArray(
@@ -30,7 +30,7 @@ export const eventRouter = createTRPCRouter({
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(eventFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
@@ -53,22 +53,29 @@ export const eventRouter = createTRPCRouter({
 			);
 		}),
 
-	getOneEvent: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
-		const data = await ctx.db.query.event.findFirst({
-			where: eq(event.id, input.id),
-		});
-
-		if (!data) {
-			throw new TRPCError({
-				code: "NOT_FOUND",
-				message: "Data Event tidak ditemukan",
+	getOneEvent: protectedProcedure
+		.input(idBase)
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.event.findFirst({
+				where: eq(event.id, input.id),
 			});
-		}
 
-		return formatResponse(true, "Berhasil mendapatkan data Event", data, null);
-	}),
+			if (!data) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Data Event tidak ditemukan",
+				});
+			}
 
-	createEvent: publicProcedure
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Event",
+				data,
+				null,
+			);
+		}),
+
+	createEvent: protectedProcedure
 		.input(eventCreateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.insert(event).values(input);
@@ -81,7 +88,7 @@ export const eventRouter = createTRPCRouter({
 			);
 		}),
 
-	updateEvent: publicProcedure
+	updateEvent: protectedProcedure
 		.input(eventUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {
@@ -98,7 +105,7 @@ export const eventRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil mengubah data Event", data, null);
 		}),
 
-	deleteEvent: publicProcedure
+	deleteEvent: protectedProcedure
 		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {

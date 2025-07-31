@@ -76,6 +76,8 @@ export default function GenerusPage() {
 		},
 	});
 
+	const { data: excelData } = api.generus.exportExcelGenerus.useQuery();
+
 	const handleDeleteConfirm = () => {
 		mutation.mutate({ id: deleteId });
 		setDialog(false);
@@ -246,6 +248,7 @@ export default function GenerusPage() {
 					}}
 				/>
 				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
+				<Button onClick={() => excelData}>Export Excel</Button>
 				<Link href="/admin/generus/create">Tambah Generus</Link>
 			</div>
 			<Table

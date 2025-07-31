@@ -17,12 +17,12 @@ export default function LoginPage() {
 	async function login(value: { email: string; password: string }) {
 		return await signIn.email(value, {
 			onError: ({ error }) => {
-				navigate.push("/error");
 				setAlert(error.message, "error");
 			},
-			onSuccess: ({ data }) => {
+			onSuccess: ({ response }) => {
+				console.log(response);
 				navigate.push("/admin/dashboard");
-				setAlert(data.message || "Berhasil login", "success");
+				setAlert(response.statusText || "Berhasil login", "success");
 			},
 		});
 	}

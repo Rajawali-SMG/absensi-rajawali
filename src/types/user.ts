@@ -12,17 +12,17 @@ export const roleSchema = createSelectSchema(role);
 export type RoleType = z.infer<typeof roleSchema>;
 
 export const userCreateSchema = z.object({
-	username: z
+	email: z
+		.email()
+		.nonempty("Email tidak boleh kosong")
+		.max(50, "Email maksimal 50 karakter"),
+	name: z
 		.string()
-		.nonempty("Username tidak boleh kosong")
-		.max(50, "Username maksimal 50 karakter"),
-	password: z
-		.string()
-		.nonempty("Password tidak boleh kosong")
-		.max(128, "Password maksimal 128 karakter"),
-	role: z.enum(["Super Admin", "Admin", "User"], {
-		error: "Role tidak boleh kosong",
-	}),
+		.nonempty("Nama tidak boleh kosong")
+		.max(50, "Nama maksimal 50 karakter"),
+	// role: z.enum(["Super Admin", "Admin", "User"], {
+	// 	error: "Role tidak boleh kosong",
+	// }),
 });
 
 export const userUpdateSchema = userCreateSchema.extend({
@@ -30,9 +30,9 @@ export const userUpdateSchema = userCreateSchema.extend({
 });
 
 export const defaultValueUser: UserInsert = {
-	username: "",
-	password: "",
-	role: "User",
+	email: "",
+	name: "",
+	// role: "User",
 };
 
 export const userFilter = filterBase.extend({

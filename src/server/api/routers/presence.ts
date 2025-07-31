@@ -8,10 +8,10 @@ import {
 	presenceUpdateSchema,
 } from "@/types/presence";
 import { presence } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const presenceRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.presence.findMany();
 
 		return formatResponseArray(
@@ -30,7 +30,7 @@ export const presenceRouter = createTRPCRouter({
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(presenceFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
@@ -61,7 +61,7 @@ export const presenceRouter = createTRPCRouter({
 			);
 		}),
 
-	getOnePresence: publicProcedure
+	getOnePresence: protectedProcedure
 		.input(idBase)
 		.query(async ({ ctx, input }) => {
 			const data = await ctx.db.query.presence.findFirst({
@@ -96,7 +96,7 @@ export const presenceRouter = createTRPCRouter({
 			);
 		}),
 
-	updatePresence: publicProcedure
+	updatePresence: protectedProcedure
 		.input(presenceUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {
@@ -119,7 +119,7 @@ export const presenceRouter = createTRPCRouter({
 			);
 		}),
 
-	deletePresence: publicProcedure
+	deletePresence: protectedProcedure
 		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db

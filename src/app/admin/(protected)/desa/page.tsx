@@ -3,7 +3,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateDesa from "@/components/Sheet/Create/Desa";
@@ -20,11 +20,13 @@ export default function DesaPage() {
 		pageSize: 10,
 	});
 	const searchQuery = useSearchParams().get("q") || "";
-	const { data, isPending } = api.desa.getAllPaginated.useQuery({
-		q: searchQuery,
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-	});
+	const { data, isPending, isError, error } = api.desa.getAllPaginated.useQuery(
+		{
+			q: searchQuery,
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+		},
+	);
 	const { setAlert } = useAlert();
 	const [dialog, setDialog] = useState(false);
 	const [sheetCreate, setSheetCreate] = useState(false);
@@ -94,6 +96,13 @@ export default function DesaPage() {
 			},
 		},
 	];
+
+	useEffect(() => {
+		console.log(error);
+		if (isError) {
+			setAlert(error.message, "error");
+		}
+	}, [isError]);
 
 	return (
 		<>

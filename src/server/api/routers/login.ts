@@ -9,14 +9,14 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 export const loginRouter = createTRPCRouter({
 	login: publicProcedure.input(loginSchema).mutation(async ({ ctx, input }) => {
 		const data = await ctx.db.query.user.findFirst({
-			where: eq(user.username, input.username),
+			where: eq(user.email, input.email),
 		});
-		if (!data || !(await verify(data.password, input.password))) {
-			throw new TRPCError({
-				code: "UNAUTHORIZED",
-				message: "Username atau kata sandi salah",
-			});
-		}
+		// if (!data || !(await verify(data.password, input.password))) {
+		// 	throw new TRPCError({
+		// 		code: "UNAUTHORIZED",
+		// 		message: "Email atau kata sandi salah",
+		// 	});
+		// }
 
 		return formatResponse(
 			true,

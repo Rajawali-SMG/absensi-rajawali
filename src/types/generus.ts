@@ -31,26 +31,26 @@ export const generusCreateSchema = z.object({
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(255, "Nama maksimal 255 karakter"),
-	jenis_kelamin: jenisKelaminSchema,
-	tempat_lahir: z
+	jenisKelamin: jenisKelaminSchema,
+	tempatLahir: z
 		.string()
 		.nonempty("Tempat Lahir tidak boleh kosong")
 		.max(50, "Tempat Lahir maksimal 50 karakter"),
-	tanggal_lahir: z.iso.date(),
+	tanggalLahir: z.iso.date(),
 	jenjang: jenjangSchema,
-	nomer_whatsapp: z
+	nomerWhatsapp: z
 		.string()
 		.max(15, "Nomor WhatsApp maksimal 15 karakter")
 		.optional()
 		.nullable(),
-	pendidikan_terakhir: pendidikanTerakhirSchema,
-	nama_orang_tua: z.string().optional().nullable(),
-	nomer_whatsapp_orang_tua: z.string().optional().nullable(),
+	pendidikanTerakhir: pendidikanTerakhirSchema,
+	namaOrangTua: z.string().optional().nullable(),
+	nomerWhatsappOrangTua: z.string().optional().nullable(),
 	sambung: sambungSchema,
-	alamat_tempat_tinggal: z.string().nonempty("Alamat tidak boleh kosong"),
+	alamatTempatTinggal: z.string().nonempty("Alamat tidak boleh kosong"),
 	keterangan: keteranganSchema,
-	alamat_asal: z.string().optional().nullable(),
-	kelompok_id: z.string().nonempty("Kelompok tidak boleh kosong"),
+	alamatAsal: z.string().optional().nullable(),
+	kelompokId: z.string().nonempty("Kelompok tidak boleh kosong"),
 });
 
 export const generusUpdateSchema = generusCreateSchema.extend({
@@ -58,32 +58,32 @@ export const generusUpdateSchema = generusCreateSchema.extend({
 });
 
 export const generusFilter = filterBase.extend({
-	jenis_kelamin: z.union([jenisKelaminSchema, z.literal(""), z.undefined()]),
+	jenisKelamin: z.union([jenisKelaminSchema, z.literal(""), z.undefined()]),
 	jenjang: z.union([jenjangSchema, z.literal(""), z.undefined()]),
-	pendidikan_terakhir: z.union([
+	pendidikanTerakhir: z.union([
 		pendidikanTerakhirSchema,
 		z.literal(""),
 		z.undefined(),
 	]),
 	sambung: z.union([sambungSchema, z.literal(""), z.undefined()]),
 	keterangan: z.union([keteranganSchema, z.literal(""), z.undefined()]),
-	kelompok_id: z.string().optional(),
+	kelompokId: z.string().optional(),
 });
 
 export const defaultGenerus: GenerusInsert = {
 	id: "",
 	nama: "",
-	jenis_kelamin: "Laki-laki",
-	tempat_lahir: "",
-	tanggal_lahir: new Date().toDateString(),
+	jenisKelamin: "Laki-laki",
+	tempatLahir: "",
+	tanggalLahir: new Date().toDateString(),
 	jenjang: "Paud",
-	nomer_whatsapp: "",
-	pendidikan_terakhir: "PAUD",
-	nama_orang_tua: "",
-	nomer_whatsapp_orang_tua: "",
+	nomerWhatsapp: "",
+	pendidikanTerakhir: "PAUD",
+	namaOrangTua: "",
+	nomerWhatsappOrangTua: "",
 	sambung: "Tidak Aktif",
-	alamat_tempat_tinggal: "",
+	alamatTempatTinggal: "",
 	keterangan: "Pendatang",
-	alamat_asal: "",
-	kelompok_id: "",
+	alamatAsal: "",
+	kelompokId: "",
 };

@@ -5,14 +5,14 @@ import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import { userCreateSchema, userFilter, userUpdateSchema } from "@/types/user";
 import { user } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.user.findMany({
-			columns: {
-				password: false,
-			},
+			// columns: {
+			// 	password: false,
+			// },
 		});
 
 		return formatResponseArray(
@@ -31,20 +31,20 @@ export const userRouter = createTRPCRouter({
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(userFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.user.findMany({
-				columns: {
-					password: false,
-				},
+				// columns: {
+				// 	password: false,
+				// },
 				limit,
 				offset: page * limit,
 				where: and(
-					input.role ? eq(user.role, input.role) : undefined,
-					input.q ? ilike(user.username, `%${input.q}%`) : undefined,
+					// input.role ? eq(user.role, input.role) : undefined,
+					input.q ? ilike(user.name, `%${input.q}%`) : undefined,
 				),
 			});
 
@@ -61,7 +61,7 @@ export const userRouter = createTRPCRouter({
 			);
 		}),
 
-	getOneUser: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+	getOneUser: protectedProcedure.input(idBase).query(async ({ ctx, input }) => {
 		const data = await ctx.db.query.user.findFirst({
 			where: eq(user.id, input.id),
 		});
@@ -81,13 +81,13 @@ export const userRouter = createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.insert(user).values({
 				...input,
-				password: await hash(input.password),
+				// password: await hash(input.password),
 			});
 
 			return formatResponse(true, "Berhasil menambahkan data User", data, null);
 		}),
 
-	updateUser: publicProcedure
+	updateUser: protectedProcedure
 		.input(userUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {
@@ -105,9 +105,11 @@ export const userRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil mengubah data User", data, null);
 		}),
 
-	deleteUser: publicProcedure.input(idBase).mutation(async ({ ctx, input }) => {
-		const data = await ctx.db.delete(user).where(eq(user.id, input.id));
+	deleteUser: protectedProcedure
+		.input(idBase)
+		.mutation(async ({ ctx, input }) => {
+			const data = await ctx.db.delete(user).where(eq(user.id, input.id));
 
-		return formatResponse(true, "Berhasil menghapus data User", data, null);
-	}),
+			return formatResponse(true, "Berhasil menghapus data User", data, null);
+		}),
 });

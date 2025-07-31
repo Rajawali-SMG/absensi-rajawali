@@ -12,7 +12,7 @@ export const logCreateSchema = z.object({
 		.nonempty("Event tidak boleh kosong")
 		.max(255, "Event maksimal 255 karakter"),
 	description: z.string().nonempty("Deskripsi tidak boleh kosong"),
-	user_id: z.uuid().nonempty("User tidak boleh kosong"),
+	userId: z.uuid().nonempty("User tidak boleh kosong"),
 });
 
 export const logUpdateSchema = logCreateSchema.extend({

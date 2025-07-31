@@ -17,4 +17,6 @@ export const auth = betterAuth({
 			maxAge: 5 * 60,
 		},
 	},
+	appName: "Website Absensi Rajawali",
+	
 });

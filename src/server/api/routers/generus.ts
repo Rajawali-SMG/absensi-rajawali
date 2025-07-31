@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ilike } from "drizzle-orm";
+import { utils, write } from "xlsx";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
@@ -8,10 +9,10 @@ import {
 	generusUpdateSchema,
 } from "@/types/generus";
 import { generus } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const generusRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.generus.findMany();
 
 		return formatResponseArray(
@@ -30,7 +31,7 @@ export const generusRouter = createTRPCRouter({
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(generusFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
@@ -40,12 +41,12 @@ export const generusRouter = createTRPCRouter({
 				offset: page * limit,
 				where: and(
 					ilike(generus.nama, `%${input.q}%`),
-					input.jenis_kelamin
-						? eq(generus.jenis_kelamin, input.jenis_kelamin)
+					input.jenisKelamin
+						? eq(generus.jenisKelamin, input.jenisKelamin)
 						: undefined,
 					input.jenjang ? eq(generus.jenjang, input.jenjang) : undefined,
-					input.pendidikan_terakhir
-						? eq(generus.pendidikan_terakhir, input.pendidikan_terakhir)
+					input.pendidikanTerakhir
+						? eq(generus.pendidikanTerakhir, input.pendidikanTerakhir)
 						: undefined,
 					input.sambung ? eq(generus.sambung, input.sambung) : undefined,
 					input.keterangan
@@ -67,27 +68,29 @@ export const generusRouter = createTRPCRouter({
 			);
 		}),
 
-	getOneGenerus: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
-		const data = await ctx.db.query.generus.findFirst({
-			where: eq(generus.id, input.id),
-		});
-
-		if (!data) {
-			throw new TRPCError({
-				code: "NOT_FOUND",
-				message: "Data Generus tidak ditemukan",
+	getOneGenerus: protectedProcedure
+		.input(idBase)
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.generus.findFirst({
+				where: eq(generus.id, input.id),
 			});
-		}
 
-		return formatResponse(
-			true,
-			"Berhasil mendapatkan data Generus",
-			data,
-			null,
-		);
-	}),
+			if (!data) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Data Generus tidak ditemukan",
+				});
+			}
 
-	createGenerus: publicProcedure
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Generus",
+				data,
+				null,
+			);
+		}),
+
+	createGenerus: protectedProcedure
 		.input(generusCreateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.insert(generus).values(input);
@@ -100,7 +103,7 @@ export const generusRouter = createTRPCRouter({
 			);
 		}),
 
-	updateGenerus: publicProcedure
+	updateGenerus: protectedProcedure
 		.input(generusUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			if (!input.id) {
@@ -117,7 +120,7 @@ export const generusRouter = createTRPCRouter({
 			return formatResponse(true, "Berhasil mengubah data Generus", data, null);
 		}),
 
-	deleteGenerus: publicProcedure
+	deleteGenerus: protectedProcedure
 		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
 			const data = await ctx.db.delete(generus).where(eq(generus.id, input.id));
