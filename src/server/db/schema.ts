@@ -75,9 +75,14 @@ export const desaRelations = relations(desa, ({ many }) => ({
 export const kelompok = createTable(
 	"kelompok",
 	{
-		id: varchar({ length: 3 }).primaryKey().notNull().unique(),
+		id: varchar()
+			.primaryKey()
+			.notNull()
+			.unique()
+			.$defaultFn(() => uuid()),
 		...timestamps,
 		nama: varchar({ length: 50 }).unique().notNull(),
+		code: varchar({ length: 3 }).notNull().unique(),
 		desaId: integer().notNull(),
 	},
 	(table) => [
@@ -102,6 +107,7 @@ export const generus = createTable(
 			.$defaultFn(() => uuid())
 			.notNull()
 			.unique(),
+		generusId: varchar({ length: 12 }).unique(),
 		...timestamps,
 		nama: varchar({ length: 255 }).notNull(),
 		jenisKelamin: jenisKelamin().notNull(),
@@ -116,7 +122,7 @@ export const generus = createTable(
 		alamatTempatTinggal: varchar({ length: 255 }).notNull(),
 		keterangan: keterangan().notNull(),
 		alamatAsal: varchar({ length: 255 }),
-		kelompokId: varchar({ length: 3 }).notNull(),
+		kelompokId: varchar().notNull(),
 	},
 	(table) => [
 		index("nama_generus_idx").on(table.nama),

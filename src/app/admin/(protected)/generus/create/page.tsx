@@ -53,6 +53,7 @@ export default function GenerusCreatePage() {
 		defaultValues: defaultGenerus,
 		onSubmit: ({ value }) => {
 			mutate(value);
+			console.log(value);
 		},
 		validators: {
 			onSubmit: generusCreateSchema,
@@ -96,7 +97,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="jenis_kelamin">
+					<form.Field name="jenisKelamin">
 						{(field) => (
 							<div className="space-y-1">
 								<Select
@@ -114,7 +115,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="tempat_lahir">
+					<form.Field name="tempatLahir">
 						{(field) => (
 							<>
 								<Input
@@ -135,7 +136,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="tanggal_lahir">
+					<form.Field name="tanggalLahir">
 						{(field) => (
 							<>
 								<Input
@@ -174,7 +175,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="nomer_whatsapp">
+					<form.Field name="nomerWhatsapp">
 						{(field) => (
 							<>
 								<Input
@@ -195,7 +196,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="pendidikan_terakhir">
+					<form.Field name="pendidikanTerakhir">
 						{(field) => (
 							<div className="space-y-1">
 								<Select
@@ -213,7 +214,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="nama_orang_tua">
+					<form.Field name="namaOrangTua">
 						{(field) => (
 							<>
 								<Input
@@ -234,7 +235,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="nomer_whatsapp_orang_tua">
+					<form.Field name="nomerWhatsappOrangTua">
 						{(field) => (
 							<>
 								<Input
@@ -273,7 +274,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="alamat_tempat_tinggal">
+					<form.Field name="alamatTempatTinggal">
 						{(field) => (
 							<>
 								<Input
@@ -312,7 +313,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="alamat_asal">
+					<form.Field name="alamatAsal">
 						{(field) => (
 							<>
 								<Input
@@ -333,7 +334,7 @@ export default function GenerusCreatePage() {
 						)}
 					</form.Field>
 
-					<form.Field name="kelompok_id">
+					<form.Field name="kelompokId">
 						{(field) => (
 							<div className="space-y-1">
 								<Select

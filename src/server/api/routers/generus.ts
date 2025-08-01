@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ilike } from "drizzle-orm";
+import { v4 as uuid } from "uuid";
 import { utils, write } from "xlsx";
 import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import { idBase } from "@/types";
@@ -8,7 +9,7 @@ import {
 	generusFilter,
 	generusUpdateSchema,
 } from "@/types/generus";
-import { generus } from "../../db/schema";
+import { generus, kelompok } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const generusRouter = createTRPCRouter({
@@ -38,6 +39,7 @@ export const generusRouter = createTRPCRouter({
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.generus.findMany({
 				limit,
+				orderBy: (generus, { desc }) => [desc(generus.createdAt)],
 				offset: page * limit,
 				where: and(
 					ilike(generus.nama, `%${input.q}%`),
@@ -93,7 +95,34 @@ export const generusRouter = createTRPCRouter({
 	createGenerus: protectedProcedure
 		.input(generusCreateSchema)
 		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(generus).values(input);
+			const { kelompokId } = input;
+
+			const generusId = await ctx.db.transaction(async (tx) => {
+				const kelompokData = await tx.query.kelompok.findFirst({
+					where: eq(kelompok.id, kelompokId),
+				});
+
+				if (!kelompokData) {
+					throw new TRPCError({
+						code: "NOT_FOUND",
+						message: "Kelompok tidak ditemukan",
+					});
+				}
+
+				const desaId = kelompokData.desaId;
+				const kelompokCode = kelompokData.code;
+
+				const randomCode = uuid().substring(0, 4);
+
+				const generusId = `${desaId}-${kelompokCode}-${randomCode}`;
+
+				return generusId;
+			});
+
+			const data = await ctx.db.insert(generus).values({
+				...input,
+				generusId,
+			});
 
 			return formatResponse(
 				true,

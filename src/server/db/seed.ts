@@ -78,9 +78,7 @@ async function main() {
 		},
 		kelompok: {
 			columns: {
-				id: f.valuesFromArray({
-					values: kelompok_id,
-				}),
+				id: f.uuid(),
 				nama: f.valuesFromArray({
 					values: [
 						"Sendang Mulyo",
@@ -104,6 +102,9 @@ async function main() {
 						"Syuhada",
 					],
 				}),
+				code: f.valuesFromArray({
+					values: kelompok_id,
+				}),
 				desaId: f.valuesFromArray({
 					values: [1, 2, 3, 4],
 				}),
@@ -113,6 +114,7 @@ async function main() {
 		generus: {
 			columns: {
 				id: f.uuid(),
+				generusId: f.string({ isUnique: true }),
 				nama: f.fullName(),
 				tempatLahir: f.city(),
 				nomerWhatsapp: f.phoneNumber({ template: "+628##########" }),
