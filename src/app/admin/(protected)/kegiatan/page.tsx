@@ -2,8 +2,9 @@
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateEvent from "@/components/Sheet/Create/Event";
@@ -12,31 +13,29 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { EventSelect } from "@/types/event";
-import { useAlert } from "@/utils/useAlert";
 
 export default function KegiatanPage() {
-	const navigate = useRouter();
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
 		pageSize: 10,
 	});
 	const searchQuery = useSearchParams().get("q") || "";
-	const { data, isPending } = api.event.getAllPaginated.useQuery({
-		q: searchQuery,
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-	});
+	const { data, isPending, error, isError } =
+		api.event.getAllPaginated.useQuery({
+			q: searchQuery,
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+		});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
 	const [selectedData, setSelectedData] = useState<EventSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
 	const mutation = api.event.deleteEvent.useMutation({
 		onError: (error) => {
-			setAlert(error.message, "error");
+			toast.error(error.message);
 		},
 	});
 
@@ -51,7 +50,7 @@ export default function KegiatanPage() {
 			{
 				onSuccess: (data) => {
 					utils.event.getAllPaginated.invalidate();
-					setAlert(data.message, "success");
+					toast.success(data.message);
 				},
 			},
 		);
@@ -118,6 +117,12 @@ export default function KegiatanPage() {
 			},
 		},
 	];
+
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<>

@@ -3,30 +3,27 @@
 import { useForm } from "@tanstack/react-form";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { signIn } from "@/server/auth/client";
-import { api } from "@/trpc/react";
 import { loginSchema } from "@/types/auth";
-import { useAlert } from "@/utils/useAlert";
 
 export default function LoginPage() {
 	const navigate = useRouter();
-	const { setAlert } = useAlert();
 	async function login(value: { email: string; password: string }) {
 		return await signIn.email(value, {
 			onError: ({ error }) => {
-				setAlert(error.message, "error");
+				toast.error(error.message);
 			},
 			onSuccess: ({ response }) => {
 				console.log(response);
 				navigate.push("/admin/dashboard");
-				setAlert(response.statusText || "Berhasil login", "success");
+				toast.success(response.statusText || "Berhasil login");
 			},
 		});
 	}
-	// const { mutate } = api.login.login.useMutation();
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -34,15 +31,6 @@ export default function LoginPage() {
 		},
 		onSubmit: ({ value }) => {
 			login(value);
-			// mutate(value, {
-			// 	onSuccess: ({ message }) => {
-			// 		setAlert(message, "success");
-			// 		navigate.push("/admin/dashboard");
-			// 	},
-			// 	onError: ({ message }) => {
-			// 		setAlert(message, "error");
-			// 	},
-			// });
 		},
 		validators: {
 			onChange: loginSchema,

@@ -1,9 +1,9 @@
 import { useForm } from "@tanstack/react-form";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { type KelompokSelect, kelompokUpdateSchema } from "@/types/kelompok";
-import { useAlert } from "@/utils/useAlert";
 import Select from "../../ui/Select";
 
 export default function SheetUpdateKelompok({
@@ -13,16 +13,15 @@ export default function SheetUpdateKelompok({
 	closeSheet: () => void;
 	selectedData: KelompokSelect;
 }) {
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 	const { data } = api.desa.getAll.useQuery();
 	const { mutate } = api.kelompok.updateKelompok.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
 			utils.kelompok.getAllPaginated.invalidate();
-			setAlert(message, "success");
+			toast.success(message);
 		},
 	});
 
@@ -30,7 +29,7 @@ export default function SheetUpdateKelompok({
 		defaultValues: {
 			id: selectedData.id,
 			nama: selectedData.nama,
-			desa_id: selectedData.desa_id,
+			desaId: selectedData.desaId,
 		},
 		onSubmit: ({ value }) => {
 			mutate(value);
@@ -105,7 +104,7 @@ export default function SheetUpdateKelompok({
 							)}
 						</form.Field>
 
-						<form.Field name="desa_id">
+						<form.Field name="desaId">
 							{(field) => (
 								<div className="space-y-1">
 									<Select

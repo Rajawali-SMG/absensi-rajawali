@@ -7,7 +7,7 @@ export type KelompokSelect = InferSelectModel<typeof kelompok>;
 export type KelompokInsert = InferInsertModel<typeof kelompok>;
 
 export const kelompokCreateSchema = z.object({
-	id: z.uuid().nonempty("ID tidak boleh kosong"),
+	id: z.uuid().optional(),
 	nama: z
 		.string()
 		.nonempty("Nama tidak boleh kosong")

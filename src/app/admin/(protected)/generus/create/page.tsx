@@ -3,6 +3,8 @@
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -24,21 +26,19 @@ import {
 	type PendidikanTerakhirType,
 	type SambungType,
 } from "@/types/generus";
-import { useAlert } from "@/utils/useAlert";
 
 export default function GenerusCreatePage() {
-	const { data } = api.kelompok.getAll.useQuery();
-	const { setAlert } = useAlert();
+	const { data, isPending, isError, error } = api.kelompok.getAll.useQuery();
 	const router = useRouter();
 	const utils = api.useUtils();
 
 	const { mutate } = api.generus.createGenerus.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
 			utils.generus.getAllPaginated.invalidate();
-			setAlert(message, "success");
+			toast.success(message);
 			router.push("/admin/generus");
 		},
 	});
@@ -53,12 +53,17 @@ export default function GenerusCreatePage() {
 		defaultValues: defaultGenerus,
 		onSubmit: ({ value }) => {
 			mutate(value);
-			console.log(value);
 		},
 		validators: {
 			onSubmit: generusCreateSchema,
 		},
 	});
+
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<div className="w-full">
@@ -345,6 +350,7 @@ export default function GenerusCreatePage() {
 									required={true}
 									value={field.state.value}
 									onChange={(e) => field.handleChange(e.target.value)}
+									disabled={isPending}
 								/>
 							</div>
 						)}

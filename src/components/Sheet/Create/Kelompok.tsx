@@ -1,9 +1,9 @@
 import { useForm } from "@tanstack/react-form";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { kelompokCreateSchema, kelompokDefaultValue } from "@/types/kelompok";
-import { useAlert } from "@/utils/useAlert";
 import Select from "../../ui/Select";
 
 export default function SheetCreateKelompok({
@@ -11,16 +11,15 @@ export default function SheetCreateKelompok({
 }: {
 	closeSheet: () => void;
 }) {
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 	const { data } = api.desa.getAll.useQuery();
 	const { mutate } = api.kelompok.createKelompok.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
 			utils.kelompok.getAllPaginated.invalidate();
-			setAlert(message, "success");
+			toast.success(message);
 			closeSheet();
 		},
 	});
@@ -101,7 +100,7 @@ export default function SheetCreateKelompok({
 							)}
 						</form.Field>
 
-						<form.Field name="desa_id">
+						<form.Field name="desaId">
 							{(field) => (
 								<div className="space-y-1">
 									<Select

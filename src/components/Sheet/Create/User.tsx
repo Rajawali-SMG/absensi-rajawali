@@ -1,10 +1,10 @@
 import { useForm } from "@tanstack/react-form";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { roleOptions } from "@/constants";
 import { api } from "@/trpc/react";
 import { defaultValueUser, userCreateSchema } from "@/types/user";
-import { useAlert } from "@/utils/useAlert";
 import Button from "../../ui/Button";
 import Select from "../../ui/Select";
 
@@ -13,15 +13,14 @@ export default function SheetCreateUser({
 }: {
 	closeSheet: () => void;
 }) {
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
 	const { mutate } = api.user.createUser.useMutation({
 		onError: (error) => {
-			setAlert(error.message, "error");
+			toast.error(error.message);
 		},
 		onSuccess: ({ message }) => {
-			setAlert(message, "success");
+			toast.success(message);
 			utils.user.getAllPaginated.invalidate();
 			closeSheet();
 		},

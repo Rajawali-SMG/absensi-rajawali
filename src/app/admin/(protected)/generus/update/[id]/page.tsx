@@ -3,8 +3,8 @@
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import navigation from "next/navigation";
-import { useRouter } from "next/router";
-import { use } from "react";
+import { use, useEffect } from "react";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -26,14 +26,12 @@ import {
 	type PendidikanTerakhirType,
 	type SambungType,
 } from "@/types/generus";
-import { useAlert } from "@/utils/useAlert";
 
 export default function GenerusUpdatePage({
 	params,
 }: {
 	params: Promise<{ id: string }>;
 }) {
-	const { setAlert } = useAlert();
 	const { id } = use(params);
 	const router = navigation.useRouter();
 	const { data: generusData } = api.generus.getOneGenerus.useQuery(
@@ -43,22 +41,26 @@ export default function GenerusUpdatePage({
 		{
 			enabled: !!id,
 			throwOnError: ({ message }) => {
-				setAlert(message, "error");
+				toast.error(message);
 				navigation.notFound();
-				return false;
 			},
 		},
 	);
-	const { data: kelompokData } = api.kelompok.getAll.useQuery();
+	const {
+		data: kelompokData,
+		isPending,
+		error,
+		isError,
+	} = api.kelompok.getAll.useQuery();
 	const utils = api.useUtils();
 
 	const { mutate } = api.generus.updateGenerus.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
 			utils.generus.getAllPaginated.invalidate();
-			setAlert(message, "success");
+			toast.success(message);
 			router.push("/admin/generus");
 		},
 	});
@@ -66,7 +68,10 @@ export default function GenerusUpdatePage({
 	const form = useForm({
 		defaultValues: generusData?.data || defaultGenerus,
 		onSubmit: ({ value }) => {
-			mutate(value);
+			mutate({
+				...value,
+				id: id,
+			});
 		},
 
 		validators: {
@@ -79,6 +84,12 @@ export default function GenerusUpdatePage({
 			value: item.id,
 			label: item.nama,
 		})) || [];
+
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<div className="w-full">
@@ -117,7 +128,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="jenis_kelamin">
+					<form.Field name="jenisKelamin">
 						{(field) => (
 							<div className="space-y-1">
 								<Select
@@ -135,7 +146,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="tempat_lahir">
+					<form.Field name="tempatLahir">
 						{(field) => (
 							<>
 								<Input
@@ -156,7 +167,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="tanggal_lahir">
+					<form.Field name="tanggalLahir">
 						{(field) => (
 							<>
 								<Input
@@ -195,7 +206,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="nomer_whatsapp">
+					<form.Field name="nomerWhatsapp">
 						{(field) => (
 							<>
 								<Input
@@ -216,7 +227,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="pendidikan_terakhir">
+					<form.Field name="pendidikanTerakhir">
 						{(field) => (
 							<div className="space-y-1">
 								<Select
@@ -234,7 +245,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="nama_orang_tua">
+					<form.Field name="namaOrangTua">
 						{(field) => (
 							<>
 								<Input
@@ -255,7 +266,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="nomer_whatsapp_orang_tua">
+					<form.Field name="nomerWhatsappOrangTua">
 						{(field) => (
 							<>
 								<Input
@@ -294,7 +305,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="alamat_tempat_tinggal">
+					<form.Field name="alamatTempatTinggal">
 						{(field) => (
 							<>
 								<Input
@@ -333,7 +344,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="alamat_asal">
+					<form.Field name="alamatAsal">
 						{(field) => (
 							<>
 								<Input
@@ -354,7 +365,7 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="kelompok_id">
+					<form.Field name="kelompokId">
 						{(field) => (
 							<div className="space-y-1">
 								<Select
@@ -365,6 +376,7 @@ export default function GenerusUpdatePage({
 									required={true}
 									value={field.state.value}
 									onChange={(e) => field.handleChange(e.target.value)}
+									disabled={isPending}
 								/>
 							</div>
 						)}

@@ -4,26 +4,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import Button from "@/components/ui/Button";
-import { useAlert } from "@/utils/useAlert";
 import { signOut } from "../server/auth/client";
 
 export default function Sidebar() {
 	const [logoutDialog, setLogoutDialog] = useState(false);
 	const navigate = useRouter();
-	const { setAlert } = useAlert();
 
 	const handleLogout = async () => {
 		setLogoutDialog(false);
 		await signOut({
 			fetchOptions: {
 				onSuccess(context) {
-					setAlert(context.data.message || "Berhasil logout", "success");
+					toast.success(context.data.message || "Berhasil logout");
 					navigate.push("/admin/login");
 				},
 				onError(context) {
-					setAlert(context.error.message || "Gagal logout", "error");
+					toast.error(context.error.message || "Gagal logout");
 				},
 			},
 		});

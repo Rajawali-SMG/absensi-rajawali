@@ -12,18 +12,20 @@ export const eventCreateSchema = z.object({
 		.nonempty("Judul tidak boleh kosong")
 		.max(255, "Judul maksimal 255 karakter"),
 	startDate: z.iso.datetime({ local: true }),
-	endDate: z.iso.datetime({ local: true }).nullable(),
+	endDate: z.iso.datetime({ local: true }).nullable().optional(),
 	latitude: z
 		.number()
 		.min(-90, "Latitude minimal -90")
 		.max(90, "Latitude maksimal 90")
-		.nullable(),
+		.nullable()
+		.optional(),
 	longitude: z
 		.number()
 		.min(-180, "Longitude minimal -180")
 		.max(180, "Longitude maksimal 180")
-		.nullable(),
-	description: z.string().nullable(),
+		.nullable()
+		.optional(),
+	description: z.string().nullable().optional(),
 });
 
 export const eventUpdateSchema = eventCreateSchema.extend({

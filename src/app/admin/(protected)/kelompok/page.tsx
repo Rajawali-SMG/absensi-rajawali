@@ -3,7 +3,8 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateKelompok from "@/components/Sheet/Create/Kelompok";
@@ -14,7 +15,6 @@ import Select from "@/components/ui/Select";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { KelompokSelect } from "@/types/kelompok";
-import { useAlert } from "@/utils/useAlert";
 
 export default function KelompokPage() {
 	const [desaParam, setDesaParam] = useState("");
@@ -31,17 +31,20 @@ export default function KelompokPage() {
 	const [deleteId, setDeleteId] = useState("");
 	const searchQuery = searchParams.get("q") || "";
 
-	const { data: kelompokData, isPending } =
-		api.kelompok.getAllPaginated.useQuery({
-			q: searchQuery,
-			limit: pagination.pageSize,
-			page: pagination.pageIndex,
-			desa_id: Number(desaParam),
-		});
-	const { setAlert } = useAlert();
+	const {
+		data: kelompokData,
+		isPending,
+		isError,
+		error,
+	} = api.kelompok.getAllPaginated.useQuery({
+		q: searchQuery,
+		limit: pagination.pageSize,
+		page: pagination.pageIndex,
+		desaId: Number(desaParam),
+	});
 	const mutation = api.kelompok.deleteKelompok.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 	});
 	const utils = api.useUtils();
@@ -51,7 +54,7 @@ export default function KelompokPage() {
 			{
 				onSuccess: (data) => {
 					utils.kelompok.getAllPaginated.invalidate();
-					setAlert(data.message, "success");
+					toast.success(data.message);
 				},
 			},
 		);
@@ -102,13 +105,29 @@ export default function KelompokPage() {
 			},
 		},
 	];
-	const { data: desaData } = api.desa.getAll.useQuery();
+	const {
+		data: desaData,
+		isError: isDesaError,
+		error: desaError,
+	} = api.desa.getAll.useQuery();
 
 	const desaOptions =
 		desaData?.data?.items.map((item) => ({
 			value: item.id,
 			label: item.nama,
 		})) || [];
+
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
+
+	useEffect(() => {
+		if (isDesaError) {
+			toast.error(desaError.message);
+		}
+	}, [isDesaError, desaError]);
 
 	return (
 		<>

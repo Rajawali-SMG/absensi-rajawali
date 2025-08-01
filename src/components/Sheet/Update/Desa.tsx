@@ -1,9 +1,9 @@
 import { useForm } from "@tanstack/react-form";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { type DesaSelect, desaUpdateSchema } from "@/types/desa";
-import { useAlert } from "@/utils/useAlert";
 
 export default function SheetUpdateDesa({
 	closeSheet,
@@ -12,16 +12,15 @@ export default function SheetUpdateDesa({
 	closeSheet: () => void;
 	selectedData: DesaSelect;
 }) {
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
 	const { mutate } = api.desa.updateDesa.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
 			utils.desa.getAllPaginated.invalidate();
-			setAlert(message, "success");
+			toast.success(message);
 		},
 	});
 

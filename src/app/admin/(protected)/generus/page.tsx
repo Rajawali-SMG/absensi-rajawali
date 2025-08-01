@@ -4,7 +4,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetFilter from "@/components/SheetFilter";
@@ -27,7 +28,6 @@ import type {
 	PendidikanTerakhirType,
 	SambungType,
 } from "@/types/generus";
-import { useAlert } from "@/utils/useAlert";
 
 export default function GenerusPage() {
 	const searchQuery = useSearchParams().get("q") || "";
@@ -46,16 +46,17 @@ export default function GenerusPage() {
 		useState<PendidikanTerakhirType>();
 	const [sambungParam, setSambungParam] = useState<SambungType>();
 	const [keteranganParam, setKeteranganParam] = useState<KeteranganType>();
-	const { data, isPending } = api.generus.getAllPaginated.useQuery({
-		q: searchQuery,
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-		jenis_kelamin: jenisKelaminParam,
-		jenjang: jenjangParam,
-		pendidikan_terakhir: pendidikanTerakhirParam,
-		sambung: sambungParam,
-		keterangan: keteranganParam,
-	});
+	const { data, isPending, isError, error } =
+		api.generus.getAllPaginated.useQuery({
+			q: searchQuery,
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+			jenisKelamin: jenisKelaminParam,
+			jenjang: jenjangParam,
+			pendidikanTerakhir: pendidikanTerakhirParam,
+			sambung: sambungParam,
+			keterangan: keteranganParam,
+		});
 	console.log(
 		jenisKelaminParam,
 		jenjangParam,
@@ -63,20 +64,17 @@ export default function GenerusPage() {
 		sambungParam,
 		keteranganParam,
 	);
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
 	const mutation = api.generus.deleteGenerus.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
 			utils.generus.getAllPaginated.invalidate();
-			setAlert(message, "success");
+			toast.success(message);
 		},
 	});
-
-	const { data: excelData } = api.generus.exportExcelGenerus.useQuery();
 
 	const handleDeleteConfirm = () => {
 		mutation.mutate({ id: deleteId });
@@ -142,23 +140,11 @@ export default function GenerusPage() {
 		},
 	];
 
-	// useEffect(() => {
-	// 	if (isError) {
-	// 		setAlert(
-	// 			error.response?.data.message || "Internal Server Error",
-	// 			"error",
-	// 		);
-	// 	}
-	// }, [isError, error]);
-
-	// const handleFilter = (value: any) => {
-	// 	setJenisKelaminParam(value.value);
-	// 	setJenjangParam(value.value);
-	// 	setPendidikanTerakhirParam(value.value);
-	// 	setSambungParam(value.value);
-	// 	setKeteranganParam(value.value);
-	// 	setSheetFilter(false);
-	// };
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<>
@@ -248,7 +234,6 @@ export default function GenerusPage() {
 					}}
 				/>
 				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
-				<Button onClick={() => excelData}>Export Excel</Button>
 				<Link href="/admin/generus/create">Tambah Generus</Link>
 			</div>
 			<Table

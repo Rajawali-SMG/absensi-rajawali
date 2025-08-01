@@ -1,25 +1,24 @@
 import { useForm } from "@tanstack/react-form";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { eventCreateSchema, eventDefaultValue } from "@/types/event";
-import { useAlert } from "@/utils/useAlert";
 
 export default function SheetCreateEvent({
 	closeSheet,
 }: {
 	closeSheet: () => void;
 }) {
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
 	const { mutate } = api.event.createEvent.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 
 		onSuccess: ({ message }) => {
-			setAlert(message, "success");
+			toast.success(message);
 			utils.event.getAllPaginated.invalidate();
 			closeSheet();
 		},
@@ -73,7 +72,7 @@ export default function SheetCreateEvent({
 							)}
 						</form.Field>
 
-						<form.Field name="start_date">
+						<form.Field name="startDate">
 							{(field) => (
 								<>
 									<Input
@@ -95,7 +94,7 @@ export default function SheetCreateEvent({
 							)}
 						</form.Field>
 
-						<form.Field name="end_date">
+						<form.Field name="endDate">
 							{(field) => (
 								<>
 									<Input

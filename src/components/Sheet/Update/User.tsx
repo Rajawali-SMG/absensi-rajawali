@@ -1,11 +1,11 @@
 import { useForm } from "@tanstack/react-form";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import { roleOptions } from "@/constants";
 import { api } from "@/trpc/react";
 import { type UserSelect, userUpdateSchema } from "@/types/user";
-import { useAlert } from "@/utils/useAlert";
 
 export default function SheetUpdateUser({
 	closeSheet,
@@ -14,17 +14,16 @@ export default function SheetUpdateUser({
 	closeSheet: () => void;
 	selectedData: UserSelect;
 }) {
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
 	const { mutate } = api.user.updateUser.useMutation({
 		onError: (error) => {
-			setAlert(error.message, "error");
+			toast.error(error.message);
 		},
 
 		onSuccess: (data) => {
 			utils.user.getAllPaginated.invalidate();
-			setAlert(data.message, "success");
+			toast.success(data.message);
 			closeSheet();
 		},
 	});

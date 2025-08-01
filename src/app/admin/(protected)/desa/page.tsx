@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateDesa from "@/components/Sheet/Create/Desa";
@@ -12,7 +13,6 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { DesaSelect } from "@/types/desa";
-import { useAlert } from "@/utils/useAlert";
 
 export default function DesaPage() {
 	const [pagination, setPagination] = useState({
@@ -27,7 +27,6 @@ export default function DesaPage() {
 			page: pagination.pageIndex,
 		},
 	);
-	const { setAlert } = useAlert();
 	const [dialog, setDialog] = useState(false);
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
@@ -35,7 +34,7 @@ export default function DesaPage() {
 	const [deleteId, setDeleteId] = useState<number>(0);
 	const mutation = api.desa.deleteDesa.useMutation({
 		onError: (error) => {
-			setAlert(error.message, "error");
+			toast.error(error.message);
 		},
 	});
 	const utils = api.useUtils();
@@ -45,7 +44,7 @@ export default function DesaPage() {
 			{
 				onSuccess: (data) => {
 					utils.desa.getAllPaginated.invalidate();
-					setAlert(data.message, "success");
+					toast.success(data.message);
 				},
 			},
 		);
@@ -98,9 +97,8 @@ export default function DesaPage() {
 	];
 
 	useEffect(() => {
-		console.log(error);
 		if (isError) {
-			setAlert(error.message, "error");
+			toast.error(error.message);
 		}
 	}, [isError]);
 

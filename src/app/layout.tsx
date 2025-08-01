@@ -1,10 +1,8 @@
 import "@/styles/globals.css";
-
-import { type Metadata } from "next";
+import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import { TRPCReactProvider } from "@/trpc/react";
-import { CustomAlert } from "../components/CustomAlert";
-import { AlertProvider } from "../utils/useAlert";
 
 export const metadata: Metadata = {
 	title: "Absensi Rajawali",
@@ -53,10 +51,8 @@ export default function RootLayout({
 			</head>
 			<body>
 				<TRPCReactProvider>
-					<AlertProvider>
-						<CustomAlert />
-						{children}
-					</AlertProvider>
+					<Toaster />
+					{children}
 				</TRPCReactProvider>
 			</body>
 		</html>

@@ -2,12 +2,12 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import SearchBar from "@/components/SearchBar";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { LogSelect } from "@/types/log";
-import { useAlert } from "@/utils/useAlert";
 
 export default function LogPage() {
 	const [pagination, setPagination] = useState({
@@ -15,12 +15,11 @@ export default function LogPage() {
 		pageSize: 10,
 	});
 	const searchQuery = useSearchParams().get("q") || "";
-	const { data, isPending } = api.log.getAllPaginated.useQuery({
+	const { data, isPending, error, isError } = api.log.getAllPaginated.useQuery({
 		q: searchQuery,
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
 	});
-	const { setAlert } = useAlert();
 
 	const columns: ColumnDef<LogSelect>[] = [
 		{
@@ -40,6 +39,12 @@ export default function LogPage() {
 			header: "User ID",
 		},
 	];
+
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<>

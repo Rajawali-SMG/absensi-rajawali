@@ -1,9 +1,9 @@
 import { useForm } from "@tanstack/react-form";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { type EventSelect, eventUpdateSchema } from "@/types/event";
-import { useAlert } from "@/utils/useAlert";
 
 export default function SheetUpdateEvent({
 	closeSheet,
@@ -12,17 +12,16 @@ export default function SheetUpdateEvent({
 	closeSheet: () => void;
 	selectedData: EventSelect;
 }) {
-	const { setAlert } = useAlert();
 	const utils = api.useUtils();
 
 	const { mutate } = api.event.updateEvent.useMutation({
 		onError: ({ message }) => {
-			setAlert(message, "error");
+			toast.error(message);
 		},
 
 		onSuccess: ({ message }) => {
 			utils.event.getAllPaginated.invalidate();
-			setAlert(message, "success");
+			toast.success(message);
 			closeSheet();
 		},
 	});
@@ -31,8 +30,8 @@ export default function SheetUpdateEvent({
 		defaultValues: {
 			id: selectedData.id,
 			title: selectedData.title,
-			start_date: selectedData.start_date,
-			end_date: selectedData.end_date,
+			startDate: selectedData.startDate,
+			endDate: selectedData.endDate,
 			latitude: selectedData.latitude,
 			longitude: selectedData.longitude,
 			description: selectedData.description,
@@ -82,7 +81,7 @@ export default function SheetUpdateEvent({
 							)}
 						</form.Field>
 
-						<form.Field name="start_date">
+						<form.Field name="startDate">
 							{(field) => (
 								<>
 									<Input
@@ -104,7 +103,7 @@ export default function SheetUpdateEvent({
 							)}
 						</form.Field>
 
-						<form.Field name="end_date">
+						<form.Field name="endDate">
 							{(field) => (
 								<>
 									<Input
