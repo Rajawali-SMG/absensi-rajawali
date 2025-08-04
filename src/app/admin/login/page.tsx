@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { signIn } from "@/server/auth/client";
+import { signIn } from "@/server/auth/auth-client";
 import { loginSchema } from "@/types/auth";
 
 export default function LoginPage() {

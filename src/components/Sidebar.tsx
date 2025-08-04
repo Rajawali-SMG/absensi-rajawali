@@ -7,7 +7,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import Button from "@/components/ui/Button";
-import { signOut } from "../server/auth/client";
+import { signOut } from "../server/auth/auth-client";
 
 export default function Sidebar() {
 	const [logoutDialog, setLogoutDialog] = useState(false);

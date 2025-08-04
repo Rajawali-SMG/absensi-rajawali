@@ -9,17 +9,13 @@ import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateUser from "@/components/Sheet/Create/User";
 import SheetUpdateUser from "@/components/Sheet/Update/User";
-import SheetFilter from "@/components/SheetFilter";
+import SheetUpdateUserPassword from "@/components/Sheet/Update/UserPassword";
 import Button from "@/components/ui/Button";
-import Select from "@/components/ui/Select";
 import Table from "@/components/ui/Table";
-import { roleOptions } from "@/constants";
 import { api } from "@/trpc/react";
-import type { RoleType, UserSelect } from "@/types/user";
+import type { UserSelect } from "@/types/user";
 
 export default function PenggunaPage() {
-	const [sheetFilter, setSheetFilter] = useState(false);
-	const [roleParam, setRoleParam] = useState<RoleType>();
 	const searchParams = useSearchParams();
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
@@ -30,11 +26,11 @@ export default function PenggunaPage() {
 			q: searchParams.get("q") || "",
 			limit: pagination.pageSize,
 			page: pagination.pageIndex,
-			role: roleParam,
 		},
 	);
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
+	const [sheetUpdatePassword, setSheetUpdatePassword] = useState(false);
 	const [selectedData, setSelectedData] = useState<UserSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
@@ -50,9 +46,14 @@ export default function PenggunaPage() {
 		},
 	});
 
-	const handleEdit = (row: UserSelect) => {
+	const handleChangeUser = (row: UserSelect) => {
 		setSelectedData(row);
 		setSheetUpdate(true);
+	};
+
+	const handleChangePassword = (row: UserSelect) => {
+		setSelectedData(row);
+		setSheetUpdatePassword(true);
 	};
 
 	const handleDeleteConfirm = () => {
@@ -71,10 +72,7 @@ export default function PenggunaPage() {
 			accessorKey: "id",
 		},
 		{
-			accessorKey: "username",
-		},
-		{
-			accessorKey: "role",
+			accessorKey: "name",
 		},
 		{
 			id: "aksi",
@@ -83,11 +81,18 @@ export default function PenggunaPage() {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
-						<button type="button" onClick={() => handleEdit(row)}>
+						<button type="button" onClick={() => handleChangeUser(row)}>
 							<Icon
-								icon="line-md:edit"
+								icon="material-symbols:person-outline-rounded"
 								fontSize={20}
 								className="text-blue-500"
+							/>
+						</button>
+						<button type="button" onClick={() => handleChangePassword(row)}>
+							<Icon
+								icon="material-symbols:password-rounded"
+								fontSize={20}
+								className="text-orange-500"
 							/>
 						</button>
 						<button type="button" onClick={() => handleDelete(row)}>
@@ -130,25 +135,11 @@ export default function PenggunaPage() {
 					selectedData={selectedData}
 				/>
 			)}
-			{sheetFilter && (
-				<SheetFilter
-					closeSheet={() => setSheetFilter(false)}
-					submitFilter={() => setSheetFilter(false)}
-					resetFilter={() => {
-						setRoleParam(undefined);
-						setSheetFilter(false);
-					}}
-				>
-					<Select
-						placeHolderEnabled={true}
-						name="role"
-						label="Role"
-						options={roleOptions}
-						placeholder="Pilih Role"
-						value={roleParam}
-						onChange={(e) => setRoleParam(e.target.value as RoleType)}
-					/>
-				</SheetFilter>
+			{sheetUpdatePassword && selectedData && (
+				<SheetUpdateUserPassword
+					closeSheet={() => setSheetUpdatePassword(false)}
+					selectedData={selectedData}
+				/>
 			)}
 			<div className="flex justify-between">
 				<SearchBar
@@ -157,7 +148,6 @@ export default function PenggunaPage() {
 					}}
 					placeholder="Cari nama pengguna..."
 				/>
-				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
 				<Button type="button" onClick={() => setSheetCreate(true)}>
 					Tambah Pengguna
 				</Button>

@@ -41,7 +41,7 @@ export const pendidikanTerakhir = pgEnum("pendidikan_terakhir", [
 export const sambung = pgEnum("sambung", ["Aktif", "Tidak Aktif"]);
 export const keterangan = pgEnum("keterangan", ["Pendatang", "Pribumi"]);
 export const status = pgEnum("status", ["Hadir", "Izin", "Tidak Hadir"]);
-export const role = pgEnum("role", ["Super Admin", "Admin", "User"]);
+export const role = pgEnum("role", ["Super Admin", "Admin"]);
 export const jenjang = pgEnum("jenjang", [
 	"Paud",
 	"Caberawit",
@@ -154,7 +154,7 @@ export const event = createTable(
 		...timestamps,
 		title: varchar({ length: 255 }).notNull().unique(),
 		startDate: timestamp({ mode: "string" }).notNull(),
-		endDate: timestamp({ mode: "string" }),
+		endDate: timestamp({ mode: "string" }).notNull(),
 		latitude: doublePrecision().default(-7.03226199678915),
 		longitude: doublePrecision().default(110.46708185437986),
 		description: varchar(),
@@ -204,7 +204,7 @@ export const user = createTable(
 			.$defaultFn(() => false)
 			.notNull(),
 		image: text(),
-		// role: role().notNull(),
+		role: role().notNull(),
 	},
 	(table) => [
 		index("name_user_idx").on(table.name),
@@ -248,10 +248,9 @@ export const session = createTable("session", {
 		.$defaultFn(() => uuid())
 		.notNull()
 		.unique(),
+	...timestamps,
 	expiresAt: timestamp().notNull(),
 	token: text().notNull().unique(),
-	createdAt: timestamp().notNull(),
-	updatedAt: timestamp().notNull(),
 	ipAddress: text(),
 	userAgent: text(),
 	userId: text()
@@ -265,6 +264,7 @@ export const account = createTable("account", {
 		.$defaultFn(() => uuid())
 		.notNull()
 		.unique(),
+	...timestamps,
 	accountId: text().notNull(),
 	providerId: text().notNull(),
 	userId: text()
@@ -277,8 +277,6 @@ export const account = createTable("account", {
 	refreshTokenExpiresAt: timestamp(),
 	scope: text(),
 	password: text(),
-	createdAt: timestamp().notNull(),
-	updatedAt: timestamp().notNull(),
 });
 
 export const verification = createTable("verification", {

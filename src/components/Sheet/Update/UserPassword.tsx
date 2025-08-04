@@ -3,17 +3,18 @@ import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
-import { defaultValueUser, userCreateSchema } from "@/types/user";
-import Button from "../../ui/Button";
+import { type UserSelect, userUpdatePasswordSchema } from "@/types/user";
 
-export default function SheetCreateUser({
+export default function SheetUpdateUserPassword({
 	closeSheet,
+	selectedData,
 }: {
 	closeSheet: () => void;
+	selectedData: UserSelect;
 }) {
 	const utils = api.useUtils();
 
-	const { mutate } = api.user.createUser.useMutation({
+	const { mutate } = api.user.updatePasswordUser.useMutation({
 		onError: (error) => {
 			toast.error(error.message);
 		},
@@ -25,21 +26,24 @@ export default function SheetCreateUser({
 	});
 
 	const form = useForm({
-		defaultValues: defaultValueUser,
-		onSubmit: ({ value }) => {
+		defaultValues: {
+			id: selectedData.id,
+			password: "",
+			confirmPassword: "",
+		},
+		onSubmit: async ({ value }) => {
 			mutate(value);
+			closeSheet();
 		},
 		validators: {
-			onSubmit: userCreateSchema,
+			onSubmit: userUpdatePasswordSchema,
 		},
 	});
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-				<h1 className="text-2xl font-bold mb-6 text-gray-800">
-					Buat Data User
-				</h1>
+				<h1 className="text-2xl font-bold mb-6 text-gray-800">Update User</h1>
 
 				<form
 					onSubmit={(e) => {
@@ -50,50 +54,6 @@ export default function SheetCreateUser({
 					className="space-y-4"
 				>
 					<div className="space-y-4">
-						<form.Field name="name">
-							{(field) => (
-								<>
-									<Input
-										label="Nama"
-										variant="secondary"
-										htmlFor={field.name}
-										type="text"
-										name={field.name}
-										id={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
-
-						<form.Field name="email">
-							{(field) => (
-								<>
-									<Input
-										label="Email"
-										variant="secondary"
-										htmlFor={field.name}
-										type="text"
-										name={field.name}
-										id={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
-
 						<form.Field name="password">
 							{(field) => (
 								<>
@@ -101,7 +61,29 @@ export default function SheetCreateUser({
 										label="Password"
 										variant="secondary"
 										htmlFor={field.name}
-										type="text"
+										type="password"
+										name={field.name}
+										id={field.name}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(e) => field.handleChange(e.target.value)}
+										placeholder="John Doe"
+										required={true}
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+									/>
+									<TextError field={field} />
+								</>
+							)}
+						</form.Field>
+
+						<form.Field name="confirmPassword">
+							{(field) => (
+								<>
+									<Input
+										label="Konfirmasi Password"
+										variant="secondary"
+										htmlFor={field.name}
+										type="password"
 										name={field.name}
 										id={field.name}
 										value={field.state.value}
@@ -122,18 +104,23 @@ export default function SheetCreateUser({
 							selector={(state) => [state.canSubmit, state.isSubmitting]}
 						>
 							{([canSubmit, isSubmitting]) => (
-								<Button type="submit" disabled={!canSubmit}>
-									{isSubmitting ? "Memproses..." : "Submit"}
-								</Button>
+								<button
+									type="submit"
+									disabled={!canSubmit}
+									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+								>
+									{isSubmitting ? "Memproses..." : "Update"}
+								</button>
 							)}
 						</form.Subscribe>
-						<Button
+
+						<button
 							type="button"
 							onClick={closeSheet}
-							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
+							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
 						>
 							Close
-						</Button>
+						</button>
 					</div>
 				</form>
 			</div>

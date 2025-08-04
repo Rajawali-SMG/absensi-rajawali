@@ -1,7 +1,7 @@
-import { hash } from "argon2";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { reset, seed } from "drizzle-seed";
 import { env } from "@/env";
+import { auth } from "../auth";
 import {
 	account,
 	desa,
@@ -17,7 +17,6 @@ import {
 
 async function main() {
 	console.log("Seeding started⏳");
-	const hashedPassword = await hash(env.USER_PASSWORD);
 	const db = drizzle(env.DATABASE_URL, { casing: "snake_case" });
 	const kelompok_id = [
 		"SML",
@@ -49,8 +48,8 @@ async function main() {
 		user,
 		event,
 		account,
-		session,
 		verification,
+		session,
 	});
 	await seed(
 		db,
@@ -60,11 +59,7 @@ async function main() {
 			generus,
 			log,
 			presence,
-			// user,
 			event,
-			// account,
-			// session,
-			// verification,
 		},
 		{ count: 25 },
 	).refine((f) => ({
@@ -129,17 +124,6 @@ async function main() {
 				}),
 			},
 		},
-		// user: {
-		// 	columns: {
-		// 		id: f.uuid(),
-		// 		name: f.default({ defaultValue: "admin" }),
-		// 		email: f.default({ defaultValue: "admin@admin.com" }),
-		// 		emailVerified: f.default({ defaultValue: true }),
-		// 		password: f.default({ defaultValue: hashedPassword }),
-		// 		role: f.default({ defaultValue: "Super Admin" }),
-		// 	},
-		// 	count: 1,
-		// },
 		log: {
 			columns: {
 				id: f.uuid(),
@@ -166,36 +150,15 @@ async function main() {
 				eventId: f.uuid(),
 			},
 		},
-		// account: {
-		// 	columns: {
-		// 		id: f.uuid(),
-		// 		account_id: f.uuid(),
-		// 		provider_id: f.uuid(),
-		// 		user_id: f.uuid(),
-		// 		id_token: f.uuid(),
-		// 		access_token_expires_at: f.timestamp(),
-		// 		refresh_token_expires_at: f.timestamp(),
-		// 		password: f.default({ defaultValue: hashedPassword }),
-		// 		created_at: f.timestamp(),
-		// 		updated_at: f.timestamp(),
-		// 	},
-		// },
-		// session: {
-		// 	columns: {
-		// 		id: f.uuid(),
-		// 		expires_at: f.timestamp(),
-		// 		created_at: f.timestamp(),
-		// 		updated_at: f.timestamp(),
-		// 		user_id: f.uuid(),
-		// 	},
-		// },
-		// verification: {
-		// 	columns: {
-		// 		id: f.uuid(),
-		// 		expires_at: f.timestamp(),
-		// 	},
-		// },
 	}));
+	await auth.api.signUpEmail({
+		body: {
+			name: "test",
+			email: "test@test.com",
+			password: env.USER_PASSWORD,
+			role: "Super Admin",
+		},
+	});
 }
 main()
 	.catch((error) => {

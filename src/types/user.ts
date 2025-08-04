@@ -4,8 +4,7 @@ import z from "zod";
 import { role, type user } from "../server/db/schema";
 import { filterBase } from ".";
 
-export type UserSelectDirty = InferSelectModel<typeof user>;
-export type UserSelect = Omit<UserSelectDirty, "password">;
+export type UserSelect = InferSelectModel<typeof user>;
 export type UserInsert = InferInsertModel<typeof user>;
 
 export const roleSchema = createSelectSchema(role);
@@ -20,21 +19,39 @@ export const userCreateSchema = z.object({
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(50, "Nama maksimal 50 karakter"),
-	// role: z.enum(["Super Admin", "Admin", "User"], {
-	// 	error: "Role tidak boleh kosong",
-	// }),
+	password: z
+		.string()
+		.nonempty("Password tidak boleh kosong")
+		.max(50, "Password maksimal 50 karakter"),
 });
 
-export const userUpdateSchema = userCreateSchema.extend({
+export const userUpdateSchema = userCreateSchema
+	.extend({
+		id: z.uuid().nonempty("ID tidak boleh kosong"),
+	})
+	.omit({ password: true });
+
+export const userUpdatePasswordSchema = z.object({
 	id: z.uuid().nonempty("ID tidak boleh kosong"),
+	password: z
+		.string()
+		.nonempty("Password tidak boleh kosong")
+		.max(50, "Password maksimal 50 karakter"),
+	confirmPassword: z
+		.string()
+		.nonempty("Konfirmasi password tidak boleh kosong")
+		.max(50, "Konfirmasi password maksimal 50 karakter"),
 });
 
-export const defaultValueUser: UserInsert = {
+export const defaultValueUser = {
 	email: "",
 	name: "",
-	// role: "User",
 };
 
-export const userFilter = filterBase.extend({
-	role: z.enum(["Super Admin", "Admin", "User"]).optional(),
-});
+export const defaultValueUserUpdatePassword = {
+	id: "",
+	password: "",
+	confirmPassword: "",
+};
+
+export const userFilter = filterBase;

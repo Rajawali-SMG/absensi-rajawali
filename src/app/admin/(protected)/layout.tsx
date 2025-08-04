@@ -2,7 +2,7 @@
 
 import { redirect, usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { useSession } from "@/server/auth/client";
+import { useSession } from "@/server/auth/auth-client";
 
 export default function ProtectedLayout({
 	children,
