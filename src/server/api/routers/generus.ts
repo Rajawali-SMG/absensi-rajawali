@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ilike } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
+import z from "zod";
 import {
 	formatResponse,
 	formatResponseArray,
@@ -13,7 +14,7 @@ import {
 	generusUpdateSchema,
 } from "@/types/generus";
 import { generus, kelompok, presence } from "../../db/schema";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const generusRouter = createTRPCRouter({
 	getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -171,4 +172,44 @@ export const generusRouter = createTRPCRouter({
 				null,
 			);
 		}),
+
+	withKelompok: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const data = await ctx.db
+			.select({
+				generusId: generus.id,
+				generusName: generus.nama,
+				kelompokId: kelompok.id,
+				kelompokName: kelompok.nama,
+			})
+			.from(generus)
+			.innerJoin(kelompok, eq(generus.kelompokId, kelompok.id));
+
+		const dataWithAttendance = await Promise.all(
+			data.map(async (gen) => {
+				const attendanceRecord = await ctx.db
+					.select()
+					.from(presence)
+					.where(
+						and(
+							eq(presence.generusId, gen.generusId),
+							eq(presence.eventId, input.id),
+						),
+					)
+					.then((rows) => rows[0]);
+
+				return {
+					...gen,
+					isDisabled: !!attendanceRecord,
+					status: attendanceRecord?.status || null,
+				};
+			}),
+		);
+
+		return formatResponseArray(
+			true,
+			"Berhasil mendapatkan semua data Presensi",
+			dataWithAttendance,
+			null,
+		);
+	}),
 });

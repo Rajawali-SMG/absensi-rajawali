@@ -31,7 +31,7 @@ export default function AbsenPage({
 			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
-			utils.presence.presencePublic.invalidate();
+			utils.generus.withKelompok.invalidate();
 			toast.success(message);
 		},
 	});
@@ -49,8 +49,8 @@ export default function AbsenPage({
 			});
 		},
 	});
-	const { data: presenceData } = api.presence.presencePublic.useQuery({
-		eventId: id,
+	const { data: presenceData } = api.generus.withKelompok.useQuery({
+		id,
 	});
 	const geo = useGeolocated({
 		positionOptions: {

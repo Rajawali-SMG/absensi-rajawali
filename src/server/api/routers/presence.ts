@@ -83,6 +83,20 @@ export const presenceRouter = createTRPCRouter({
 	createPresence: publicProcedure
 		.input(presenceCreateSchema)
 		.mutation(async ({ ctx, input }) => {
+			const existingPresence = await ctx.db.query.presence.findFirst({
+				where: and(
+					eq(presence.generusId, input.generusId),
+					eq(presence.eventId, input.eventId),
+				),
+			});
+
+			if (existingPresence) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Presensi sudah ada",
+				});
+			}
+
 			const data = await ctx.db.insert(presence).values(input);
 
 			return formatResponse(
@@ -127,48 +141,6 @@ export const presenceRouter = createTRPCRouter({
 				true,
 				"Berhasil menghapus data Presensi",
 				data,
-				null,
-			);
-		}),
-
-	presencePublic: publicProcedure
-		.input(z.object({ eventId: z.string() }))
-		.query(async ({ ctx, input }) => {
-			const data = await ctx.db
-				.select({
-					generusId: generus.id,
-					generusName: generus.nama,
-					kelompokId: kelompok.id,
-					kelompokName: kelompok.nama,
-				})
-				.from(generus)
-				.innerJoin(kelompok, eq(generus.kelompokId, kelompok.id));
-
-			const dataWithAttendance = await Promise.all(
-				data.map(async (gen) => {
-					const attendanceRecord = await ctx.db
-						.select()
-						.from(presence)
-						.where(
-							and(
-								eq(presence.generusId, gen.generusId),
-								eq(presence.eventId, input.eventId),
-							),
-						)
-						.then((rows) => rows[0]);
-
-					return {
-						...gen,
-						isDisabled: !!attendanceRecord,
-						status: attendanceRecord?.status || null,
-					};
-				}),
-			);
-
-			return formatResponseArray(
-				true,
-				"Berhasil mendapatkan semua data Presensi",
-				dataWithAttendance,
 				null,
 			);
 		}),
