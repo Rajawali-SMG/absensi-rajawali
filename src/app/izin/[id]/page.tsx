@@ -11,7 +11,7 @@ import { api } from "@/trpc/react";
 import { calculateDistance } from "@/utils/calculateDistance";
 import useLocation from "@/utils/useLocation";
 
-export default function AbsenPage({
+export default function IzinPage({
 	params,
 }: {
 	params: Promise<{ id: string }>;
@@ -40,13 +40,13 @@ export default function AbsenPage({
 		defaultValues: {
 			generusId: "",
 			eventId: id,
-			status: "Hadir",
+			status: "Izin",
 		},
 		onSubmit: ({ value }) => {
 			mutate({
 				generusId: value.generusId,
 				eventId: id,
-				status: "Hadir",
+				status: "Izin",
 			});
 		},
 	});
@@ -98,7 +98,7 @@ export default function AbsenPage({
 						<Icon icon="material-symbols:check_circle" className="w-6 h-6" />
 					),
 					title: "Absensi Sedang Berlangsung",
-					subtitle: "Silakan pilih peserta yang hadir",
+					subtitle: "Silakan pilih peserta yang Izin",
 					bgColor: "bg-green-50",
 					textColor: "text-green-700",
 					borderColor: "border-green-200",
@@ -234,7 +234,7 @@ export default function AbsenPage({
 												icon="material-symbols:people"
 												className="w-5 h-5"
 											/>
-											Pilih Peserta Hadir
+											Pilih Peserta Izin
 										</h2>
 										<form.Field name="generusId">
 											{(field) => (
@@ -266,9 +266,9 @@ export default function AbsenPage({
 
 									{/* Summary */}
 									<div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl p-6 text-center">
-										<div className="text-purple-100">Total Peserta Hadir:</div>
+										<div className="text-purple-100">Total Peserta Izin:</div>
 										<div className="text-4xl font-bold mb-2">
-											{presenceCount?.data?.hadir}
+											{presenceCount?.data.izin}
 										</div>
 									</div>
 								</div>

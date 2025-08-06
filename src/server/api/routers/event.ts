@@ -73,17 +73,10 @@ export const eventRouter = createTRPCRouter({
 				status = "ended";
 			}
 
-			const [total] = await ctx.db
-				.select({ count: count() })
-				.from(presence)
-				.where(
-					and(eq(presence.eventId, input.id), eq(presence.status, "Hadir")),
-				);
-
 			return formatResponse(
 				true,
 				"Berhasil mendapatkan data Event",
-				{ ...data, status, total: total?.count },
+				{ ...data, status },
 				null,
 			);
 		}),
@@ -131,4 +124,23 @@ export const eventRouter = createTRPCRouter({
 
 			return formatResponse(true, "Berhasil menghapus data Event", data, null);
 		}),
+
+	countGenerus: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const [hadir] = await ctx.db
+			.select({ count: count() })
+			.from(presence)
+			.where(and(eq(presence.eventId, input.id), eq(presence.status, "Hadir")));
+
+		const [izin] = await ctx.db
+			.select({ count: count() })
+			.from(presence)
+			.where(and(eq(presence.eventId, input.id), eq(presence.status, "Izin")));
+
+		return formatResponse(
+			true,
+			"Berhasil mendapatkan semua data Generus",
+			{ hadir: hadir?.count ?? 0, izin: izin?.count ?? 0 },
+			null,
+		);
+	}),
 });
