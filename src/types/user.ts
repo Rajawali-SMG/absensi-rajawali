@@ -46,6 +46,7 @@ export const userUpdatePasswordSchema = z.object({
 export const defaultValueUser = {
 	email: "",
 	name: "",
+	password: "",
 };
 
 export const defaultValueUserUpdatePassword = {

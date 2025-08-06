@@ -112,7 +112,7 @@ export default function KelompokPage() {
 	} = api.desa.getAll.useQuery();
 
 	const desaOptions =
-		desaData?.data?.items.map((item) => ({
+		desaData?.data.map((item) => ({
 			value: item.id,
 			label: item.nama,
 		})) || [];
@@ -185,9 +185,9 @@ export default function KelompokPage() {
 			</div>
 			<Table
 				isPending={isPending}
-				data={kelompokData?.data?.items || []}
+				data={kelompokData?.data.items || []}
 				columns={columns}
-				rowCount={kelompokData?.data?.meta?.total || 0}
+				rowCount={kelompokData?.data.meta.total || 0}
 				onPaginationChange={setPagination}
 				pagination={pagination}
 			/>

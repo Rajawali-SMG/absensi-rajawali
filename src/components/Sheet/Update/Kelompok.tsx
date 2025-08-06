@@ -29,6 +29,7 @@ export default function SheetUpdateKelompok({
 		defaultValues: {
 			id: selectedData.id,
 			nama: selectedData.nama,
+			code: selectedData.code,
 			desaId: selectedData.desaId,
 		},
 		onSubmit: ({ value }) => {
@@ -41,7 +42,7 @@ export default function SheetUpdateKelompok({
 	});
 
 	const desaOptions =
-		data?.data?.items.map((item) => ({
+		data?.data.map((item) => ({
 			value: item.id,
 			label: item.nama,
 		})) || [];

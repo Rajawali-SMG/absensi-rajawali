@@ -1,13 +1,18 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq } from "drizzle-orm";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import { and, count, eq } from "drizzle-orm";
+import z from "zod";
+import {
+	formatResponse,
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
 	presenceCreateSchema,
 	presenceFilter,
 	presenceUpdateSchema,
 } from "@/types/presence";
-import { presence } from "../../db/schema";
+import { generus, kelompok, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const presenceRouter = createTRPCRouter({
@@ -17,15 +22,7 @@ export const presenceRouter = createTRPCRouter({
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data Presensi",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
@@ -45,7 +42,7 @@ export const presenceRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Presensi",
 				{
@@ -130,6 +127,48 @@ export const presenceRouter = createTRPCRouter({
 				true,
 				"Berhasil menghapus data Presensi",
 				data,
+				null,
+			);
+		}),
+
+	presencePublic: publicProcedure
+		.input(z.object({ eventId: z.string() }))
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db
+				.select({
+					generusId: generus.id,
+					generusName: generus.nama,
+					kelompokId: kelompok.id,
+					kelompokName: kelompok.nama,
+				})
+				.from(generus)
+				.innerJoin(kelompok, eq(generus.kelompokId, kelompok.id));
+
+			const dataWithAttendance = await Promise.all(
+				data.map(async (gen) => {
+					const attendanceRecord = await ctx.db
+						.select()
+						.from(presence)
+						.where(
+							and(
+								eq(presence.generusId, gen.generusId),
+								eq(presence.eventId, input.eventId),
+							),
+						)
+						.then((rows) => rows[0]);
+
+					return {
+						...gen,
+						isDisabled: !!attendanceRecord,
+						status: attendanceRecord?.status || null,
+					};
+				}),
+			);
+
+			return formatResponseArray(
+				true,
+				"Berhasil mendapatkan semua data Presensi",
+				dataWithAttendance,
 				null,
 			);
 		}),

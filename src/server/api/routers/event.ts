@@ -1,14 +1,18 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq } from "drizzle-orm";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import { and, count, eq } from "drizzle-orm";
+import {
+	formatResponse,
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
 	eventCreateSchema,
 	eventFilter,
 	eventUpdateSchema,
 } from "@/types/event";
-import { event } from "../../db/schema";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { event, presence } from "../../db/schema";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const eventRouter = createTRPCRouter({
 	getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -17,15 +21,7 @@ export const eventRouter = createTRPCRouter({
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data Event",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
@@ -45,7 +41,7 @@ export const eventRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Event",
 				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
@@ -53,7 +49,7 @@ export const eventRouter = createTRPCRouter({
 			);
 		}),
 
-	getOneEvent: protectedProcedure
+	getOneEventPublic: publicProcedure
 		.input(idBase)
 		.query(async ({ ctx, input }) => {
 			const data = await ctx.db.query.event.findFirst({
@@ -66,11 +62,28 @@ export const eventRouter = createTRPCRouter({
 					message: "Data Event tidak ditemukan",
 				});
 			}
+			let status = "not-started";
+			if (
+				new Date(data.startDate) <= new Date() &&
+				new Date(data.endDate) >= new Date()
+			) {
+				status = "active";
+			}
+			if (new Date(data.endDate) <= new Date()) {
+				status = "ended";
+			}
+
+			const [total] = await ctx.db
+				.select({ count: count() })
+				.from(presence)
+				.where(
+					and(eq(presence.eventId, input.id), eq(presence.status, "Hadir")),
+				);
 
 			return formatResponse(
 				true,
 				"Berhasil mendapatkan data Event",
-				data,
+				{ ...data, status, total: total?.count },
 				null,
 			);
 		}),

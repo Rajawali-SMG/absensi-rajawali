@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
+// import ExportComponent from "@/components/ExportComponent";
 import SearchBar from "@/components/SearchBar";
 import SheetFilter from "@/components/SheetFilter";
 import Button from "@/components/ui/Button";
@@ -148,6 +149,7 @@ export default function GenerusPage() {
 
 	return (
 		<>
+			{/* <ExportComponent /> */}
 			{dialog && (
 				<Dialog
 					cancel="Batal"
@@ -238,9 +240,9 @@ export default function GenerusPage() {
 			</div>
 			<Table
 				isPending={isPending}
-				data={data?.data?.items || []}
+				data={data?.data.items || []}
 				columns={columns}
-				rowCount={data?.data?.meta?.total || 0}
+				rowCount={data?.data.meta.total || 0}
 				onPaginationChange={setPagination}
 				pagination={pagination}
 			/>

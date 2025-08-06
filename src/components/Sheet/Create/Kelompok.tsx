@@ -35,7 +35,7 @@ export default function SheetCreateKelompok({
 	});
 
 	const desaOptions =
-		data?.data?.items.map((item) => ({
+		data?.data.map((item) => ({
 			value: item.id,
 			label: item.nama,
 		})) || [];

@@ -154,9 +154,9 @@ export default function PenggunaPage() {
 			</div>
 			<Table
 				isPending={isPending}
-				data={data?.data?.items || []}
+				data={data?.data.items || []}
 				columns={columns}
-				rowCount={data?.data?.meta?.total || 0}
+				rowCount={data?.data.meta.total || 0}
 				onPaginationChange={setPagination}
 				pagination={pagination}
 			/>

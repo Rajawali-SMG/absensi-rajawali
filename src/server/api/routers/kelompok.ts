@@ -1,6 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ilike } from "drizzle-orm";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import {
+	formatResponse,
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
 	kelompokCreateSchema,
@@ -17,15 +21,7 @@ export const kelompokRouter = createTRPCRouter({
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data Kelompok",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
@@ -49,7 +45,7 @@ export const kelompokRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Kelompok",
 				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
@@ -95,6 +91,12 @@ export const kelompokRouter = createTRPCRouter({
 	updateKelompok: protectedProcedure
 		.input(kelompokUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
 			const data = await ctx.db
 				.update(kelompok)
 				.set(input)

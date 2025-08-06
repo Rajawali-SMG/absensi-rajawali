@@ -99,7 +99,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
 const authMiddleware = t.middleware(async ({ ctx, next }) => {
 	const session = await auth.api.getSession(ctx);
-	
+
 	if (!session?.user) {
 		throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
 	}

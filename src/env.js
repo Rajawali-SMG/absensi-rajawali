@@ -13,7 +13,8 @@ export const env = createEnv({
 			.default("development"),
 		USER_PASSWORD: z.string(),
 		BETTER_AUTH_SECRET: z.string(),
-		BETTER_AUTH_URL: z.string(),
+		BETTER_AUTH_URL: z.url(),
+		OPEN_CAGE_API_KEY: z.string(),
 	},
 
 	/**
@@ -35,6 +36,7 @@ export const env = createEnv({
 		USER_PASSWORD: process.env.USER_PASSWORD,
 		BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+		OPEN_CAGE_API_KEY: process.env.OPEN_CAGE_API_KEY,
 		// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 	},
 	/**

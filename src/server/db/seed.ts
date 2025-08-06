@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import { reset, seed } from "drizzle-seed";
+import { v4 as uuidv4 } from "uuid";
 import { env } from "@/env";
 import { auth } from "../auth";
 import {
@@ -18,7 +19,8 @@ import {
 async function main() {
 	console.log("Seeding started⏳");
 	const db = drizzle(env.DATABASE_URL, { casing: "snake_case" });
-	const kelompok_id = [
+	const uuids: string[] = Array.from({ length: 19 }, () => uuidv4());
+	const kelompok_code = [
 		"SML",
 		"SRT",
 		"FTM",
@@ -73,7 +75,9 @@ async function main() {
 		},
 		kelompok: {
 			columns: {
-				id: f.uuid(),
+				id: f.valuesFromArray({
+					values: uuids,
+				}),
 				nama: f.valuesFromArray({
 					values: [
 						"Sendang Mulyo",
@@ -98,7 +102,7 @@ async function main() {
 					],
 				}),
 				code: f.valuesFromArray({
-					values: kelompok_id,
+					values: kelompok_code,
 				}),
 				desaId: f.valuesFromArray({
 					values: [1, 2, 3, 4],
@@ -120,7 +124,7 @@ async function main() {
 				alamatTempatTinggal: f.streetAddress(),
 				alamatAsal: f.streetAddress(),
 				kelompokId: f.valuesFromArray({
-					values: kelompok_id,
+					values: uuids,
 				}),
 			},
 		},

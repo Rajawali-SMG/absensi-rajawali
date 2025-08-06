@@ -174,8 +174,8 @@ export const presence = createTable("presence", {
 		.unique(),
 	createdAt: timestamp().defaultNow().notNull(),
 	status: status().notNull(),
-	generusId: varchar({ length: 255 }).notNull().unique(),
-	eventId: varchar({ length: 255 }).notNull().unique(),
+	generusId: varchar({ length: 255 }).notNull(),
+	eventId: varchar({ length: 255 }).notNull(),
 });
 
 export const presenceRelations = relations(presence, ({ one }) => ({
@@ -227,7 +227,7 @@ export const log = createTable(
 		createdAt: timestamp().defaultNow().notNull(),
 		event: varchar({ length: 255 }).notNull(),
 		description: text(),
-		userId: varchar().unique().notNull(),
+		userId: varchar().notNull(),
 	},
 	(table) => [
 		index("event_log_idx").on(table.event),

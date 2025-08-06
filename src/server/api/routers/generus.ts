@@ -1,14 +1,18 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ilike } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import {
+	formatResponse,
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
 	generusCreateSchema,
 	generusFilter,
 	generusUpdateSchema,
 } from "@/types/generus";
-import { generus, kelompok } from "../../db/schema";
+import { generus, kelompok, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const generusRouter = createTRPCRouter({
@@ -18,15 +22,7 @@ export const generusRouter = createTRPCRouter({
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data Generus",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
@@ -61,7 +57,7 @@ export const generusRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Generus",
 				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
@@ -156,6 +152,21 @@ export const generusRouter = createTRPCRouter({
 			return formatResponse(
 				true,
 				"Berhasil menghapus data Generus",
+				data,
+				null,
+			);
+		}),
+
+	getEventAttendancebyGenerus: protectedProcedure
+		.input(idBase)
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.presence.findMany({
+				where: eq(presence.generusId, input.id),
+			});
+
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Presensi",
 				data,
 				null,
 			);

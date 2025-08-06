@@ -7,7 +7,6 @@ export type KelompokSelect = InferSelectModel<typeof kelompok>;
 export type KelompokInsert = InferInsertModel<typeof kelompok>;
 
 export const kelompokCreateSchema = z.object({
-	id: z.uuid().optional(),
 	nama: z
 		.string()
 		.nonempty("Nama tidak boleh kosong")
@@ -20,7 +19,9 @@ export const kelompokCreateSchema = z.object({
 	desaId: z.number().min(1, "Desa tidak boleh kosong"),
 });
 
-export const kelompokUpdateSchema = kelompokCreateSchema;
+export const kelompokUpdateSchema = kelompokCreateSchema.extend({
+	id: z.uuid().nonempty("ID tidak boleh kosong"),
+});
 
 export const kelompokFilter = filterBase.extend({
 	desaId: z.number().optional(),

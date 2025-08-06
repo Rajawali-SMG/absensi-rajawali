@@ -6,15 +6,22 @@ export type ErrorResponse = {
 export type ResponseBase<T> = {
 	success: boolean;
 	message: string;
-	data: T | null;
-	error: ErrorResponse | null;
+	data: T;
+	error: null;
 };
 
 export type ResponseBaseArray<T> = {
 	success: boolean;
 	message: string;
-	data: { items: T[]; meta: Pagination } | null;
-	error: ErrorResponse | null;
+	data: T[];
+	error: null;
+};
+
+export type ResponseBasePagination<T> = {
+	success: boolean;
+	message: string;
+	data: { items: T[]; meta: Pagination };
+	error: null;
 };
 
 export type ErrorBase = {

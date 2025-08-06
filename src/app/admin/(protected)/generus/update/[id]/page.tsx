@@ -80,7 +80,7 @@ export default function GenerusUpdatePage({
 	});
 
 	const kelompokOptions =
-		kelompokData?.data?.items.map((item) => ({
+		kelompokData?.data.map((item) => ({
 			value: item.id,
 			label: item.nama,
 		})) || [];

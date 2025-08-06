@@ -3,6 +3,7 @@ import type { DetailedHTMLProps, SelectHTMLAttributes } from "react";
 interface SelectOption {
 	value: string | number;
 	label?: string;
+	isDone?: boolean;
 }
 
 type SelectProps = DetailedHTMLProps<
@@ -40,7 +41,11 @@ export default function Select({
 					{placeholder}
 				</option>
 				{options.map((option) => (
-					<option key={option.value} value={option.value}>
+					<option
+						key={option.value}
+						value={option.value}
+						disabled={option.isDone}
+					>
 						{option.label}
 					</option>
 				))}

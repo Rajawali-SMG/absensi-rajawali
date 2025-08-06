@@ -2,7 +2,11 @@ import { TRPCError } from "@trpc/server";
 import { hash } from "argon2";
 import { and, count, eq, ilike } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import {
+	formatResponse,
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
 import { idBase } from "@/types";
 import {
 	userCreateSchema,
@@ -20,15 +24,7 @@ export const userRouter = createTRPCRouter({
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data User",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
@@ -49,7 +45,7 @@ export const userRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data User",
 				{ items: data, meta: { total: totalCount, page, limit, totalPages } },

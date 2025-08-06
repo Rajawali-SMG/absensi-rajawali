@@ -1,6 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ilike } from "drizzle-orm";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import {
+	formatResponse,
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
 import { idBase } from "@/types";
 import { logCreateSchema, logFilter, logUpdateSchema } from "@/types/log";
 import { log } from "../../db/schema";
@@ -13,15 +17,7 @@ export const logRouter = createTRPCRouter({
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data Log",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
@@ -45,7 +41,7 @@ export const logRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Log",
 				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
