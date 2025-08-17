@@ -107,7 +107,6 @@ export const generus = createTable(
 			.$defaultFn(() => uuid())
 			.notNull()
 			.unique(),
-		generusId: varchar({ length: 12 }).unique(),
 		...timestamps,
 		nama: varchar({ length: 255 }).notNull(),
 		jenisKelamin: jenisKelamin().notNull(),

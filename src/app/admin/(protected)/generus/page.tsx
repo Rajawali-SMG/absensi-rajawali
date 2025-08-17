@@ -11,6 +11,7 @@ import Dialog from "@/components/Dialog";
 import ExportGenerus from "@/components/ExportGenerus";
 import SearchBar from "@/components/SearchBar";
 import SheetFilter from "@/components/SheetFilter";
+import UploadExcelDialog from "@/components/UploadGenerus";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import Table from "@/components/ui/Table";
@@ -84,24 +85,21 @@ export default function GenerusPage() {
 
 	const columns: ColumnDef<GenerusSelect>[] = [
 		{
-			accessorKey: "id",
-		},
-		{
 			accessorKey: "nama",
 		},
 		{
-			accessorKey: "jenis_kelamin",
+			accessorKey: "jenisKelamin",
 			header: "Jenis Kelamin",
 		},
 		{
 			accessorKey: "jenjang",
 		},
 		{
-			accessorKey: "alamat_tempat_tinggal",
+			accessorKey: "alamatTempatTinggal",
 			header: "Alamat Tempat Tinggal",
 		},
 		{
-			accessorKey: "sambung",
+			accessorKey: "keterangan",
 		},
 		{
 			id: "aksi",
@@ -228,6 +226,7 @@ export default function GenerusPage() {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
 				/>
+				<UploadExcelDialog />
 				<ExportGenerus />
 				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
 				<Link href="/admin/generus/create">Tambah Generus</Link>
