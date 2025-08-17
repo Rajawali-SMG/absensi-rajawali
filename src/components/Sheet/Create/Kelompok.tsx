@@ -4,7 +4,7 @@ import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { kelompokCreateSchema, kelompokDefaultValue } from "@/types/kelompok";
-import Select from "../../ui/Select";
+import CustomSelect from "../../CustomSelect";
 
 export default function SheetCreateKelompok({
 	closeSheet,
@@ -12,7 +12,7 @@ export default function SheetCreateKelompok({
 	closeSheet: () => void;
 }) {
 	const utils = api.useUtils();
-	const { data } = api.desa.getAll.useQuery();
+	const { data, isLoading: desaIsLoading } = api.desa.getAll.useQuery();
 	const { mutate } = api.kelompok.createKelompok.useMutation({
 		onError: ({ message }) => {
 			toast.error(message);
@@ -36,7 +36,7 @@ export default function SheetCreateKelompok({
 
 	const desaOptions =
 		data?.data.map((item) => ({
-			value: item.id,
+			value: String(item.id),
 			label: item.nama,
 		})) || [];
 
@@ -56,11 +56,11 @@ export default function SheetCreateKelompok({
 					className="space-y-4"
 				>
 					<div className="space-y-4">
-						<form.Field name="id">
+						<form.Field name="code">
 							{(field) => (
 								<>
 									<Input
-										label="ID"
+										label="Kode"
 										variant="secondary"
 										htmlFor={field.name}
 										type="text"
@@ -103,15 +103,23 @@ export default function SheetCreateKelompok({
 						<form.Field name="desaId">
 							{(field) => (
 								<div className="space-y-1">
-									<Select
-										name={field.name}
+									<CustomSelect
 										label="Desa"
 										options={desaOptions}
-										placeholder="Pilih Desa"
-										required={true}
-										value={field.state.value}
-										onChange={(e) => field.handleChange(Number(e.target.value))}
+										isLoading={desaIsLoading}
+										onChange={(option) => {
+											field.handleChange(Number(option?.value || ""));
+											console.log(option);
+										}}
+										value={
+											desaOptions.find(
+												(option) => option.value === String(field.state.value),
+											) || null
+										}
+										isClearable
 									/>
+
+									<TextError field={field} />
 								</div>
 							)}
 						</form.Field>
@@ -121,15 +129,17 @@ export default function SheetCreateKelompok({
 						<form.Subscribe
 							selector={(state) => [state.canSubmit, state.isSubmitting]}
 						>
-							{([canSubmit, isSubmitting]) => (
-								<button
-									type="submit"
-									disabled={!canSubmit}
-									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-								>
-									{isSubmitting ? "Memproses..." : "Buat"}
-								</button>
-							)}
+							{([canSubmit, isSubmitting]) => {
+								return (
+									<button
+										type="submit"
+										disabled={!canSubmit}
+										className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+									>
+										{isSubmitting ? "Memproses..." : "Buat"}
+									</button>
+								);
+							}}
 						</form.Subscribe>
 
 						<button

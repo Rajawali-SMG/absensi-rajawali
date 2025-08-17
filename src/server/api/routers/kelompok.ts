@@ -78,6 +78,16 @@ export const kelompokRouter = createTRPCRouter({
 	createKelompok: protectedProcedure
 		.input(kelompokCreateSchema)
 		.mutation(async ({ ctx, input }) => {
+			const existingKelompok = await ctx.db.query.kelompok.findFirst({
+				where: and(eq(kelompok.code, input.code)),
+			});
+
+			if (existingKelompok) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Code sudah didaftarkan, silahkan gunakan kode lain",
+				});
+			}
 			const data = await ctx.db.insert(kelompok).values(input);
 
 			return formatResponse(
