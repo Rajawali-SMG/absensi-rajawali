@@ -6,8 +6,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import * as XLSX from "xlsx";
 import Dialog from "@/components/Dialog";
-// import ExportComponent from "@/components/ExportComponent";
+import ExportGenerus from "@/components/ExportGenerus";
 import SearchBar from "@/components/SearchBar";
 import SheetFilter from "@/components/SheetFilter";
 import Button from "@/components/ui/Button";
@@ -58,13 +59,6 @@ export default function GenerusPage() {
 			sambung: sambungParam,
 			keterangan: keteranganParam,
 		});
-	console.log(
-		jenisKelaminParam,
-		jenjangParam,
-		pendidikanTerakhirParam,
-		sambungParam,
-		keteranganParam,
-	);
 	const utils = api.useUtils();
 
 	const mutation = api.generus.deleteGenerus.useMutation({
@@ -149,7 +143,6 @@ export default function GenerusPage() {
 
 	return (
 		<>
-			{/* <ExportComponent /> */}
 			{dialog && (
 				<Dialog
 					cancel="Batal"
@@ -235,6 +228,7 @@ export default function GenerusPage() {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
 				/>
+				<ExportGenerus />
 				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
 				<Link href="/admin/generus/create">Tambah Generus</Link>
 			</div>

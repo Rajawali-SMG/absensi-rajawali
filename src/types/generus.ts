@@ -15,7 +15,7 @@ export type GenerusSelect = InferSelectModel<typeof generus>;
 export type GenerusInsert = InferInsertModel<typeof generus>;
 
 const jenisKelaminSchema = createSelectSchema(jenisKelamin);
-const jenjangSchema = createSelectSchema(jenjang);
+export const jenjangSchema = createSelectSchema(jenjang);
 const pendidikanTerakhirSchema = createSelectSchema(pendidikanTerakhir);
 const sambungSchema = createSelectSchema(sambung);
 const keteranganSchema = createSelectSchema(keterangan);

@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ilike } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
-import z from "zod";
 import {
 	formatResponse,
 	formatResponseArray,
@@ -17,16 +16,35 @@ import { generus, kelompok, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const generusRouter = createTRPCRouter({
-	getAll: protectedProcedure.query(async ({ ctx }) => {
-		const data = await ctx.db.query.generus.findMany();
+	getAll: protectedProcedure
+		.input(generusFilter.omit({ q: true, page: true, limit: true }))
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.generus.findMany({
+				where: and(
+					input.jenisKelamin
+						? eq(generus.jenisKelamin, input.jenisKelamin)
+						: undefined,
+					input.jenjang ? eq(generus.jenjang, input.jenjang) : undefined,
+					input.pendidikanTerakhir
+						? eq(generus.pendidikanTerakhir, input.pendidikanTerakhir)
+						: undefined,
+					input.sambung ? eq(generus.sambung, input.sambung) : undefined,
+					input.keterangan
+						? eq(generus.keterangan, input.keterangan)
+						: undefined,
+					input.kelompokId
+						? eq(generus.kelompokId, input.kelompokId)
+						: undefined,
+				),
+			});
 
-		return formatResponseArray(
-			true,
-			"Berhasil mendapatkan semua data Generus",
-			data,
-			null,
-		);
-	}),
+			return formatResponseArray(
+				true,
+				"Berhasil mendapatkan semua data Generus",
+				data,
+				null,
+			);
+		}),
 
 	getAllPaginated: protectedProcedure
 		.input(generusFilter)

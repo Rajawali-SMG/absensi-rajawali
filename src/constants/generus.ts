@@ -37,19 +37,3 @@ export const keteranganOptions = [
 	{ value: "Pendatang", label: "Pendatang" },
 	{ value: "Pribumi", label: "Pribumi" },
 ];
-
-export const filterOptions = [
-	{
-		value: "jenis_kelamin",
-		label: "Jenis Kelamin",
-		options: jenisKelaminOptions,
-	},
-	{ value: "jenjang", label: "Jenjang", options: jenjangOptions },
-	{
-		value: "pendidikan_terakhir",
-		label: "Pendidikan Terakhir",
-		options: pendidikanTerakhirOptions,
-	},
-	{ value: "sambung", label: "Sambung", options: sambungOptions },
-	{ value: "keterangan", label: "Keterangan", options: keteranganOptions },
-];
