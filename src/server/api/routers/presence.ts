@@ -12,7 +12,7 @@ import {
 	presenceFilter,
 	presenceUpdateSchema,
 } from "@/types/presence";
-import { generus, kelompok, presence } from "../../db/schema";
+import { generus, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const presenceRouter = createTRPCRouter({
@@ -140,6 +140,34 @@ export const presenceRouter = createTRPCRouter({
 			return formatResponse(
 				true,
 				"Berhasil menghapus data Presensi",
+				data,
+				null,
+			);
+		}),
+
+	exportPresence: publicProcedure
+		.input(z.object({ eventId: z.string() }))
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db
+				.select({
+					generusId: presence.generusId,
+					generusName: generus.nama,
+					status: presence.status,
+				})
+				.from(presence)
+				.innerJoin(generus, eq(presence.generusId, generus.id))
+				.where(eq(presence.eventId, input.eventId));
+
+			if (!data) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Data Presensi tidak ditemukan",
+				});
+			}
+
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Presensi",
 				data,
 				null,
 			);

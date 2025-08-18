@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import * as XLSX from "xlsx";
 import Dialog from "@/components/Dialog";
 import ExportGenerus from "@/components/ExportGenerus";
 import SearchBar from "@/components/SearchBar";

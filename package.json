@@ -47,6 +47,7 @@
 		"react-dom": "^19.1.0",
 		"react-geolocated": "^4.3.0",
 		"react-hot-toast": "^2.5.2",
+		"react-qr-code": "^2.0.18",
 		"react-scan": "^0.4.3",
 		"react-select": "^5.10.2",
 		"server-only": "^0.0.1",

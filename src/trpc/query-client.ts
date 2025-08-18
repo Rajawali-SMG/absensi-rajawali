@@ -13,6 +13,7 @@ export const createQueryClient = () =>
 				// above 0 to avoid refetching immediately on the client
 				staleTime: 30 * 1000,
 				placeholderData: keepPreviousData,
+				experimental_prefetchInRender: true,
 			},
 			dehydrate: {
 				serializeData: SuperJSON.serialize,

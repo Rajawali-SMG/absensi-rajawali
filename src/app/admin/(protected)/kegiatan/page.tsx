@@ -2,10 +2,12 @@
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
+import ExportKegiatan from "@/components/ExportKegiatan";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateEvent from "@/components/Sheet/Create/Event";
 import SheetUpdateEvent from "@/components/Sheet/Update/Event";
@@ -98,6 +100,9 @@ export default function KegiatanPage() {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
+						<Link href={`/qr/${row.id}`} target="_blank">
+							<Icon icon="bx:qr" fontSize={20} className="text-blue-500" />
+						</Link>
 						<button type="button" onClick={() => handleEdit(row)}>
 							<Icon
 								icon="line-md:edit"
@@ -152,6 +157,7 @@ export default function KegiatanPage() {
 					}}
 					placeholder="Cari Kegiatan..."
 				/>
+				<ExportKegiatan />
 				<Button type="button" onClick={() => setSheetCreate(true)}>
 					Tambah Kegiatan
 				</Button>

@@ -34,20 +34,21 @@ export default function DesaPage() {
 	const [deleteId, setDeleteId] = useState<number>(0);
 	const mutation = api.desa.deleteDesa.useMutation({
 		onError: (error) => {
+			toast.dismiss();
 			toast.error(error.message);
+		},
+		onSuccess: (data) => {
+			toast.dismiss();
+			utils.desa.getAllPaginated.invalidate();
+			toast.success(data.message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
 		},
 	});
 	const utils = api.useUtils();
 	const handleDeleteConfirm = () => {
-		mutation.mutate(
-			{ id: deleteId },
-			{
-				onSuccess: (data) => {
-					utils.desa.getAllPaginated.invalidate();
-					toast.success(data.message);
-				},
-			},
-		);
+		mutation.mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId(0);
 	};

@@ -2,31 +2,14 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import Button from "@/components/ui/Button";
-import {
-	jenisKelaminOptions,
-	jenjangOptions,
-	keteranganOptions,
-	pendidikanTerakhirOptions,
-	sambungOptions,
-} from "@/constants/generus";
+import { jenisKelaminOptions } from "@/constants/generus";
 import { api } from "@/trpc/react";
-import type {
-	JenisKelaminType,
-	JenjangType,
-	KeteranganType,
-	PendidikanTerakhirType,
-	SambungType,
-} from "@/types/generus";
+import type { JenisKelaminType } from "@/types/generus";
 import CustomSelect from "./CustomSelect";
 
-export default function ExportGenerus() {
+export default function ExportKegiatan() {
 	const [jenisKelaminParam, setJenisKelaminParam] =
 		useState<JenisKelaminType>();
-	const [jenjangParam, setJenjangParam] = useState<JenjangType>();
-	const [pendidikanTerakhirParam, setPendidikanTerakhirParam] =
-		useState<PendidikanTerakhirType>();
-	const [sambungParam, setSambungParam] = useState<SambungType>();
-	const [keteranganParam, setKeteranganParam] = useState<KeteranganType>();
 	const [kelompokIdParam, setKelompokIdParam] = useState("");
 	const {
 		data: kelompokData,
@@ -34,14 +17,18 @@ export default function ExportGenerus() {
 		error: kelompokError,
 		isLoading: kelompokIsLoading,
 	} = api.kelompok.getAll.useQuery();
-	const { refetch } = api.generus.getAll.useQuery(
+	// const { refetch } = api.event.getAll.useQuery(
+	// 	{
+	// 		kelompokId: kelompokIdParam
+	// 	},
+	// 	{
+	// 		enabled: false,
+	// 	},
+	// );
+
+	const test = api.presence.exportPresence.useQuery(
 		{
-			jenisKelamin: jenisKelaminParam,
-			jenjang: jenjangParam,
-			pendidikanTerakhir: pendidikanTerakhirParam,
-			sambung: sambungParam,
-			keterangan: keteranganParam,
-			kelompokId: kelompokIdParam,
+			eventId: "17d456ed-38ed-4242-a7d5-ee333d73dbfc",
 		},
 		{
 			enabled: false,
@@ -49,24 +36,19 @@ export default function ExportGenerus() {
 	);
 	const handleExport = async () => {
 		setOpenModal(false);
-		const { data: generusData, isError, error } = await refetch();
+		// const { data: generusData, isError, error } = await refetch();
 
-		if (isError) {
-			toast.error(error.message);
-			return;
-		}
+		// if (isError) {
+		// 	toast.error(error.message);
+		// 	return;
+		// }
 
-		const worksheet = XLSX.utils.json_to_sheet(generusData?.data || []);
+		const worksheet = XLSX.utils.json_to_sheet(test?.data?.data || []);
 		const workbook = XLSX.utils.book_new();
 		XLSX.utils.book_append_sheet(workbook, worksheet, "Generus");
 		XLSX.writeFile(workbook, "generus.xlsx");
 		toast.success("Data Generus berhasil diexport");
 		setJenisKelaminParam(undefined);
-		setJenjangParam(undefined);
-		setKelompokIdParam("");
-		setKeteranganParam(undefined);
-		setPendidikanTerakhirParam(undefined);
-		setSambungParam(undefined);
 	};
 	const [openModal, setOpenModal] = useState(false);
 	const [isClient, setIsClient] = useState(false);
@@ -131,7 +113,7 @@ export default function ExportGenerus() {
 							}
 							isClearable
 						/>
-						<CustomSelect
+						{/* <CustomSelect
 							label="Jenjang"
 							options={jenjangOptions}
 							placeholder="Pilih Jenjang"
@@ -180,7 +162,7 @@ export default function ExportGenerus() {
 								) || null
 							}
 							isClearable
-						/>
+						/> */}
 					</div>
 					<div className="flex justify-end gap-x-2">
 						<Button onClick={() => setOpenModal(false)}>Close</Button>

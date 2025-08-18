@@ -8,7 +8,7 @@ import {
 } from "@/helper/response.helper";
 import { idBase } from "@/types";
 import { desaCreateSchema, desaFilter, desaUpdateSchema } from "@/types/desa";
-import { desa } from "../../db/schema";
+import { desa, kelompok } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const desaRouter = createTRPCRouter({
@@ -28,6 +28,7 @@ export const desaRouter = createTRPCRouter({
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
+
 			const data = await ctx.db.query.desa.findMany({
 				limit,
 				offset: page * limit,
@@ -39,10 +40,27 @@ export const desaRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
+			// relation check
+			const items = await Promise.all(
+				data.map(async (d) => {
+					const relatedKelompok = await ctx.db.query.kelompok.findFirst({
+						where: eq(kelompok.desaId, d.id),
+					});
+
+					return {
+						...d,
+						isDeletable: !relatedKelompok,
+					};
+				}),
+			);
+
 			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Desa",
-				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				{
+					items,
+					meta: { total: totalCount, page, limit, totalPages },
+				},
 				null,
 			);
 		}),
@@ -65,6 +83,16 @@ export const desaRouter = createTRPCRouter({
 	createDesa: protectedProcedure
 		.input(desaCreateSchema)
 		.mutation(async ({ ctx, input }) => {
+			const existingDesa = await ctx.db.query.desa.findFirst({
+				where: eq(desa.nama, input.nama),
+			});
+
+			if (existingDesa) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Desa sudah ada",
+				});
+			}
 			const data = await ctx.db.insert(desa).values(input);
 
 			return formatResponse(true, "Berhasil menambahkan data Desa", data, null);

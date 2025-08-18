@@ -21,21 +21,27 @@ export default function AbsenPage({
 	const {
 		data: eventData,
 		error,
-		isError,
 		isPending,
+		promise,
 	} = api.event.getOneEventPublic.useQuery({
 		id,
 	});
 	const { mutate } = api.presence.createPresence.useMutation({
 		onError: ({ message }) => {
+			toast.dismiss();
 			toast.error(message);
 		},
 		onSuccess: ({ message }) => {
+			toast.dismiss();
 			utils.generus.withKelompok.invalidate();
 			utils.event.countGenerus.invalidate();
 			toast.success(message);
 		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
 	});
+
 	const form = useForm({
 		defaultValues: {
 			generusId: "",
@@ -62,15 +68,16 @@ export default function AbsenPage({
 		},
 	});
 	const locationData = useLocation(geo.coords?.latitude, geo.coords?.longitude);
-	const radius = 1; //1km
+	const radius = 1; //km
 	const latitude = eventData?.data.latitude;
 	const longitude = eventData?.data.longitude;
 
 	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+		toast.promise(promise, {
+			loading: "Loading...",
+			error: error?.message,
+		});
+	}, [promise, error]);
 
 	const getStatusConfig = () => {
 		switch (eventData?.data.status) {

@@ -5,7 +5,7 @@ import { useForm } from "@tanstack/react-form";
 import { use, useEffect } from "react";
 import { useGeolocated } from "react-geolocated";
 import toast from "react-hot-toast";
-import Select from "react-select";
+import CustomSelect from "@/components/CustomSelect";
 import Button from "@/components/ui/Button";
 import { api } from "@/trpc/react";
 import { calculateDistance } from "@/utils/calculateDistance";
@@ -238,7 +238,8 @@ export default function IzinPage({
 										</h2>
 										<form.Field name="generusId">
 											{(field) => (
-												<Select
+												<CustomSelect
+													label="Pilih Peserta"
 													name={field.name}
 													options={generusOptions}
 													onChange={(e) => field.handleChange(e?.value || "")}

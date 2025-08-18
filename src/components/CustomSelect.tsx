@@ -1,7 +1,7 @@
 import Select, { type GroupBase, type Props } from "react-select";
 
 interface CustomSelectProps<
-	Option,
+	Option = unknown,
 	IsMulti extends boolean = false,
 	Group extends GroupBase<Option> = GroupBase<Option>,
 > extends Props<Option, IsMulti, Group> {

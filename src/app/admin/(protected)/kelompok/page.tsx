@@ -5,13 +5,13 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import CustomSelect from "@/components/CustomSelect";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateKelompok from "@/components/Sheet/Create/Kelompok";
 import SheetUpdateKelompok from "@/components/Sheet/Update/Kelompok";
 import SheetFilter from "@/components/SheetFilter";
 import Button from "@/components/ui/Button";
-import Select from "@/components/ui/Select";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { KelompokSelect } from "@/types/kelompok";
@@ -159,7 +159,7 @@ export default function KelompokPage() {
 						setSheetFilter(false);
 					}}
 				>
-					<Select
+					<CustomSelect
 						placeHolderEnabled={true}
 						name="desa_id"
 						label="Desa"
