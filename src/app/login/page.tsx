@@ -1,35 +1,36 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { api } from "@/trpc/react";
+import { signIn } from "@/server/auth/auth-client";
 import { loginSchema } from "@/types/auth";
-import { useAlert } from "@/utils/useAlert";
 
 export default function LoginPage() {
 	const navigate = useRouter();
-	const { setAlert } = useAlert();
-	const { mutate } = api.login.login.useMutation();
+	async function login(value: { email: string; password: string }) {
+		return await signIn.email(value, {
+			onError: ({ error }) => {
+				toast.error(error.message);
+			},
+			onSuccess: ({ response }) => {
+				console.log(response);
+				navigate.push("/admin/dashboard");
+				toast.success(response.statusText || "Berhasil login");
+			},
+		});
+	}
 	const form = useForm({
 		defaultValues: {
-			username: "",
+			email: "",
 			password: "",
 		},
 		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					console.log(`berhasil: ${data}`);
-					setAlert(data.message, "success");
-					navigate.push("/admin/dashboard");
-				},
-				onError: (error) => {
-					console.log(`gagal: ${error}`);
-					setAlert(error.message, "error");
-				},
-			});
+			login(value);
 		},
 		validators: {
 			onChange: loginSchema,
@@ -38,10 +39,12 @@ export default function LoginPage() {
 
 	return (
 		<div className="flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900">
-			<img
-				src="/logo-rajawali.png"
-				className="h-24 mb-10"
+			<Image
 				alt="Logo Rajawali"
+				className="h-24 mb-10"
+				height={200}
+				src="/logo-rajawali.png"
+				width={200}
 			/>
 			{/* Card */}
 			<div className="w-full max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800">
@@ -57,20 +60,20 @@ export default function LoginPage() {
 					}}
 				>
 					<div>
-						<form.Field name="username">
+						<form.Field name="email">
 							{(field) => (
 								<>
 									<Input
-										label="Username"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Email"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="JohnDoe"
 										required={true}
+										type="text"
+										value={field.state.value}
 									/>
 									<TextError field={field} />
 								</>
@@ -82,17 +85,17 @@ export default function LoginPage() {
 							{(field) => (
 								<>
 									<Input
-										label="Password"
+										className="flex-1"
 										htmlFor={field.name}
-										type="password"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Password"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="Password"
 										required={true}
-										className="flex-1"
+										type="password"
+										value={field.state.value}
 									/>
 									<TextError field={field} />
 								</>
@@ -103,7 +106,7 @@ export default function LoginPage() {
 						selector={(state) => [state.canSubmit, state.isSubmitting]}
 					>
 						{([canSubmit, isSubmitting]) => (
-							<Button type="submit" disabled={!canSubmit}>
+							<Button disabled={!canSubmit} type="submit">
 								{isSubmitting ? "Memproses..." : "Masuk"}
 							</Button>
 						)}

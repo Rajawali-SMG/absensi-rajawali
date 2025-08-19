@@ -1,80 +1,54 @@
 "use client";
 
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
-import { useState } from "react";
-import type { Presence } from "@/generated/client/client";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
-import { useAlert } from "@/utils/useAlert";
+import type { PresenceSelect } from "@/types/presence";
 
 export default function PresensiPage() {
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 9,
+		pageSize: 10,
 	});
-	const { data } = api.presence.getAllPaginated.useQuery({
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-	});
-	const { setAlert } = useAlert();
+	const { data, isPending, error, isError } =
+		api.presence.getAllPaginated.useQuery({
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+		});
 
-	const columnHelper = createColumnHelper<Presence>();
-
-	const columns = [
-		columnHelper.accessor("id", { header: "ID" }),
-		columnHelper.accessor("event_id", { header: "Event ID" }),
-		columnHelper.accessor("generus_id", { header: "Generus ID" }),
-		columnHelper.accessor("status", { header: "Status" }),
+	const columns: ColumnDef<PresenceSelect>[] = [
+		{
+			accessorKey: "id",
+		},
+		{
+			accessorKey: "eventId",
+			header: "Event ID",
+		},
+		{
+			accessorKey: "generusId",
+			header: "Generus ID",
+		},
+		{
+			accessorKey: "status",
+		},
 	];
 
-	const table = useReactTable({
-		data: data?.data?.items || [],
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		manualPagination: true,
-		rowCount: data?.data?.meta?.total || 0,
-		onPaginationChange: setPagination,
-		state: {
-			pagination,
-		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
-	});
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
-		<>
-			<table className="w-full text-left text-sm text-gray-500">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
-									{flexRender(
-										header.column.columnDef.header,
-										header.getContext(),
-									)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id} className="bg-white border-b">
-							{row.getVisibleCells().map((cell) => (
-								<td key={cell.id} className="px-6 py-4">
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
-		</>
+		<Table
+			columns={columns}
+			data={data?.data.items || []}
+			isPending={isPending}
+			onPaginationChange={setPagination}
+			pagination={pagination}
+			rowCount={data?.data.meta.total || 0}
+		/>
 	);
 }

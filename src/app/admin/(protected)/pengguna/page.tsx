@@ -1,67 +1,63 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateUser from "@/components/Sheet/Create/User";
 import SheetUpdateUser from "@/components/Sheet/Update/User";
+import SheetUpdateUserPassword from "@/components/Sheet/Update/UserPassword";
 import Button from "@/components/ui/Button";
+import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { UserSelect } from "@/types/user";
-import { useAlert } from "@/utils/useAlert";
 
 export default function PenggunaPage() {
 	const searchParams = useSearchParams();
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 9,
+		pageSize: 10,
 	});
-	const { data } = api.user.getAllPaginated.useQuery({
-		q: searchParams.get("q") || "",
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-	});
+	const { data, isPending, error, isError } = api.user.getAllPaginated.useQuery(
+		{
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+			q: searchParams.get("q") || "",
+		},
+	);
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
+	const [sheetUpdatePassword, setSheetUpdatePassword] = useState(false);
 	const [selectedData, setSelectedData] = useState<UserSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	const queryClient = useQueryClient();
-	const { setAlert } = useAlert();
+	const utils = api.useUtils();
 
 	const mutation = api.user.deleteUser.useMutation({
 		onError: (error) => {
-			setAlert(error.message || "Internal Server Error", "error");
+			toast.error(error.message);
+		},
+		onSuccess: (data) => {
+			utils.user.getAllPaginated.invalidate();
+			toast.success(data.message);
 		},
 	});
 
-	const columnHelper = createColumnHelper<UserSelect>();
-
-	const handleEdit = (row: UserSelect) => {
+	const handleChangeUser = (row: UserSelect) => {
 		setSelectedData(row);
 		setSheetUpdate(true);
 	};
 
+	const handleChangePassword = (row: UserSelect) => {
+		setSelectedData(row);
+		setSheetUpdatePassword(true);
+	};
+
 	const handleDeleteConfirm = () => {
-		mutation.mutate(
-			{ id: deleteId },
-			{
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["userData"] });
-					setAlert("Berhasil menghapus data User", "success");
-				},
-			},
-		);
+		mutation.mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};
@@ -71,62 +67,66 @@ export default function PenggunaPage() {
 		setDialog(true);
 	};
 
-	const columns = [
-		columnHelper.accessor("id", { header: "ID" }),
-		columnHelper.accessor("username", { header: "Username" }),
-		columnHelper.accessor("role", { header: "Role" }),
-		columnHelper.display({
-			id: "actions",
-			header: "Action",
+	const columns: ColumnDef<UserSelect>[] = [
+		{
+			accessorKey: "id",
+		},
+		{
+			accessorKey: "name",
+		},
+		{
+			accessorKey: "email",
+		},
+		{
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
-						<button type="button" onClick={() => handleEdit(row)}>
+						<button onClick={() => handleChangeUser(row)} type="button">
 							<Icon
-								icon="line-md:edit"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="material-symbols:person-outline-rounded"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleChangePassword(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
+								className="text-orange-500"
 								fontSize={20}
+								icon="material-symbols:password-rounded"
+							/>
+						</button>
+						<button onClick={() => handleDelete(row)} type="button">
+							<Icon
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
-			enableHiding: true,
-		}),
+			header: "Aksi",
+			id: "aksi",
+		},
 	];
 
-	const table = useReactTable({
-		data: data?.data?.items || [],
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		manualPagination: true,
-		rowCount: data?.data?.meta?.total || 0,
-		onPaginationChange: setPagination,
-		state: {
-			pagination,
-		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
-	});
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<>
 			{dialog && (
 				<Dialog
-					cancel="Cancel"
-					confirm="Delete"
-					title="Are you sure you want to delete this data?"
+					cancel="Batal"
+					confirm="Hapus"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="This action cannot be undone."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
 			{sheetCreate && (
@@ -138,44 +138,31 @@ export default function PenggunaPage() {
 					selectedData={selectedData}
 				/>
 			)}
+			{sheetUpdatePassword && selectedData && (
+				<SheetUpdateUserPassword
+					closeSheet={() => setSheetUpdatePassword(false)}
+					selectedData={selectedData}
+				/>
+			)}
 			<div className="flex justify-between">
 				<SearchBar
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
-					placeholder="Search by Name"
+					placeholder="Cari nama pengguna..."
 				/>
-				<Button typeof="button" onClick={() => setSheetCreate(true)}>
-					Create User
+				<Button onClick={() => setSheetCreate(true)} type="button">
+					Tambah Pengguna
 				</Button>
 			</div>
-			<table className="w-full text-left text-sm text-gray-500">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
-									{flexRender(
-										header.column.columnDef.header,
-										header.getContext(),
-									)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id} className="bg-white border-b">
-							{row.getVisibleCells().map((cell) => (
-								<td key={cell.id} className="px-6 py-4">
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
+			<Table
+				columns={columns}
+				data={data?.data.items || []}
+				isPending={isPending}
+				onPaginationChange={setPagination}
+				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
+			/>
 		</>
 	);
 }

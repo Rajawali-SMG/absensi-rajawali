@@ -5,10 +5,12 @@ export default function SheetFilter({
 	closeSheet,
 	children,
 	submitFilter,
+	resetFilter,
 }: {
 	closeSheet: () => void;
 	children: ReactNode;
 	submitFilter: () => void;
+	resetFilter: () => void;
 }) {
 	return (
 		<div className="bg-black/50 inset-0 fixed">
@@ -17,6 +19,7 @@ export default function SheetFilter({
 				<div className="flex flex-col gap-y-2">{children}</div>
 				<div className="flex justify-end gap-x-2">
 					<Button onClick={closeSheet}>Close</Button>
+					<Button onClick={resetFilter}>Reset</Button>
 					<Button onClick={submitFilter}>Apply</Button>
 				</div>
 			</div>

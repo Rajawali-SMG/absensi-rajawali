@@ -3,13 +3,12 @@
 
 import { relations } from "drizzle-orm";
 import {
+	boolean,
 	date,
 	doublePrecision,
 	index,
-	integer,
 	pgEnum,
 	pgTableCreator,
-	serial,
 	text,
 	timestamp,
 	varchar,
@@ -40,7 +39,7 @@ export const pendidikanTerakhir = pgEnum("pendidikan_terakhir", [
 export const sambung = pgEnum("sambung", ["Aktif", "Tidak Aktif"]);
 export const keterangan = pgEnum("keterangan", ["Pendatang", "Pribumi"]);
 export const status = pgEnum("status", ["Hadir", "Izin", "Tidak Hadir"]);
-export const role = pgEnum("role", ["Super Admin", "Admin", "User"]);
+export const role = pgEnum("role", ["Super Admin", "Admin"]);
 export const jenjang = pgEnum("jenjang", [
 	"Paud",
 	"Caberawit",
@@ -48,10 +47,12 @@ export const jenjang = pgEnum("jenjang", [
 	"Remaja",
 	"Pra Nikah",
 ]);
+export const logEvent = pgEnum("log_event", ["Create", "Update", "Delete"]);
 
 const timestamps = {
-	created_at: timestamp().defaultNow().notNull(),
-	updated_at: timestamp()
+	createdAt: timestamp().defaultNow().notNull(),
+	updatedAt: timestamp()
+		.defaultNow()
 		.$onUpdateFn(() => new Date())
 		.notNull(),
 };
@@ -59,26 +60,46 @@ const timestamps = {
 export const desa = createTable(
 	"desa",
 	{
-		id: serial().primaryKey().notNull().unique(),
+		id: varchar()
+			.primaryKey()
+			.$defaultFn(() => uuid())
+			.notNull()
+			.unique(),
 		...timestamps,
 		nama: varchar({ length: 256 }).unique().notNull(),
 	},
-	(table) => [index("nama_idx").on(table.nama)],
+	(table) => [index("nama_desa_idx").on(table.nama)],
 );
+
+export const desaRelations = relations(desa, ({ many }) => ({
+	kelompok: many(kelompok),
+}));
 
 export const kelompok = createTable(
 	"kelompok",
 	{
-		id: varchar({ length: 3 }).primaryKey().notNull().unique(),
+		id: varchar()
+			.primaryKey()
+			.notNull()
+			.unique()
+			.$defaultFn(() => uuid()),
 		...timestamps,
+		desaId: varchar().notNull(),
 		nama: varchar({ length: 50 }).unique().notNull(),
-		desa_id: integer().notNull(),
 	},
 	(table) => [
-		index("nama_idx").on(table.nama),
-		index("desa_id_idx").on(table.desa_id),
+		index("nama_kelompok_idx").on(table.nama),
+		index("desa_id_idx").on(table.desaId),
 	],
 );
+
+export const kelompokRelations = relations(kelompok, ({ one, many }) => ({
+	desa: one(desa, {
+		fields: [kelompok.desaId],
+		references: [desa.id],
+	}),
+	generus: many(generus),
+}));
 
 export const generus = createTable(
 	"generus",
@@ -89,69 +110,39 @@ export const generus = createTable(
 			.notNull()
 			.unique(),
 		...timestamps,
-		nama: varchar({ length: 255 }).notNull(),
-		jenis_kelamin: jenisKelamin().notNull(),
-		tempat_lahir: varchar({ length: 50 }).notNull(),
-		tanggal_lahir: date({ mode: "string" }).notNull(),
+		alamatAsal: varchar({ length: 255 }),
+		alamatTempatTinggal: varchar({ length: 255 }).notNull(),
+		jenisKelamin: jenisKelamin().notNull(),
 		jenjang: jenjang().notNull(),
-		nomer_whatsapp: varchar({ length: 15 }),
-		pendidikan_terakhir: pendidikanTerakhir().notNull(),
-		nama_orang_tua: varchar({ length: 255 }),
-		nomer_whatsapp_orang_tua: varchar({ length: 15 }),
-		sambung: sambung().notNull(),
-		alamat_tempat_tinggal: varchar({ length: 255 }).notNull(),
+		kelompokId: varchar().notNull(),
 		keterangan: keterangan().notNull(),
-		alamat_asal: varchar({ length: 255 }),
-		kelompok_id: varchar({ length: 3 }).notNull(),
+		nama: varchar({ length: 255 }).notNull(),
+		namaOrangTua: varchar({ length: 255 }),
+		nomerWhatsapp: varchar({ length: 15 }),
+		nomerWhatsappOrangTua: varchar({ length: 15 }),
+		pendidikanTerakhir: pendidikanTerakhir().notNull(),
+		sambung: sambung().notNull(),
+		tanggalLahir: date({ mode: "string" }).notNull(),
+		tempatLahir: varchar({ length: 50 }).notNull(),
 	},
 	(table) => [
-		index("nama_idx").on(table.nama),
-		index("jenis_kelamin_idx").on(table.jenis_kelamin),
-		index("jenjang_idx").on(table.jenjang),
-		index("pendidikan_terakhir_idx").on(table.pendidikan_terakhir),
-		index("sambung_idx").on(table.sambung),
-		index("keterangan_idx").on(table.keterangan),
-		index("kelompok_id_idx").on(table.kelompok_id),
+		index("nama_generus_idx").on(table.nama),
+		index("jenis_kelamin_generus_idx").on(table.jenisKelamin),
+		index("jenjang_generus_idx").on(table.jenjang),
+		index("pendidikan_terakhir_generus_idx").on(table.pendidikanTerakhir),
+		index("sambung_generus_idx").on(table.sambung),
+		index("keterangan_generus_idx").on(table.keterangan),
+		index("kelompok_id_idx").on(table.kelompokId),
 	],
 );
 
-export const user = createTable(
-	"user",
-	{
-		id: varchar()
-			.primaryKey()
-			.$defaultFn(() => uuid())
-			.notNull()
-			.unique(),
-		...timestamps,
-		username: varchar({ length: 50 }).unique().notNull(),
-		password: varchar({ length: 255 }).notNull(),
-		role: role().notNull(),
-	},
-	(table) => [
-		index("username_idx").on(table.username),
-		index("role_idx").on(table.role),
-	],
-);
-
-export const log = createTable(
-	"log",
-	{
-		id: varchar()
-			.primaryKey()
-			.$defaultFn(() => uuid())
-			.notNull()
-			.unique(),
-		created_at: timestamp().defaultNow().notNull(),
-		event: varchar({ length: 255 }).notNull(),
-		description: text(),
-		user_id: varchar().unique().notNull(),
-	},
-	(table) => [
-		index("event_idx").on(table.event),
-		index("user_id_idx").on(table.user_id),
-	],
-);
+export const generusRelations = relations(generus, ({ one, many }) => ({
+	kelompok: one(kelompok, {
+		fields: [generus.kelompokId],
+		references: [kelompok.id],
+	}),
+	presence: many(presence),
+}));
 
 export const event = createTable(
 	"event",
@@ -162,35 +153,141 @@ export const event = createTable(
 			.notNull()
 			.unique(),
 		...timestamps,
+		description: text(),
+		endDate: timestamp({ mode: "string" }).notNull(),
+		latitude: doublePrecision().default(-7.03226199678915).notNull(),
+		longitude: doublePrecision().default(110.46708185437986).notNull(),
+		startDate: timestamp({ mode: "string" }).notNull(),
 		title: varchar({ length: 255 }).notNull().unique(),
-		start_date: timestamp({ mode: "string" }).notNull(),
-		end_date: timestamp({ mode: "string" }),
-		latitude: doublePrecision().default(-7.03226199678915),
-		longitude: doublePrecision().default(110.46708185437986),
-		description: varchar(),
 	},
-	(table) => [index("title_idx").on(table.title)],
+	(table) => [index("title_event_idx").on(table.title)],
 );
 
+export const eventRelations = relations(event, ({ many }) => ({
+	presence: many(presence),
+}));
+
 export const presence = createTable("presence", {
+	createdAt: timestamp().defaultNow().notNull(),
+	eventId: varchar({ length: 255 }).notNull(),
+	generusId: varchar({ length: 255 }).notNull(),
 	id: varchar()
 		.primaryKey()
 		.$defaultFn(() => uuid())
 		.notNull()
 		.unique(),
-	created_at: timestamp().defaultNow().notNull(),
 	status: status().notNull(),
-	generus_id: varchar({ length: 255 }).notNull().unique(),
-	event_id: varchar({ length: 255 }).notNull().unique(),
 });
 
 export const presenceRelations = relations(presence, ({ one }) => ({
-	generus: one(generus, {
-		fields: [presence.generus_id],
-		references: [generus.id],
-	}),
 	event: one(event, {
-		fields: [presence.event_id],
+		fields: [presence.eventId],
 		references: [event.id],
 	}),
+	generus: one(generus, {
+		fields: [presence.generusId],
+		references: [generus.id],
+	}),
 }));
+
+export const user = createTable(
+	"user",
+	{
+		id: varchar()
+			.primaryKey()
+			.$defaultFn(() => uuid())
+			.notNull()
+			.unique(),
+		...timestamps,
+		email: text().notNull().unique(),
+		emailVerified: boolean()
+			.$defaultFn(() => false)
+			.notNull(),
+		image: text(),
+		name: text().notNull(),
+		role: role().notNull(),
+	},
+	(table) => [
+		index("name_user_idx").on(table.name),
+		// index("role_user_idx").on(table.role),
+	],
+);
+
+export const userRelations = relations(user, ({ many }) => ({
+	log: many(log),
+}));
+
+export const log = createTable(
+	"log",
+	{
+		createdAt: timestamp().defaultNow().notNull(),
+		description: text(),
+		event: logEvent().notNull(),
+		id: varchar()
+			.primaryKey()
+			.$defaultFn(() => uuid())
+			.notNull()
+			.unique(),
+		userId: varchar().notNull(),
+	},
+	(table) => [
+		index("event_log_idx").on(table.event),
+		index("user_id_log_idx").on(table.userId),
+	],
+);
+
+export const logRelations = relations(log, ({ one }) => ({
+	user: one(user, {
+		fields: [log.userId],
+		references: [user.id],
+	}),
+}));
+
+export const session = createTable("session", {
+	id: varchar()
+		.primaryKey()
+		.$defaultFn(() => uuid())
+		.notNull()
+		.unique(),
+	...timestamps,
+	expiresAt: timestamp().notNull(),
+	ipAddress: text(),
+	token: text().notNull().unique(),
+	userAgent: text(),
+	userId: text()
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+});
+
+export const account = createTable("account", {
+	id: varchar()
+		.primaryKey()
+		.$defaultFn(() => uuid())
+		.notNull()
+		.unique(),
+	...timestamps,
+	accessToken: text(),
+	accessTokenExpiresAt: timestamp(),
+	accountId: text().notNull(),
+	idToken: text(),
+	password: text(),
+	providerId: text().notNull(),
+	refreshToken: text(),
+	refreshTokenExpiresAt: timestamp(),
+	scope: text(),
+	userId: text()
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+});
+
+export const verification = createTable("verification", {
+	id: varchar()
+		.primaryKey()
+		.$defaultFn(() => uuid())
+		.notNull()
+		.unique(),
+	...timestamps,
+	expiresAt: timestamp().notNull(),
+	identifier: text().notNull(),
+	value: text().notNull(),
+});

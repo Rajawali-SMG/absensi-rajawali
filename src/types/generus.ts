@@ -2,20 +2,20 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
 import {
-	generus,
+	type generus,
 	jenisKelamin,
 	jenjang,
 	keterangan,
 	pendidikanTerakhir,
 	sambung,
 } from "../server/db/schema";
-import { filterBase } from "./api";
+import { filterBase } from ".";
 
 export type GenerusSelect = InferSelectModel<typeof generus>;
 export type GenerusInsert = InferInsertModel<typeof generus>;
 
 const jenisKelaminSchema = createSelectSchema(jenisKelamin);
-const jenjangSchema = createSelectSchema(jenjang);
+export const jenjangSchema = createSelectSchema(jenjang);
 const pendidikanTerakhirSchema = createSelectSchema(pendidikanTerakhir);
 const sambungSchema = createSelectSchema(sambung);
 const keteranganSchema = createSelectSchema(keterangan);
@@ -27,67 +27,63 @@ export type SambungType = z.infer<typeof sambungSchema>;
 export type KeteranganType = z.infer<typeof keteranganSchema>;
 
 export const generusCreateSchema = z.object({
+	alamatAsal: z.string().optional().nullable(),
+	alamatTempatTinggal: z.string().nonempty("Alamat tidak boleh kosong"),
+	jenisKelamin: jenisKelaminSchema,
+	jenjang: jenjangSchema,
+	kelompokId: z.string().nonempty("Kelompok tidak boleh kosong"),
+	keterangan: keteranganSchema,
 	nama: z
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(255, "Nama maksimal 255 karakter"),
-	jenis_kelamin: jenisKelaminSchema,
-	tempat_lahir: z
-		.string()
-		.nonempty("Tempat Lahir tidak boleh kosong")
-		.max(50, "Tempat Lahir maksimal 50 karakter"),
-	tanggal_lahir: z.iso.date(),
-	jenjang: jenjangSchema,
-	nomer_whatsapp: z
+	namaOrangTua: z.string().optional().nullable(),
+	nomerWhatsapp: z
 		.string()
 		.max(15, "Nomor WhatsApp maksimal 15 karakter")
 		.optional()
 		.nullable(),
-	pendidikan_terakhir: pendidikanTerakhirSchema,
-	nama_orang_tua: z.string().optional().nullable(),
-	nomer_whatsapp_orang_tua: z.string().optional().nullable(),
+	nomerWhatsappOrangTua: z.string().optional().nullable(),
+	pendidikanTerakhir: pendidikanTerakhirSchema,
 	sambung: sambungSchema,
-	alamat_tempat_tinggal: z.string().nonempty("Alamat tidak boleh kosong"),
-	keterangan: keteranganSchema,
-	alamat_asal: z.string().optional().nullable(),
-	kelompok_id: z.string().nonempty("Kelompok tidak boleh kosong"),
+	tanggalLahir: z.iso.date(),
+	tempatLahir: z
+		.string()
+		.nonempty("Tempat Lahir tidak boleh kosong")
+		.max(50, "Tempat Lahir maksimal 50 karakter"),
 });
 
 export const generusUpdateSchema = generusCreateSchema.extend({
-	id: z.uuid().nonempty("ID tidak boleh kosong"),
-});
-
-export const generusDeleteSchema = generusUpdateSchema.pick({
-	id: true,
+	id: z.string().nonempty("ID tidak boleh kosong"),
 });
 
 export const generusFilter = filterBase.extend({
-	jenis_kelamin: jenisKelaminSchema.optional(),
-	jenjang: jenjangSchema.optional(),
-	pendidikan_terakhir: pendidikanTerakhirSchema.optional(),
-	sambung: sambungSchema.optional(),
-	keterangan: keteranganSchema.optional(),
-	kelompok_id: z.string().optional(),
+	jenisKelamin: z.union([jenisKelaminSchema, z.literal(""), z.undefined()]),
+	jenjang: z.union([jenjangSchema, z.literal(""), z.undefined()]),
+	kelompokId: z.string().optional(),
+	keterangan: z.union([keteranganSchema, z.literal(""), z.undefined()]),
+	pendidikanTerakhir: z.union([
+		pendidikanTerakhirSchema,
+		z.literal(""),
+		z.undefined(),
+	]),
+	sambung: z.union([sambungSchema, z.literal(""), z.undefined()]),
 });
 
 export const defaultGenerus: GenerusInsert = {
-	nama: "",
-	jenis_kelamin: "Laki-laki",
-	tempat_lahir: "",
-	tanggal_lahir: new Date().toDateString(),
-	jenjang: "Paud",
-	nomer_whatsapp: "",
-	pendidikan_terakhir: "PAUD",
-	nama_orang_tua: "",
-	nomer_whatsapp_orang_tua: "",
-	sambung: "Tidak Aktif",
-	alamat_tempat_tinggal: "",
-	keterangan: "Pendatang",
-	alamat_asal: "",
-	kelompok_id: "",
-};
-
-export const defaultGenerusUpdate: z.infer<typeof generusUpdateSchema> = {
+	alamatAsal: "",
+	alamatTempatTinggal: "",
 	id: "",
-	...defaultGenerus,
+	jenisKelamin: "Laki-laki",
+	jenjang: "Paud",
+	kelompokId: "",
+	keterangan: "Pendatang",
+	nama: "",
+	namaOrangTua: "",
+	nomerWhatsapp: "",
+	nomerWhatsappOrangTua: "",
+	pendidikanTerakhir: "PAUD",
+	sambung: "Tidak Aktif",
+	tanggalLahir: new Date().toDateString(),
+	tempatLahir: "",
 };

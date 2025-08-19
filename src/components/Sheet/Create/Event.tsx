@@ -1,35 +1,33 @@
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
-import ThemedInput from "@/components/ui/Input";
+import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { eventCreateSchema, eventDefaultValue } from "@/types/event";
-import { useAlert } from "@/utils/useAlert";
 
 export default function SheetCreateEvent({
 	closeSheet,
 }: {
 	closeSheet: () => void;
 }) {
-	const { setAlert } = useAlert();
-	const queryClient = useQueryClient();
+	const utils = api.useUtils();
 
 	const { mutate } = api.event.createEvent.useMutation({
-		onError: (error) => {
-			setAlert(error.message, "error");
+		onError: ({ message }) => {
+			toast.error(message);
+		},
+
+		onSuccess: ({ message }) => {
+			toast.success(message);
+			utils.event.getAllPaginated.invalidate();
+			closeSheet();
 		},
 	});
 
 	const form = useForm({
 		defaultValues: eventDefaultValue,
 		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					setAlert("Data berhasil ditambahkan", "success");
-					queryClient.invalidateQueries({ queryKey: ["eventData"] });
-					closeSheet();
-				},
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: eventCreateSchema,
@@ -44,74 +42,74 @@ export default function SheetCreateEvent({
 				</h1>
 
 				<form
+					className="space-y-4"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="space-y-4"
 				>
 					<div className="space-y-4">
 						<form.Field name="title">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										htmlFor={field.name}
+										id={field.name}
 										label="Title"
-										variant="secondary"
-										htmlFor={field.name}
+										name={field.name}
+										onBlur={field.handleBlur}
+										onChange={(e) => field.handleChange(e.target.value)}
+										placeholder="John Doe"
+										required={true}
 										type="text"
-										name={field.name}
-										id={field.name}
 										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
 							)}
 						</form.Field>
 
-						<form.Field name="start_date">
+						<form.Field name="startDate">
 							{(field) => (
 								<>
-									<ThemedInput
+									<Input
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										htmlFor={field.name}
+										id={field.name}
 										label="Start Date"
-										variant="secondary"
-										htmlFor={field.name}
-										type="date"
 										name={field.name}
-										id={field.name}
-										value={field.state.value}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="datetime-local"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
 							)}
 						</form.Field>
 
-						<form.Field name="end_date">
+						<form.Field name="endDate">
 							{(field) => (
 								<>
-									<ThemedInput
-										label="End Date"
-										variant="secondary"
+									<Input
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="date"
-										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										label="End Date"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="datetime-local"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -120,19 +118,19 @@ export default function SheetCreateEvent({
 						<form.Field name="latitude">
 							{(field) => (
 								<>
-									<ThemedInput
-										label="Latitude"
-										variant="secondary"
+									<Input
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="number"
-										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										label="Latitude"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="number"
+										value={field.state.value || ""}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -142,19 +140,19 @@ export default function SheetCreateEvent({
 						<form.Field name="longitude">
 							{(field) => (
 								<>
-									<ThemedInput
-										label="Longitude"
-										variant="secondary"
+									<Input
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="number"
-										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										label="Longitude"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="number"
+										value={field.state.value || ""}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -164,18 +162,18 @@ export default function SheetCreateEvent({
 						<form.Field name="description">
 							{(field) => (
 								<>
-									<ThemedInput
-										label="Deskripsi"
-										variant="secondary"
+									<Input
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										label="Deskripsi"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value || ""}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -189,9 +187,9 @@ export default function SheetCreateEvent({
 						>
 							{([canSubmit, isSubmitting]) => (
 								<button
-									type="submit"
-									disabled={!canSubmit}
 									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+									disabled={!canSubmit}
+									type="submit"
 								>
 									{isSubmitting ? "Memproses..." : "Update"}
 								</button>
@@ -199,9 +197,9 @@ export default function SheetCreateEvent({
 						</form.Subscribe>
 
 						<button
-							type="button"
-							onClick={closeSheet}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+							onClick={closeSheet}
+							type="button"
 						>
 							Close
 						</button>

@@ -1,41 +1,58 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { createSelectSchema } from "drizzle-zod";
 import z from "zod";
-import type { user } from "../server/db/schema";
+import { role, type user } from "../server/db/schema";
+import { filterBase } from ".";
 
 export type UserSelect = InferSelectModel<typeof user>;
 export type UserInsert = InferInsertModel<typeof user>;
 
+export const roleSchema = createSelectSchema(role);
+export type RoleType = z.infer<typeof roleSchema>;
+
 export const userCreateSchema = z.object({
-	username: z
+	email: z
+		.email()
+		.nonempty("Email tidak boleh kosong")
+		.max(50, "Email maksimal 50 karakter"),
+	name: z
 		.string()
-		.nonempty("Username tidak boleh kosong")
-		.max(50, "Username maksimal 50 karakter"),
+		.nonempty("Nama tidak boleh kosong")
+		.max(50, "Nama maksimal 50 karakter"),
 	password: z
 		.string()
 		.nonempty("Password tidak boleh kosong")
-		.max(128, "Password maksimal 128 karakter"),
-	role: z.enum(["Super Admin", "Admin", "User"], {
-		error: "Role tidak boleh kosong",
-	}),
+		.max(50, "Password maksimal 50 karakter"),
 });
 
-export const userUpdateSchema = userCreateSchema.extend({
-	id: z.uuid().nonempty("ID tidak boleh kosong"),
+export const userUpdateSchema = userCreateSchema
+	.extend({
+		id: z.string().nonempty("ID tidak boleh kosong"),
+	})
+	.omit({ password: true });
+
+export const userUpdatePasswordSchema = z.object({
+	confirmPassword: z
+		.string()
+		.nonempty("Konfirmasi password tidak boleh kosong")
+		.max(50, "Konfirmasi password maksimal 50 karakter"),
+	id: z.string().nonempty("ID tidak boleh kosong"),
+	password: z
+		.string()
+		.nonempty("Password tidak boleh kosong")
+		.max(50, "Password maksimal 50 karakter"),
 });
 
-export const userDeleteSchema = userUpdateSchema.pick({
-	id: true,
-});
-
-export const defaultValueUser: UserInsert = {
-	username: "",
+export const defaultValueUser = {
+	email: "",
+	name: "",
 	password: "",
-	role: "User",
 };
 
-export const userFilter = z.object({
-	q: z.string().optional(),
-	page: z.number().optional(),
-	limit: z.number().optional(),
-	role: z.enum(["Super Admin", "Admin", "User"]).optional(),
-});
+export const defaultValueUserUpdatePassword = {
+	confirmPassword: "",
+	id: "",
+	password: "",
+};
+
+export const userFilter = filterBase;

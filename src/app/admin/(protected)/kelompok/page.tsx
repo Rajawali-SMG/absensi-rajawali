@@ -1,136 +1,196 @@
 "use client";
 
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import CustomSelect from "@/components/CustomSelect";
+import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
-import Skeleton from "@/components/Skeleton";
+import SheetCreateKelompok from "@/components/Sheet/Create/Kelompok";
+import SheetUpdateKelompok from "@/components/Sheet/Update/Kelompok";
+import SheetFilter from "@/components/SheetFilter";
 import Button from "@/components/ui/Button";
-import Select from "@/components/ui/Select";
+import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { KelompokSelect } from "@/types/kelompok";
-import { useAlert } from "@/utils/useAlert";
 
 export default function KelompokPage() {
+	const [desaParam, setDesaParam] = useState("");
+	const [sheetFilter, setSheetFilter] = useState(false);
 	const searchParams = useSearchParams();
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 9,
+		pageSize: 10,
 	});
-
+	const [dialog, setDialog] = useState(false);
+	const [sheetCreate, setSheetCreate] = useState(false);
+	const [sheetUpdate, setSheetUpdate] = useState(false);
+	const [selectedData, setSelectedData] = useState<KelompokSelect | null>(null);
+	const [deleteId, setDeleteId] = useState("");
 	const searchQuery = searchParams.get("q") || "";
 
-	const { data, isPending } = api.kelompok.getAllPaginated.useQuery({
-		q: searchQuery,
+	const {
+		data: kelompokData,
+		isPending,
+		isError,
+		error,
+	} = api.kelompok.getAllPaginated.useQuery({
+		desaId: desaParam,
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
+		q: searchQuery,
 	});
-	const { setAlert } = useAlert();
-
-	const columnHelper = createColumnHelper<KelompokSelect>();
-
-	const columns = [
-		columnHelper.accessor("id", { header: "ID" }),
-		columnHelper.accessor("nama", { header: "Nama" }),
-	];
-
-	const table = useReactTable({
-		data: data?.data?.items || [],
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		manualPagination: true,
-		rowCount: data?.data?.meta?.total || 0,
-		onPaginationChange: setPagination,
-		state: {
-			pagination,
+	const mutation = api.kelompok.deleteKelompok.useMutation({
+		onError: ({ message }) => {
+			toast.error(message);
 		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
 	});
+	const utils = api.useUtils();
+	const handleDeleteConfirm = () => {
+		mutation.mutate(
+			{ id: deleteId },
+			{
+				onSuccess: (data) => {
+					utils.kelompok.getAllPaginated.invalidate();
+					toast.success(data.message);
+				},
+			},
+		);
+		setDialog(false);
+		setDeleteId("");
+	};
+
+	const handleDelete = (row: KelompokSelect) => {
+		setDeleteId(row.id);
+		setDialog(true);
+	};
+
+	const handleEdit = (row: KelompokSelect) => {
+		setSelectedData(row);
+		setSheetUpdate(true);
+	};
+
+	const columns: ColumnDef<KelompokSelect>[] = [
+		{
+			accessorKey: "id",
+		},
+		{
+			accessorKey: "nama",
+		},
+		{
+			cell: (props) => {
+				const row = props.row.original;
+				return (
+					<div className="flex space-x-2">
+						<button onClick={() => handleEdit(row)} type="button">
+							<Icon
+								className="text-blue-500"
+								fontSize={20}
+								icon="line-md:edit"
+							/>
+						</button>
+						<button onClick={() => handleDelete(row)} type="button">
+							<Icon
+								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
+							/>
+						</button>
+					</div>
+				);
+			},
+			header: "Aksi",
+			id: "aksi",
+		},
+	];
+	const {
+		data: desaData,
+		isError: isDesaError,
+		error: desaError,
+	} = api.desa.getAll.useQuery();
+
+	const desaOptions =
+		desaData?.data.map((item) => ({
+			label: item.nama,
+			value: item.id,
+		})) || [];
+
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
+
+	useEffect(() => {
+		if (isDesaError) {
+			toast.error(desaError.message);
+		}
+	}, [isDesaError, desaError]);
 
 	return (
 		<>
+			{dialog && (
+				<Dialog
+					cancel="Batal"
+					confirm="Hapus"
+					description="Tindakan ini tidak dapat dibatalkan."
+					handleCancel={() => setDialog(false)}
+					handleConfirm={handleDeleteConfirm}
+					title="Apakah Anda yakin ingin menghapus data ini?"
+				/>
+			)}
+			{sheetCreate && (
+				<SheetCreateKelompok closeSheet={() => setSheetCreate(false)} />
+			)}
+			{sheetUpdate && selectedData && (
+				<SheetUpdateKelompok
+					closeSheet={() => setSheetUpdate(false)}
+					selectedData={selectedData}
+				/>
+			)}
+			{sheetFilter && (
+				<SheetFilter
+					closeSheet={() => setSheetFilter(false)}
+					resetFilter={() => {
+						setDesaParam("");
+						setSheetFilter(false);
+					}}
+					submitFilter={() => setSheetFilter(false)}
+				>
+					<CustomSelect
+						label="Desa"
+						name="desa_id"
+						onChange={(e) => setDesaParam(e.target.value)}
+						options={desaOptions}
+						placeHolderEnabled={true}
+						placeholder="Pilih Desa"
+						value={desaParam}
+					/>
+				</SheetFilter>
+			)}
 			<div className="flex justify-between mb-4">
 				<SearchBar
-					placeholder="Cari kelompok..."
 					className="w-full max-w-lg"
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
+					placeholder="Cari kelompok..."
 				/>
+				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
+				<Button onClick={() => setSheetCreate(true)} type="button">
+					Tambah Kelompok
+				</Button>
 			</div>
-			<table className="w-full text-left text-sm text-gray-500">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
-									{flexRender(
-										header.column.columnDef.header,
-										header.getContext(),
-									)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{isPending
-						? Skeleton(table)
-						: table.getRowModel().rows.map((row) => (
-								<tr key={row.id} className="border-b">
-									{row.getVisibleCells().map((cell) => (
-										<td key={cell.id} className="px-6 py-4">
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</td>
-									))}
-								</tr>
-							))}
-				</tbody>
-				<tfoot>
-					<tr>
-						<td>
-							<Button
-								type="button"
-								onClick={() => table.previousPage()}
-								disabled={!table.getCanPreviousPage()}
-							>
-								Previous
-							</Button>
-							<Button
-								type="button"
-								onClick={() => table.nextPage()}
-								disabled={!table.getCanNextPage()}
-							>
-								Next
-							</Button>
-							<Select
-								name="pageSize"
-								options={[
-									{ value: 9, label: "9" },
-									{ value: 19, label: "19" },
-									{ value: 20, label: "20" },
-									{ value: 30, label: "30" },
-								]}
-								placeholder="Select Page Size"
-								value={table.getState().pagination.pageSize}
-								onChange={(e) => table.setPageSize(Number(e.target.value))}
-							/>
-							<p>Total Page: {table.getPageCount()}</p>
-							<p>Total Row: {table.getRowCount()}</p>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
+			<Table
+				columns={columns}
+				data={kelompokData?.data.items || []}
+				isPending={isPending}
+				onPaginationChange={setPagination}
+				pagination={pagination}
+				rowCount={kelompokData?.data.meta.total || 0}
+			/>
 		</>
 	);
 }

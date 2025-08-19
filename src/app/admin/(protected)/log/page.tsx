@@ -1,54 +1,50 @@
 "use client";
 
-import {
-	createColumnHelper,
-	useReactTable,
-	getCoreRowModel,
-	flexRender,
-	getFilteredRowModel,
-} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import SearchBar from "@/components/SearchBar";
+import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { LogSelect } from "@/types/log";
-import { useAlert } from "@/utils/useAlert";
 
 export default function LogPage() {
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 9,
+		pageSize: 10,
 	});
 	const searchQuery = useSearchParams().get("q") || "";
-	const { data } = api.log.getAllPaginated.useQuery({
-		q: searchQuery,
+	const { data, isPending, error, isError } = api.log.getAllPaginated.useQuery({
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
+		q: searchQuery,
 	});
-	const { setAlert } = useAlert();
 
-	const columnHelper = createColumnHelper<LogSelect>();
-
-	const columns = [
-		columnHelper.accessor("id", { header: "ID" }),
-		columnHelper.accessor("event", { header: "Event" }),
-		columnHelper.accessor("description", { header: "Description" }),
-		columnHelper.accessor("user_id", { header: "User ID" }),
+	const columns: ColumnDef<LogSelect>[] = [
+		{
+			accessorKey: "id",
+			header: "ID",
+		},
+		{
+			accessorKey: "event",
+			header: "Event",
+		},
+		{
+			accessorKey: "description",
+			header: "Description",
+		},
+		{
+			accessorKey: "userId",
+			header: "User ID",
+		},
 	];
 
-	const table = useReactTable({
-		data: data?.data?.items || [],
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		manualPagination: true,
-		rowCount: data?.data?.meta?.total || 0,
-		onPaginationChange: setPagination,
-		state: {
-			pagination,
-		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
-	});
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<>
@@ -57,36 +53,17 @@ export default function LogPage() {
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
-					placeholder="Search by Event or Description"
+					placeholder="Cari Event atau Deskripsi..."
 				/>
 			</div>
-			<table className="w-full text-left text-sm text-gray-500">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
-									{flexRender(
-										header.column.columnDef.header,
-										header.getContext(),
-									)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id} className="bg-white border-b">
-							{row.getVisibleCells().map((cell) => (
-								<td key={cell.id} className="px-6 py-4">
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
+			<Table
+				columns={columns}
+				data={data?.data.items || []}
+				isPending={isPending}
+				onPaginationChange={setPagination}
+				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
+			/>
 		</>
 	);
 }

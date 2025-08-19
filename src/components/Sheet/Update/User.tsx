@@ -1,12 +1,10 @@
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
-import { roleOptions } from "@/constants";
 import { api } from "@/trpc/react";
 import { type UserSelect, userUpdateSchema } from "@/types/user";
-import { useAlert } from "@/utils/useAlert";
+import Button from "../../ui/Button";
 
 export default function SheetUpdateUser({
 	closeSheet,
@@ -15,30 +13,27 @@ export default function SheetUpdateUser({
 	closeSheet: () => void;
 	selectedData: UserSelect;
 }) {
-	const { setAlert } = useAlert();
-	const queryClient = useQueryClient();
+	const utils = api.useUtils();
 
 	const { mutate } = api.user.updateUser.useMutation({
 		onError: (error) => {
-			setAlert(error.message, "error");
+			toast.error(error.message);
+		},
+		onSuccess: ({ message }) => {
+			toast.success(message);
+			utils.user.getAllPaginated.invalidate();
+			closeSheet();
 		},
 	});
 
 	const form = useForm({
 		defaultValues: {
+			email: selectedData.email,
 			id: selectedData.id,
-			username: selectedData.username,
-			password: "",
-			role: selectedData.role,
+			name: selectedData.name,
 		},
-		onSubmit: ({ value }) => {
-			mutate(value, {
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["userData"] });
-					setAlert(data.message, "success");
-					closeSheet();
-				},
-			});
+		onSubmit: async ({ value }) => {
+			mutate(value);
 			closeSheet();
 		},
 		validators: {
@@ -52,74 +47,55 @@ export default function SheetUpdateUser({
 				<h1 className="text-2xl font-bold mb-6 text-gray-800">Update User</h1>
 
 				<form
+					className="space-y-4"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="space-y-4"
 				>
 					<div className="space-y-4">
-						<form.Field name="username">
+						<form.Field name="name">
 							{(field) => (
 								<>
 									<Input
-										label="Username"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										htmlFor={field.name}
+										id={field.name}
+										label="Nama"
+										name={field.name}
+										onBlur={field.handleBlur}
+										onChange={(e) => field.handleChange(e.target.value)}
+										placeholder="John Doe"
+										required={true}
+										type="text"
+										value={field.state.value}
 										variant="secondary"
-										htmlFor={field.name}
-										type="text"
-										name={field.name}
-										id={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 									/>
 									<TextError field={field} />
 								</>
 							)}
 						</form.Field>
 
-						<form.Field name="password">
+						<form.Field name="email">
 							{(field) => (
 								<>
 									<Input
-										label="Password"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Email"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
+										placeholder="john.doe@example.com"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
-							)}
-						</form.Field>
-
-						<form.Field name="role">
-							{(field) => (
-								<div className="space-y-1">
-									<Select
-										name={field.name}
-										label="Role"
-										options={roleOptions}
-										placeholder="Pilih Role"
-										value={field.state.value}
-										onChange={(e) =>
-											field.handleChange(
-												e.target.value as typeof field.state.value,
-											)
-										}
-										required={true}
-									/>
-								</div>
 							)}
 						</form.Field>
 					</div>
@@ -129,20 +105,20 @@ export default function SheetUpdateUser({
 							selector={(state) => [state.canSubmit, state.isSubmitting]}
 						>
 							{([canSubmit, isSubmitting]) => (
-								<button
-									type="submit"
-									disabled={!canSubmit}
+								<Button
 									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+									disabled={!canSubmit}
+									type="submit"
 								>
 									{isSubmitting ? "Memproses..." : "Update"}
-								</button>
+								</Button>
 							)}
 						</form.Subscribe>
 
 						<button
-							type="button"
-							onClick={closeSheet}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+							onClick={closeSheet}
+							type="button"
 						>
 							Close
 						</button>

@@ -1,52 +1,45 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
+import ExportKegiatan from "@/components/ExportKegiatan";
 import SearchBar from "@/components/SearchBar";
 import SheetCreateEvent from "@/components/Sheet/Create/Event";
 import SheetUpdateEvent from "@/components/Sheet/Update/Event";
 import Button from "@/components/ui/Button";
+import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { EventSelect } from "@/types/event";
-import { useAlert } from "@/utils/useAlert";
 
 export default function KegiatanPage() {
-	const navigate = useRouter();
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 9,
+		pageSize: 10,
 	});
 	const searchQuery = useSearchParams().get("q") || "";
-	const { data } = api.event.getAllPaginated.useQuery({
-		q: searchQuery,
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-	});
+	const { data, isPending, error, isError } =
+		api.event.getAllPaginated.useQuery({
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+			q: searchQuery,
+		});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
 	const [selectedData, setSelectedData] = useState<EventSelect | null>(null);
 	const [dialog, setDialog] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	const queryClient = useQueryClient();
-	const { setAlert } = useAlert();
+	const utils = api.useUtils();
 
 	const mutation = api.event.deleteEvent.useMutation({
 		onError: (error) => {
-			setAlert(error.message || "Internal Server Error", "error");
+			toast.error(error.message);
 		},
 	});
-
-	const columnHelper = createColumnHelper<EventSelect>();
 
 	const handleEdit = (row: EventSelect) => {
 		setSelectedData(row);
@@ -58,8 +51,8 @@ export default function KegiatanPage() {
 			{ id: deleteId },
 			{
 				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["eventData"] });
-					setAlert("Data berhasil dihapus", "success");
+					utils.event.getAllPaginated.invalidate();
+					toast.success(data.message);
 				},
 			},
 		);
@@ -72,66 +65,80 @@ export default function KegiatanPage() {
 		setDialog(true);
 	};
 
-	const columns = [
-		columnHelper.accessor("id", { header: "ID" }),
-		columnHelper.accessor("title", { header: "Judul" }),
-		columnHelper.accessor("start_date", { header: "Tanggal Mulai" }),
-		columnHelper.accessor("end_date", { header: "Tanggal Selesai" }),
-		columnHelper.accessor("latitude", { header: "Latitude" }),
-		columnHelper.accessor("longitude", { header: "Longitude" }),
-		columnHelper.accessor("description", { header: "Deskripsi" }),
-		columnHelper.display({
-			id: "actions",
-			header: "Action",
+	const columns: ColumnDef<EventSelect>[] = [
+		{
+			accessorKey: "id",
+		},
+		{
+			accessorKey: "title",
+			header: "Judul",
+		},
+		{
+			accessorKey: "startDate",
+			header: "Tanggal Mulai",
+		},
+		{
+			accessorKey: "endDate",
+			header: "Tanggal Selesai",
+		},
+		{
+			accessorKey: "latitude",
+			header: "Latitude",
+		},
+		{
+			accessorKey: "longitude",
+			header: "Longitude",
+		},
+		{
+			accessorKey: "description",
+			header: "Deskripsi",
+		},
+		{
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
-						<button type="button" onClick={() => handleEdit(row)}>
+						<Link href={`/qr/${row.id}`} target="_blank">
+							<Icon className="text-blue-500" fontSize={20} icon="bx:qr" />
+						</Link>
+						<button onClick={() => handleEdit(row)} type="button">
 							<Icon
-								icon="line-md:edit"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="line-md:edit"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleDelete(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
-								fontSize={20}
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
-			enableHiding: true,
-		}),
+			header: "Aksi",
+			id: "aksi",
+		},
 	];
 
-	const table = useReactTable({
-		data: data?.data?.items || [],
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		manualPagination: true,
-		rowCount: data?.data?.meta?.total || 0,
-		onPaginationChange: setPagination,
-		state: {
-			pagination,
-		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
-	});
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<>
 			{dialog && (
 				<Dialog
-					cancel="Cancel"
-					confirm="Delete"
-					title="Are you sure you want to delete this data?"
+					cancel="Batal"
+					confirm="Hapus"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="This action cannot be undone."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
 			{sheetCreate && (
@@ -148,39 +155,21 @@ export default function KegiatanPage() {
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
-					placeholder="Search by Name"
+					placeholder="Cari Kegiatan..."
 				/>
-				<Button typeof="button" onClick={() => setSheetCreate(true)}>
-					Create Generus
+				<ExportKegiatan />
+				<Button onClick={() => setSheetCreate(true)} type="button">
+					Tambah Kegiatan
 				</Button>
 			</div>
-			<table className="w-full text-left text-sm text-gray-500">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
-									{flexRender(
-										header.column.columnDef.header,
-										header.getContext(),
-									)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id} className="bg-white border-b">
-							{row.getVisibleCells().map((cell) => (
-								<td key={cell.id} className="px-6 py-4">
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
+			<Table
+				columns={columns}
+				data={data?.data.items || []}
+				isPending={isPending}
+				onPaginationChange={setPagination}
+				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
+			/>
 		</>
 	);
 }

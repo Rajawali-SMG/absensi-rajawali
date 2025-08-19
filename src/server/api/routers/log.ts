@@ -1,35 +1,25 @@
-import { count, eq, ilike, or } from "drizzle-orm";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
+import { and, count, ilike } from "drizzle-orm";
 import {
-	logCreateSchema,
-	logDeleteSchema,
-	logFilter,
-	logUpdateSchema,
-} from "@/types/log";
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
+import { logFilter } from "@/types/log";
 import { log } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const logRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.log.findMany();
 
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data Log",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(logFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
@@ -37,7 +27,8 @@ export const logRouter = createTRPCRouter({
 			const data = await ctx.db.query.log.findMany({
 				limit,
 				offset: page * limit,
-				where: or(
+				orderBy: (log, { desc }) => [desc(log.createdAt)],
+				where: and(
 					input.q ? ilike(log.event, `%${input.q}%`) : undefined,
 					input.q ? ilike(log.description, `%${input.q}%`) : undefined,
 				),
@@ -48,38 +39,11 @@ export const logRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Log",
-				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				{ items: data, meta: { limit, page, total: totalCount, totalPages } },
 				null,
 			);
-		}),
-
-	createLog: publicProcedure
-		.input(logCreateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(log).values(input);
-
-			return formatResponse(true, "Berhasil menambahkan data Log", data, null);
-		}),
-
-	updateLog: publicProcedure
-		.input(logUpdateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db
-				.update(log)
-				.set(input)
-				.where(eq(log.id, input.id));
-
-			return formatResponse(true, "Berhasil mengubah data Log", data, null);
-		}),
-
-	deleteLog: publicProcedure
-		.input(logDeleteSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.delete(log).where(eq(log.id, input.id));
-
-			return formatResponse(true, "Berhasil menghapus data Log", data, null);
 		}),
 });

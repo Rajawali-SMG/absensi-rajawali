@@ -1,42 +1,85 @@
+import { TRPCError } from "@trpc/server";
 import { count, eq, ilike } from "drizzle-orm";
-import { formatResponse, formatResponseArray } from "@/helper/response.helper";
 import {
-	desaCreateSchema,
-	desaDeleteSchema,
-	desaFilter,
-	desaUpdateSchema,
-} from "@/types/desa";
-import { desa } from "../../db/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+	formatResponse,
+	formatResponseArray,
+	formatResponsePagination,
+} from "@/helper/response.helper";
+import { idBase } from "@/types";
+import { desaCreateSchema, desaFilter, desaUpdateSchema } from "@/types/desa";
+import { desa, kelompok, log } from "../../db/schema";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const desaRouter = createTRPCRouter({
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	createDesa: protectedProcedure
+		.input(desaCreateSchema)
+		.mutation(async ({ ctx, input }) => {
+			const existingDesa = await ctx.db.query.desa.findFirst({
+				where: eq(desa.nama, input.nama),
+			});
+			if (existingDesa) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Desa sudah ada",
+				});
+			}
+
+			const data = await ctx.db.insert(desa).values(input);
+
+			await ctx.db.insert(log).values({
+				description: `Menambahkan Data Desa: ${input.nama}`,
+				event: "Create",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(true, "Berhasil menambahkan data Desa", data, null);
+		}),
+
+	deleteDesa: protectedProcedure
+		.input(idBase)
+		.mutation(async ({ ctx, input }) => {
+			const relatedKelompok = await ctx.db.query.kelompok.findFirst({
+				where: eq(kelompok.desaId, input.id),
+			});
+
+			if (relatedKelompok) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Kelompok terkait ditemukan",
+				});
+			}
+
+			const data = await ctx.db.delete(desa).where(eq(desa.id, input.id));
+
+			await ctx.db.insert(log).values({
+				description: `Menghapus Data Desa: ${input.id}`,
+				event: "Delete",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(true, "Berhasil menghapus data Desa", data, null);
+		}),
+	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.desa.findMany();
 
 		return formatResponseArray(
 			true,
 			"Berhasil mendapatkan semua data Desa",
-			{
-				items: data,
-				meta: {
-					limit: data.length,
-					page: 1,
-					total: data.length,
-					totalPages: 1,
-				},
-			},
+			data,
 			null,
 		);
 	}),
 
-	getAllPaginated: publicProcedure
+	getAllPaginated: protectedProcedure
 		.input(desaFilter)
 		.query(async ({ ctx, input }) => {
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
+
 			const data = await ctx.db.query.desa.findMany({
 				limit,
 				offset: page * limit,
+				orderBy: (desa, { desc }) => [desc(desa.createdAt)],
 				where: ilike(desa.nama, `%${input.q}%`),
 			});
 
@@ -45,38 +88,63 @@ export const desaRouter = createTRPCRouter({
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
 
-			return formatResponseArray(
+			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Desa",
-				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				{
+					items: data,
+					meta: { limit, page, total: totalCount, totalPages },
+				},
 				null,
 			);
 		}),
 
-	createDesa: publicProcedure
-		.input(desaCreateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(desa).values(input);
+	getOneDesa: protectedProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const data = await ctx.db.query.desa.findFirst({
+			where: eq(desa.id, input.id),
+		});
 
-			return formatResponse(true, "Berhasil menambahkan data Desa", data, null);
-		}),
+		if (!data) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Data Desa tidak ditemukan",
+			});
+		}
 
-	updateDesa: publicProcedure
+		return formatResponse(true, "Berhasil mendapatkan data Desa", data, null);
+	}),
+
+	updateDesa: protectedProcedure
 		.input(desaUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			const existingDesa = await ctx.db.query.desa.findFirst({
+				where: eq(desa.nama, input.nama),
+			});
+			if (existingDesa) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Desa sudah ada",
+				});
+			}
+
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
+
 			const data = await ctx.db
 				.update(desa)
 				.set(input)
 				.where(eq(desa.id, input.id));
 
+			await ctx.db.insert(log).values({
+				description: `Mengubah Data Desa: ${input.nama}`,
+				event: "Update",
+				userId: ctx.session.user.email,
+			});
+
 			return formatResponse(true, "Berhasil mengubah data Desa", data, null);
-		}),
-
-	deleteDesa: publicProcedure
-		.input(desaDeleteSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.delete(desa).where(eq(desa.id, input.id));
-
-			return formatResponse(true, "Berhasil menghapus data Desa", data, null);
 		}),
 });

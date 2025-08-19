@@ -1,23 +1,19 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
+import ExportGenerus from "@/components/ExportGenerus";
 import SearchBar from "@/components/SearchBar";
 import SheetFilter from "@/components/SheetFilter";
-import Skeleton from "@/components/Skeleton";
+import UploadExcelDialog from "@/components/UploadGenerus";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
+import Table from "@/components/ui/Table";
 import {
 	jenisKelaminOptions,
 	jenjangOptions,
@@ -26,71 +22,57 @@ import {
 	sambungOptions,
 } from "@/constants/generus";
 import { api } from "@/trpc/react";
-import type { GenerusSelect } from "@/types/generus";
-import { useAlert } from "@/utils/useAlert";
+import type {
+	GenerusSelect,
+	JenisKelaminType,
+	JenjangType,
+	KeteranganType,
+	PendidikanTerakhirType,
+	SambungType,
+} from "@/types/generus";
 
 export default function GenerusPage() {
 	const searchQuery = useSearchParams().get("q") || "";
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 9,
+		pageSize: 10,
 	});
 	const navigate = useRouter();
 	const [dialog, setDialog] = useState(false);
 	const [sheetFilter, setSheetFilter] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
-	const queryClient = useQueryClient();
-	// const [jenisKelaminParam, setJenisKelaminParam] = useQueryState(
-	// 	"jenis_kelamin",
-	// 	{
-	// 		defaultValue: "",
-	// 	},
-	// );
-	// const [jenjangParam, setJenjangParam] = useQueryState("jenjang", {
-	// 	defaultValue: "",
-	// });
-	// const [pendidikanTerakhirParam, setPendidikanTerakhirParam] = useQueryState(
-	// 	"pendidikan_terakhir",
-	// 	{
-	// 		defaultValue: "",
-	// 	},
-	// );
-	// const [sambungParam, setSambungParam] = useQueryState("sambung", {
-	// 	defaultValue: "",
-	// });
-	// const [keteranganParam, setKeteranganParam] = useQueryState("keterangan", {
-	// 	defaultValue: "",
-	// });
-	const { data, isPending } = api.generus.getAllPaginated.useQuery({
-		q: searchQuery,
-		limit: pagination.pageSize,
-		page: pagination.pageIndex,
-		// jenis_kelamin: jenisKelaminParam,
-		// jenjang: jenjangParam,
-		// pendidikan_terakhir: pendidikanTerakhirParam,
-		// sambung: sambungParam,
-		// keterangan: keteranganParam,
-	});
-	const { setAlert } = useAlert();
+	const [jenisKelaminParam, setJenisKelaminParam] =
+		useState<JenisKelaminType>();
+	const [jenjangParam, setJenjangParam] = useState<JenjangType>();
+	const [pendidikanTerakhirParam, setPendidikanTerakhirParam] =
+		useState<PendidikanTerakhirType>();
+	const [sambungParam, setSambungParam] = useState<SambungType>();
+	const [keteranganParam, setKeteranganParam] = useState<KeteranganType>();
+	const { data, isPending, isError, error } =
+		api.generus.getAllPaginated.useQuery({
+			jenisKelamin: jenisKelaminParam,
+			jenjang: jenjangParam,
+			keterangan: keteranganParam,
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+			pendidikanTerakhir: pendidikanTerakhirParam,
+			q: searchQuery,
+			sambung: sambungParam,
+		});
+	const utils = api.useUtils();
 
 	const mutation = api.generus.deleteGenerus.useMutation({
-		onError: (error) => {
-			setAlert(error.message || "Internal Server Error", "error");
+		onError: ({ message }) => {
+			toast.error(message);
+		},
+		onSuccess: ({ message }) => {
+			utils.generus.getAllPaginated.invalidate();
+			toast.success(message);
 		},
 	});
 
-	const columnHelper = createColumnHelper<GenerusSelect>();
-
 	const handleDeleteConfirm = () => {
-		mutation.mutate(
-			{ id: deleteId },
-			{
-				onSuccess: (data) => {
-					queryClient.invalidateQueries({ queryKey: ["generusData"] });
-					setAlert(data.message, "success");
-				},
-			},
-		);
+		mutation.mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};
@@ -100,215 +82,162 @@ export default function GenerusPage() {
 		setDialog(true);
 	};
 
-	const columns = [
-		columnHelper.accessor("id", { header: "ID" }),
-		columnHelper.accessor("nama", { header: "Nama" }),
-		columnHelper.accessor("jenis_kelamin", { header: "Jenis Kelamin" }),
-		columnHelper.accessor("jenjang", { header: "Jenjang" }),
-		columnHelper.accessor("alamat_tempat_tinggal", {
+	const columns: ColumnDef<GenerusSelect>[] = [
+		{
+			accessorKey: "nama",
+		},
+		{
+			accessorKey: "jenisKelamin",
+			header: "Jenis Kelamin",
+		},
+		{
+			accessorKey: "jenjang",
+		},
+		{
+			accessorKey: "alamatTempatTinggal",
 			header: "Alamat Tempat Tinggal",
-		}),
-		columnHelper.accessor("sambung", { header: "Sambung" }),
-		columnHelper.display({
-			id: "actions",
-			header: "Action",
+		},
+		{
+			accessorKey: "keterangan",
+		},
+		{
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
 						<button
-							type="button"
 							onClick={() => {
 								return navigate.push(`/admin/generus/update/${row.id}`);
 							}}
+							type="button"
 						>
 							<Icon
-								icon="line-md:edit"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="line-md:edit"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleDelete(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
-								fontSize={20}
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
-			enableHiding: true,
-		}),
+			header: "Aksi",
+			id: "aksi",
+		},
 	];
 
-	const table = useReactTable({
-		data: data?.data?.items || [],
-		columns,
-		getCoreRowModel: getCoreRowModel(),
-		manualPagination: true,
-		rowCount: data?.data?.meta?.total || 0,
-		onPaginationChange: setPagination,
-		state: {
-			pagination,
-		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
-	});
-
-	// useEffect(() => {
-	// 	if (isError) {
-	// 		setAlert(
-	// 			error.response?.data.message || "Internal Server Error",
-	// 			"error",
-	// 		);
-	// 	}
-	// }, [isError, error]);
-
-	// const handleFilter = (value) => {
-	// 	setJenisKelaminParam(value.value);
-	// 	setJenjangParam(value.value);
-	// 	setPendidikanTerakhirParam(value.value);
-	// 	setSambungParam(value.value);
-	// 	setKeteranganParam(value.value);
-	// 	setSheetFilter(false);
-	// };
+	useEffect(() => {
+		if (isError) {
+			toast.error(error.message);
+		}
+	}, [isError, error]);
 
 	return (
 		<>
 			{dialog && (
 				<Dialog
-					cancel="Cancel"
-					confirm="Delete"
-					title="Are you sure you want to delete this data?"
+					cancel="Batal"
+					confirm="Hapus"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="This action cannot be undone."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
-			{/* {sheetFilter && (
+			{sheetFilter && (
 				<SheetFilter
 					closeSheet={() => setSheetFilter(false)}
+					resetFilter={() => {
+						setJenisKelaminParam(undefined);
+						setJenjangParam(undefined);
+						setPendidikanTerakhirParam(undefined);
+						setSambungParam(undefined);
+						setKeteranganParam(undefined);
+						setSheetFilter(false);
+					}}
 					submitFilter={() => setSheetFilter(false)}
-				> */}
-			{/* <Select
-						name="jenis_kelamin"
+				>
+					<Select
 						label="Jenis Kelamin"
+						name="jenis_kelamin"
+						onChange={(e) =>
+							setJenisKelaminParam(e.target.value as JenisKelaminType)
+						}
 						options={jenisKelaminOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Jenis Kelamin"
 						value={jenisKelaminParam}
-						onChange={(e) => setJenisKelaminParam(e.target.value)}
 					/>
 					<Select
-						name="jenjang"
 						label="Jenjang"
+						name="jenjang"
+						onChange={(e) => setJenjangParam(e.target.value as JenjangType)}
 						options={jenjangOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Jenjang"
 						value={jenjangParam}
-						onChange={(e) => setJenjangParam(e.target.value)}
 					/>
 					<Select
-						name="pendidikan_terakhir"
 						label="Pendidikan Terakhir"
+						name="pendidikan_terakhir"
+						onChange={(e) =>
+							setPendidikanTerakhirParam(
+								e.target.value as PendidikanTerakhirType,
+							)
+						}
 						options={pendidikanTerakhirOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Pendidikan Terakhir"
 						value={pendidikanTerakhirParam}
-						onChange={(e) => setPendidikanTerakhirParam(e.target.value)}
 					/>
 					<Select
-						name="sambung"
 						label="Sambung"
+						name="sambung"
+						onChange={(e) => setSambungParam(e.target.value as SambungType)}
 						options={sambungOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Sambung"
 						value={sambungParam}
-						onChange={(e) => setSambungParam(e.target.value)}
 					/>
 					<Select
-						name="keterangan"
 						label="Keterangan"
+						name="keterangan"
+						onChange={(e) =>
+							setKeteranganParam(e.target.value as KeteranganType)
+						}
 						options={keteranganOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Keterangan"
 						value={keteranganParam}
-						onChange={(e) => setKeteranganParam(e.target.value)}
-					/> */}
-			{/* </SheetFilter>
-			)} */}
+					/>
+				</SheetFilter>
+			)}
 			<div className="flex justify-between">
 				<SearchBar
-					placeholder="Search by Name"
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
+					placeholder="Cari Nama Generus"
 				/>
+				<UploadExcelDialog />
+				<ExportGenerus />
 				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
-				<Link href="/admin/generus/create">Create Generus</Link>
+				<Link href="/admin/generus/create">Tambah Generus</Link>
 			</div>
-			<table className="w-full text-left text-sm text-gray-500">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
-									{flexRender(
-										header.column.columnDef.header,
-										header.getContext(),
-									)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{isPending
-						? Skeleton(table)
-						: table.getRowModel().rows.map((row) => (
-								<tr key={row.id} className="bg-white border-b">
-									{row.getVisibleCells().map((cell) => (
-										<td key={cell.id} className="px-6 py-4">
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</td>
-									))}
-								</tr>
-							))}
-				</tbody>
-				<tfoot>
-					<tr>
-						<td>
-							<Button
-								type="button"
-								onClick={() => table.previousPage()}
-								disabled={!table.getCanPreviousPage()}
-							>
-								Previous
-							</Button>
-							<Button
-								type="button"
-								onClick={() => table.nextPage()}
-								disabled={!table.getCanNextPage()}
-							>
-								Next
-							</Button>
-							<Select
-								name="pageSize"
-								options={[
-									{ value: 9, label: "9" },
-									{ value: 19, label: "19" },
-									{ value: 20, label: "20" },
-									{ value: 30, label: "30" },
-								]}
-								placeholder="Select Page Size"
-								value={table.getState().pagination.pageSize}
-								onChange={(e) => table.setPageSize(Number(e.target.value))}
-							/>
-							<p>Total Page: {table.getPageCount()}</p>
-							<p>Total Row: {table.getRowCount()}</p>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
+			<Table
+				columns={columns}
+				data={data?.data.items || []}
+				isPending={isPending}
+				onPaginationChange={setPagination}
+				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
+			/>
 		</>
 	);
 }

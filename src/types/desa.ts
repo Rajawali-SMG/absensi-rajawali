@@ -1,7 +1,8 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { v4 as uuid } from "uuid";
 import z from "zod";
 import type { desa } from "../server/db/schema";
-import { filterBase } from "./api";
+import { filterBase } from ".";
 
 export type DesaSelect = InferSelectModel<typeof desa>;
 export type DesaInsert = InferInsertModel<typeof desa>;
@@ -14,11 +15,12 @@ export const desaCreateSchema = z.object({
 });
 
 export const desaUpdateSchema = desaCreateSchema.extend({
-	id: z.int().min(1, "ID tidak boleh kosong").max(32767, "ID maksimal 32767"),
-});
-
-export const desaDeleteSchema = desaUpdateSchema.pick({
-	id: true,
+	id: z.string().nonempty("ID tidak boleh kosong"),
 });
 
 export const desaFilter = filterBase;
+
+export const desaDefaultValue: DesaInsert = {
+	id: uuid(),
+	nama: "",
+};

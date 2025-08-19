@@ -59,8 +59,8 @@ export default function Input({
 	return (
 		<>
 			<label
-				htmlFor={htmlFor}
 				className={`block mb-2 text-sm font-medium ${getLabelClasses(variant)}`}
+				htmlFor={htmlFor}
 			>
 				{label}
 			</label>
@@ -68,19 +68,19 @@ export default function Input({
 				className={`flex space-x-2 border sm:text-sm rounded-lg w-full p-2.5 ring-offset-2 focus-within:ring-2 transition-colors ${getVariantClasses(variant)} ${className}`}
 			>
 				<input
-					type={type === "password" && showPassword ? "text" : type}
 					className="focus:outline-none w-full bg-transparent"
+					type={type === "password" && showPassword ? "text" : type}
 					{...props}
 				/>
 				{type === "password" && (
 					<button
-						type="button"
-						onClick={() => setShowPassword(!showPassword)}
 						className="focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-md p-1"
+						onClick={() => setShowPassword(!showPassword)}
+						type="button"
 					>
 						<Icon
-							icon={showPassword ? "mdi:eye" : "mdi:eye-off"}
 							color={getIconColor(variant)}
+							icon={showPassword ? "mdi:eye" : "mdi:eye-off"}
 							width={20}
 						/>
 					</button>
