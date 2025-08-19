@@ -46,9 +46,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html className={`${geist.variable}`} lang="en">
-			<head>
+			{/* <head>
 				<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
-			</head>
+			</head> */}
 			<body>
 				<TRPCReactProvider>
 					<Toaster />

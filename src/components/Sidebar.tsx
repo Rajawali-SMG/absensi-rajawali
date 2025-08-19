@@ -22,7 +22,7 @@ export default function Sidebar() {
 				},
 				onSuccess(context) {
 					toast.success(context.data.message || "Berhasil logout");
-					navigate.push("/admin/login");
+					navigate.push("/login");
 				},
 			},
 		});

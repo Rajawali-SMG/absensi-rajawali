@@ -17,10 +17,9 @@ export default function LoginPage() {
 			onError: ({ error }) => {
 				toast.error(error.message);
 			},
-			onSuccess: ({ response }) => {
-				console.log(response);
+			onSuccess: () => {
 				navigate.push("/admin/dashboard");
-				toast.success(response.statusText || "Berhasil login");
+				toast.success("Berhasil login");
 			},
 		});
 	}
