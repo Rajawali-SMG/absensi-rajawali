@@ -116,7 +116,6 @@ export default function SheetCreateKelompok({
 												(option) => option.value === String(field.state.value),
 											) || null
 										}
-										isClearable
 									/>
 
 									<TextError field={field} />

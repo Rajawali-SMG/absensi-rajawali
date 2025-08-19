@@ -74,11 +74,11 @@ export default function KegiatanPage() {
 			header: "Judul",
 		},
 		{
-			accessorKey: "start_date",
+			accessorKey: "startDate",
 			header: "Tanggal Mulai",
 		},
 		{
-			accessorKey: "end_date",
+			accessorKey: "endDate",
 			header: "Tanggal Selesai",
 		},
 		{

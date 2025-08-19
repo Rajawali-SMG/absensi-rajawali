@@ -84,6 +84,17 @@ export const eventRouter = createTRPCRouter({
 	createEvent: protectedProcedure
 		.input(eventCreateSchema)
 		.mutation(async ({ ctx, input }) => {
+			const existingEvent = await ctx.db.query.event.findFirst({
+				where: eq(event.title, input.title),
+			});
+
+			if (existingEvent) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Judul sudah didaftarkan, silahkan gunakan judul lain",
+				});
+			}
+
 			const data = await ctx.db.insert(event).values(input);
 
 			return formatResponse(

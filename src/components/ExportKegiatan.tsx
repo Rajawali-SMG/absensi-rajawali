@@ -2,53 +2,48 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import Button from "@/components/ui/Button";
-import { jenisKelaminOptions } from "@/constants/generus";
 import { api } from "@/trpc/react";
-import type { JenisKelaminType } from "@/types/generus";
 import CustomSelect from "./CustomSelect";
 
 export default function ExportKegiatan() {
-	const [jenisKelaminParam, setJenisKelaminParam] =
-		useState<JenisKelaminType>();
 	const [kelompokIdParam, setKelompokIdParam] = useState("");
+	const [eventIdParam, setEventIdParam] = useState("");
 	const {
 		data: kelompokData,
 		isError: kelompokIsError,
 		error: kelompokError,
 		isLoading: kelompokIsLoading,
 	} = api.kelompok.getAll.useQuery();
-	// const { refetch } = api.event.getAll.useQuery(
-	// 	{
-	// 		kelompokId: kelompokIdParam
-	// 	},
-	// 	{
-	// 		enabled: false,
-	// 	},
-	// );
 
-	const test = api.presence.exportPresence.useQuery(
+	const { refetch } = api.presence.exportPresence.useQuery(
 		{
-			eventId: "17d456ed-38ed-4242-a7d5-ee333d73dbfc",
+			eventId: eventIdParam,
+			kelompokId: kelompokIdParam,
 		},
 		{
 			enabled: false,
 		},
 	);
+	const { data: eventData } = api.event.getAll.useQuery();
 	const handleExport = async () => {
 		setOpenModal(false);
-		// const { data: generusData, isError, error } = await refetch();
+		const { data: presenceData, isError, error } = await refetch();
 
-		// if (isError) {
-		// 	toast.error(error.message);
-		// 	return;
-		// }
+		if (isError) {
+			toast.error(error.message);
+			return;
+		}
 
-		const worksheet = XLSX.utils.json_to_sheet(test?.data?.data || []);
+		const worksheet = XLSX.utils.json_to_sheet(presenceData?.data || []);
 		const workbook = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(workbook, worksheet, "Generus");
-		XLSX.writeFile(workbook, "generus.xlsx");
-		toast.success("Data Generus berhasil diexport");
-		setJenisKelaminParam(undefined);
+		XLSX.utils.book_append_sheet(workbook, worksheet, "Presence");
+		XLSX.writeFile(
+			workbook,
+			`${eventData?.data.find((item) => item.id === eventIdParam)?.title}.xlsx`,
+		);
+		toast.success("Data Presence berhasil diexport");
+		setKelompokIdParam("");
+		setEventIdParam("");
 	};
 	const [openModal, setOpenModal] = useState(false);
 	const [isClient, setIsClient] = useState(false);
@@ -64,7 +59,12 @@ export default function ExportKegiatan() {
 		kelompokData?.data.map((item) => ({
 			value: item.id,
 			label: item.nama,
-			isDisabled: false,
+		})) || [];
+
+	const eventOptions =
+		eventData?.data.map((item) => ({
+			value: item.id,
+			label: item.title,
 		})) || [];
 
 	if (!isClient) {
@@ -97,72 +97,18 @@ export default function ExportKegiatan() {
 									(option) => option.value === kelompokIdParam,
 								) || null
 							}
-							isClearable
 						/>
 						<CustomSelect
-							label="Jenis Kelamin"
-							options={jenisKelaminOptions}
-							placeholder="Pilih Jenis Kelamin"
-							onChange={(e) =>
-								setJenisKelaminParam(e?.value as JenisKelaminType)
-							}
+							label="Event"
+							isLoading={kelompokIsLoading}
+							options={eventOptions}
+							placeholder="Pilih Event"
+							onChange={(e) => setEventIdParam(e?.value || "")}
 							value={
-								jenisKelaminOptions.find(
-									(option) => option.value === jenisKelaminParam,
-								) || null
+								eventOptions.find((option) => option.value === eventIdParam) ||
+								null
 							}
-							isClearable
 						/>
-						{/* <CustomSelect
-							label="Jenjang"
-							options={jenjangOptions}
-							placeholder="Pilih Jenjang"
-							onChange={(e) => setJenjangParam(e?.value as JenjangType)}
-							value={
-								jenjangOptions.find(
-									(option) => option.value === jenjangParam,
-								) || null
-							}
-							isClearable
-						/>
-						<CustomSelect
-							label="Pendidikan Terakhir"
-							options={pendidikanTerakhirOptions}
-							placeholder="Pilih Pendidikan Terakhir"
-							onChange={(e) =>
-								setPendidikanTerakhirParam(e?.value as PendidikanTerakhirType)
-							}
-							value={
-								pendidikanTerakhirOptions.find(
-									(option) => option.value === pendidikanTerakhirParam,
-								) || null
-							}
-							isClearable
-						/>
-						<CustomSelect
-							label="Sambung"
-							options={sambungOptions}
-							placeholder="Pilih Sambung"
-							onChange={(e) => setSambungParam(e?.value as SambungType)}
-							value={
-								sambungOptions.find(
-									(option) => option.value === sambungParam,
-								) || null
-							}
-							isClearable
-						/>
-						<CustomSelect
-							label="Keterangan"
-							options={keteranganOptions}
-							placeholder="Pilih Keterangan"
-							onChange={(e) => setKeteranganParam(e?.value as KeteranganType)}
-							value={
-								keteranganOptions.find(
-									(option) => option.value === keteranganParam,
-								) || null
-							}
-							isClearable
-						/> */}
 					</div>
 					<div className="flex justify-end gap-x-2">
 						<Button onClick={() => setOpenModal(false)}>Close</Button>

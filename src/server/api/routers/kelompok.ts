@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq, ilike } from "drizzle-orm";
+import { and, count, eq, ilike, or } from "drizzle-orm";
 import {
 	formatResponse,
 	formatResponseArray,
@@ -79,13 +79,14 @@ export const kelompokRouter = createTRPCRouter({
 		.input(kelompokCreateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const existingKelompok = await ctx.db.query.kelompok.findFirst({
-				where: and(eq(kelompok.code, input.code)),
+				where: or(eq(kelompok.code, input.code), eq(kelompok.nama, input.nama)),
 			});
 
 			if (existingKelompok) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Code sudah didaftarkan, silahkan gunakan kode lain",
+					message:
+						"Code atau nama sudah didaftarkan, silahkan gunakan kode lain",
 				});
 			}
 			const data = await ctx.db.insert(kelompok).values(input);

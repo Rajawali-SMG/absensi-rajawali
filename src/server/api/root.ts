@@ -4,7 +4,6 @@ import { eventRouter } from "./routers/event";
 import { generusRouter } from "./routers/generus";
 import { kelompokRouter } from "./routers/kelompok";
 import { logRouter } from "./routers/log";
-import { loginRouter } from "./routers/login";
 import { presenceRouter } from "./routers/presence";
 import { userRouter } from "./routers/user";
 
@@ -14,7 +13,6 @@ import { userRouter } from "./routers/user";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-	login: loginRouter,
 	kelompok: kelompokRouter,
 	desa: desaRouter,
 	generus: generusRouter,

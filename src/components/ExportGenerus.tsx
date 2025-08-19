@@ -115,7 +115,6 @@ export default function ExportGenerus() {
 									(option) => option.value === kelompokIdParam,
 								) || null
 							}
-							isClearable
 						/>
 						<CustomSelect
 							label="Jenis Kelamin"
@@ -129,7 +128,6 @@ export default function ExportGenerus() {
 									(option) => option.value === jenisKelaminParam,
 								) || null
 							}
-							isClearable
 						/>
 						<CustomSelect
 							label="Jenjang"
@@ -141,7 +139,6 @@ export default function ExportGenerus() {
 									(option) => option.value === jenjangParam,
 								) || null
 							}
-							isClearable
 						/>
 						<CustomSelect
 							label="Pendidikan Terakhir"
@@ -155,7 +152,6 @@ export default function ExportGenerus() {
 									(option) => option.value === pendidikanTerakhirParam,
 								) || null
 							}
-							isClearable
 						/>
 						<CustomSelect
 							label="Sambung"
@@ -167,7 +163,6 @@ export default function ExportGenerus() {
 									(option) => option.value === sambungParam,
 								) || null
 							}
-							isClearable
 						/>
 						<CustomSelect
 							label="Keterangan"
@@ -179,7 +174,6 @@ export default function ExportGenerus() {
 									(option) => option.value === keteranganParam,
 								) || null
 							}
-							isClearable
 						/>
 					</div>
 					<div className="flex justify-end gap-x-2">

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, or } from "drizzle-orm";
 import z from "zod";
 import {
 	formatResponse,
@@ -146,7 +146,7 @@ export const presenceRouter = createTRPCRouter({
 		}),
 
 	exportPresence: publicProcedure
-		.input(z.object({ eventId: z.string() }))
+		.input(z.object({ eventId: z.string(), kelompokId: z.string() }))
 		.query(async ({ ctx, input }) => {
 			const data = await ctx.db
 				.select({
@@ -156,7 +156,12 @@ export const presenceRouter = createTRPCRouter({
 				})
 				.from(presence)
 				.innerJoin(generus, eq(presence.generusId, generus.id))
-				.where(eq(presence.eventId, input.eventId));
+				.where(
+					or(
+						eq(presence.eventId, input.eventId),
+						eq(generus.kelompokId, input.kelompokId),
+					),
+				);
 
 			if (!data) {
 				throw new TRPCError({
