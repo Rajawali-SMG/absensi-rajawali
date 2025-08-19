@@ -27,7 +27,16 @@ export const eventCreateSchema = z.object({
 });
 
 export const eventUpdateSchema = eventCreateSchema.extend({
+	description: z.string().nullable(),
 	id: z.string().nonempty("ID tidak boleh kosong"),
+	latitude: z
+		.number()
+		.min(-90, "Latitude minimal -90")
+		.max(90, "Latitude maksimal 90"),
+	longitude: z
+		.number()
+		.min(-180, "Longitude minimal -180")
+		.max(180, "Longitude maksimal 180"),
 });
 
 export const eventDefaultValue: EventInsert = {

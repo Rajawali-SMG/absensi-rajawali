@@ -162,11 +162,12 @@ export default function KelompokPage() {
 					<CustomSelect
 						label="Desa"
 						name="desa_id"
-						onChange={(e) => setDesaParam(e.target.value)}
+						onChange={(e) => setDesaParam(e?.value || "")}
 						options={desaOptions}
-						placeHolderEnabled={true}
 						placeholder="Pilih Desa"
-						value={desaParam}
+						value={
+							desaOptions.find((option) => option.value === desaParam) || null
+						}
 					/>
 				</SheetFilter>
 			)}

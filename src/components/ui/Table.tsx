@@ -11,9 +11,7 @@ import Skeleton from "../Skeleton";
 import Button from "./Button";
 import Select from "./Select";
 
-type Props<
-	T extends Record<string, string | number | Date | undefined | null>,
-> = {
+type Props<T extends Record<string, unknown>> = {
 	isPending: boolean;
 	data: T[];
 	columns: ColumnDef<T>[];
@@ -22,9 +20,7 @@ type Props<
 	pagination: PaginationState;
 };
 
-export default function Table<
-	T extends Record<string, string | number | Date | undefined | null>,
->({
+export default function Table<T extends Record<string, unknown>>({
 	isPending,
 	data,
 	columns,
