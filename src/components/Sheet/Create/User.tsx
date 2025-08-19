@@ -42,30 +42,30 @@ export default function SheetCreateUser({
 				</h1>
 
 				<form
+					className="space-y-4"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="space-y-4"
 				>
 					<div className="space-y-4">
 						<form.Field name="name">
 							{(field) => (
 								<>
 									<Input
-										label="Nama"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Nama"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -76,18 +76,18 @@ export default function SheetCreateUser({
 							{(field) => (
 								<>
 									<Input
-										label="Email"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Email"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -98,18 +98,18 @@ export default function SheetCreateUser({
 							{(field) => (
 								<>
 									<Input
-										label="Password"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Password"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -122,15 +122,15 @@ export default function SheetCreateUser({
 							selector={(state) => [state.canSubmit, state.isSubmitting]}
 						>
 							{([canSubmit, isSubmitting]) => (
-								<Button type="submit" disabled={!canSubmit}>
+								<Button disabled={!canSubmit} type="submit">
 									{isSubmitting ? "Memproses..." : "Submit"}
 								</Button>
 							)}
 						</form.Subscribe>
 						<Button
-							type="button"
-							onClick={closeSheet}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
+							onClick={closeSheet}
+							type="button"
 						>
 							Close
 						</Button>

@@ -1,9 +1,9 @@
 import z from "zod";
 
 export const filterBase = z.object({
-	q: z.string().optional().default(""),
-	page: z.number().optional().default(0),
 	limit: z.number().optional().default(9),
+	page: z.number().optional().default(0),
+	q: z.string().optional().default(""),
 });
 
 export const idBase = z.object({

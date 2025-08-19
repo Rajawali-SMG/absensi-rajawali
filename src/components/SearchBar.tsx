@@ -51,7 +51,6 @@ export default function SearchBar({
 	return (
 		<div className={cn("flex items-center space-x-2", className)}>
 			<input
-				type="text"
 				className={cn(
 					"w-full rounded-md border border-gray-300 p-2",
 					"focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none",
@@ -59,6 +58,7 @@ export default function SearchBar({
 					className,
 				)}
 				onChange={handleChange}
+				type="text"
 				value={searchInput}
 				{...props}
 			/>

@@ -10,8 +10,8 @@ export type LogSelect = InferSelectModel<typeof log>;
 const logEventSchema = createSelectSchema(logEvent);
 
 export const logCreateSchema = z.object({
-	event: logEventSchema,
 	description: z.string().nonempty("Deskripsi tidak boleh kosong"),
+	event: logEventSchema,
 	userId: z.string().nonempty("User tidak boleh kosong"),
 });
 

@@ -44,99 +44,99 @@ async function main() {
 	await db.delete(kelompok);
 	const kelompokData: KelompokInsert[] = [
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Sendang Mulyo",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Sambiroto",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Fatmawati",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Zebra",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Kokosan",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Sendang Guwo",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Pancur Sari",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Lamper Tengah",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Kanguru",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Karang Anyar",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Pandansari",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Sambirejo",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Menjangan",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Graha Mukti",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Ganesha",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Banget Ayu",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Genuk Indah",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Muktiharjo",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 		{
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 			id: faker.string.uuid(),
 			nama: "Syuhada",
-			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
 	];
 	await db.insert(kelompok).values(kelompokData);
@@ -147,10 +147,9 @@ async function main() {
 	const generusData: GenerusInsert[] = [];
 	for (let i = 1; i <= 25; i++) {
 		generusData.push({
-			nama: faker.person.fullName(),
+			alamatAsal: faker.location.streetAddress(),
+			alamatTempatTinggal: faker.location.streetAddress(),
 			jenisKelamin: faker.helpers.arrayElement(["Laki-laki", "Perempuan"]),
-			tempatLahir: faker.location.city(),
-			tanggalLahir: faker.date.birthdate().toDateString(),
 			jenjang: faker.helpers.arrayElement([
 				"Paud",
 				"Caberawit",
@@ -160,6 +159,14 @@ async function main() {
 				"Remaja",
 				"Pra Nikah",
 			]),
+			kelompokId: faker.helpers.arrayElement(
+				kelompokIds.map((k) => k.id) ?? [],
+			),
+			keterangan: faker.helpers.arrayElement(["Pendatang", "Pribumi"]),
+			nama: faker.person.fullName(),
+			namaOrangTua: faker.person.fullName(),
+			nomerWhatsapp: faker.phone.number({ style: "international" }),
+			nomerWhatsappOrangTua: faker.phone.number({ style: "international" }),
 			pendidikanTerakhir: faker.helpers.arrayElement([
 				"PAUD",
 				"TK",
@@ -171,16 +178,9 @@ async function main() {
 				"S2",
 				"S3",
 			]),
-			alamatTempatTinggal: faker.location.streetAddress(),
-			alamatAsal: faker.location.streetAddress(),
-			nomerWhatsapp: faker.phone.number({ style: "international" }),
-			nomerWhatsappOrangTua: faker.phone.number({ style: "international" }),
-			namaOrangTua: faker.person.fullName(),
 			sambung: faker.helpers.arrayElement(["Aktif", "Tidak Aktif"]),
-			keterangan: faker.helpers.arrayElement(["Pendatang", "Pribumi"]),
-			kelompokId: faker.helpers.arrayElement(
-				kelompokIds.map((k) => k.id) ?? [],
-			),
+			tanggalLahir: faker.date.birthdate().toDateString(),
+			tempatLahir: faker.location.city(),
 		});
 	}
 	await db.insert(generus).values(generusData);
@@ -190,12 +190,12 @@ async function main() {
 	for (let i = 1; i <= 25; i++) {
 		const title = `${faker.food.spice()} - ${faker.string.alphanumeric(6)}`;
 		eventData.push({
-			title,
-			startDate: faker.date.past().toISOString(),
+			description: faker.lorem.sentence({ max: 5, min: 1 }),
 			endDate: faker.date.future().toISOString(),
 			latitude: faker.location.latitude({ precision: 1 }),
 			longitude: faker.location.longitude({ precision: 1 }),
-			description: faker.lorem.sentence({ min: 1, max: 5 }),
+			startDate: faker.date.past().toISOString(),
+			title,
 		});
 	}
 	await db.insert(event).values(eventData);
@@ -210,8 +210,8 @@ async function main() {
 
 	await auth.api.signUpEmail({
 		body: {
-			name: "test",
 			email: "test@test.com",
+			name: "test",
 			password: env.USER_PASSWORD,
 			role: "Super Admin",
 		},

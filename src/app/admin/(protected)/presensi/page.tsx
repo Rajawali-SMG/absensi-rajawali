@@ -43,12 +43,12 @@ export default function PresensiPage() {
 
 	return (
 		<Table
-			isPending={isPending}
-			data={data?.data.items || []}
 			columns={columns}
-			rowCount={data?.data.meta.total || 0}
+			data={data?.data.items || []}
+			isPending={isPending}
 			onPaginationChange={setPagination}
 			pagination={pagination}
+			rowCount={data?.data.meta.total || 0}
 		/>
 	);
 }

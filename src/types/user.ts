@@ -32,15 +32,15 @@ export const userUpdateSchema = userCreateSchema
 	.omit({ password: true });
 
 export const userUpdatePasswordSchema = z.object({
+	confirmPassword: z
+		.string()
+		.nonempty("Konfirmasi password tidak boleh kosong")
+		.max(50, "Konfirmasi password maksimal 50 karakter"),
 	id: z.string().nonempty("ID tidak boleh kosong"),
 	password: z
 		.string()
 		.nonempty("Password tidak boleh kosong")
 		.max(50, "Password maksimal 50 karakter"),
-	confirmPassword: z
-		.string()
-		.nonempty("Konfirmasi password tidak boleh kosong")
-		.max(50, "Konfirmasi password maksimal 50 karakter"),
 });
 
 export const defaultValueUser = {
@@ -50,9 +50,9 @@ export const defaultValueUser = {
 };
 
 export const defaultValueUserUpdatePassword = {
+	confirmPassword: "",
 	id: "",
 	password: "",
-	confirmPassword: "",
 };
 
 export const userFilter = filterBase;

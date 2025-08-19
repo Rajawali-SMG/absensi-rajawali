@@ -57,19 +57,19 @@ export default function ExportKegiatan() {
 
 	const kelompokOptions =
 		kelompokData?.data.map((item) => ({
-			value: item.id,
 			label: item.nama,
+			value: item.id,
 		})) || [];
 
 	const eventOptions =
 		eventData?.data.map((item) => ({
-			value: item.id,
 			label: item.title,
+			value: item.id,
 		})) || [];
 
 	if (!isClient) {
 		return (
-			<Button type="button" onClick={() => setOpenModal(true)}>
+			<Button onClick={() => setOpenModal(true)} type="button">
 				Export
 			</Button>
 		);
@@ -77,7 +77,7 @@ export default function ExportKegiatan() {
 
 	return (
 		<>
-			<Button type="button" onClick={() => setOpenModal(true)}>
+			<Button onClick={() => setOpenModal(true)} type="button">
 				Export
 			</Button>
 			<div
@@ -87,11 +87,11 @@ export default function ExportKegiatan() {
 					<h2 className="text-xl font-bold">Export</h2>
 					<div className="flex flex-col gap-y-2">
 						<CustomSelect
-							label="Kelompok"
 							isLoading={kelompokIsLoading}
+							label="Kelompok"
+							onChange={(e) => setKelompokIdParam(e?.value || "")}
 							options={kelompokOptions}
 							placeholder="Pilih Kelompok"
-							onChange={(e) => setKelompokIdParam(e?.value || "")}
 							value={
 								kelompokOptions.find(
 									(option) => option.value === kelompokIdParam,
@@ -99,11 +99,11 @@ export default function ExportKegiatan() {
 							}
 						/>
 						<CustomSelect
-							label="Event"
 							isLoading={kelompokIsLoading}
+							label="Event"
+							onChange={(e) => setEventIdParam(e?.value || "")}
 							options={eventOptions}
 							placeholder="Pilih Event"
-							onChange={(e) => setEventIdParam(e?.value || "")}
 							value={
 								eventOptions.find((option) => option.value === eventIdParam) ||
 								null

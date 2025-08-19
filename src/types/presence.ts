@@ -7,13 +7,13 @@ export type PresenceSelect = InferSelectModel<typeof presence>;
 export type PresenceInsert = InferInsertModel<typeof presence>;
 
 export const presenceCreateSchema = z.object({
+	eventId: z.string().nonempty("Event tidak boleh kosong"),
+	generusId: z.string().nonempty("Generus tidak boleh kosong"),
 	status: z
 		.enum(["Hadir", "Izin", "Tidak Hadir"], {
 			error: "Status tidak boleh kosong",
 		})
 		.default("Tidak Hadir"),
-	eventId: z.string().nonempty("Event tidak boleh kosong"),
-	generusId: z.string().nonempty("Generus tidak boleh kosong"),
 });
 
 export const presenceUpdateSchema = presenceCreateSchema.extend({

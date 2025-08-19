@@ -7,10 +7,8 @@ import {
 	date,
 	doublePrecision,
 	index,
-	integer,
 	pgEnum,
 	pgTableCreator,
-	serial,
 	text,
 	timestamp,
 	varchar,
@@ -86,8 +84,8 @@ export const kelompok = createTable(
 			.unique()
 			.$defaultFn(() => uuid()),
 		...timestamps,
-		nama: varchar({ length: 50 }).unique().notNull(),
 		desaId: varchar().notNull(),
+		nama: varchar({ length: 50 }).unique().notNull(),
 	},
 	(table) => [
 		index("nama_kelompok_idx").on(table.nama),
@@ -112,20 +110,20 @@ export const generus = createTable(
 			.notNull()
 			.unique(),
 		...timestamps,
-		nama: varchar({ length: 255 }).notNull(),
-		jenisKelamin: jenisKelamin().notNull(),
-		tempatLahir: varchar({ length: 50 }).notNull(),
-		tanggalLahir: date({ mode: "string" }).notNull(),
-		jenjang: jenjang().notNull(),
-		nomerWhatsapp: varchar({ length: 15 }),
-		pendidikanTerakhir: pendidikanTerakhir().notNull(),
-		namaOrangTua: varchar({ length: 255 }),
-		nomerWhatsappOrangTua: varchar({ length: 15 }),
-		sambung: sambung().notNull(),
-		alamatTempatTinggal: varchar({ length: 255 }).notNull(),
-		keterangan: keterangan().notNull(),
 		alamatAsal: varchar({ length: 255 }),
+		alamatTempatTinggal: varchar({ length: 255 }).notNull(),
+		jenisKelamin: jenisKelamin().notNull(),
+		jenjang: jenjang().notNull(),
 		kelompokId: varchar().notNull(),
+		keterangan: keterangan().notNull(),
+		nama: varchar({ length: 255 }).notNull(),
+		namaOrangTua: varchar({ length: 255 }),
+		nomerWhatsapp: varchar({ length: 15 }),
+		nomerWhatsappOrangTua: varchar({ length: 15 }),
+		pendidikanTerakhir: pendidikanTerakhir().notNull(),
+		sambung: sambung().notNull(),
+		tanggalLahir: date({ mode: "string" }).notNull(),
+		tempatLahir: varchar({ length: 50 }).notNull(),
 	},
 	(table) => [
 		index("nama_generus_idx").on(table.nama),
@@ -155,12 +153,12 @@ export const event = createTable(
 			.notNull()
 			.unique(),
 		...timestamps,
-		title: varchar({ length: 255 }).notNull().unique(),
-		startDate: timestamp({ mode: "string" }).notNull(),
+		description: text(),
 		endDate: timestamp({ mode: "string" }).notNull(),
 		latitude: doublePrecision().default(-7.03226199678915).notNull(),
 		longitude: doublePrecision().default(110.46708185437986).notNull(),
-		description: text(),
+		startDate: timestamp({ mode: "string" }).notNull(),
+		title: varchar({ length: 255 }).notNull().unique(),
 	},
 	(table) => [index("title_event_idx").on(table.title)],
 );
@@ -170,25 +168,25 @@ export const eventRelations = relations(event, ({ many }) => ({
 }));
 
 export const presence = createTable("presence", {
+	createdAt: timestamp().defaultNow().notNull(),
+	eventId: varchar({ length: 255 }).notNull(),
+	generusId: varchar({ length: 255 }).notNull(),
 	id: varchar()
 		.primaryKey()
 		.$defaultFn(() => uuid())
 		.notNull()
 		.unique(),
-	createdAt: timestamp().defaultNow().notNull(),
 	status: status().notNull(),
-	generusId: varchar({ length: 255 }).notNull(),
-	eventId: varchar({ length: 255 }).notNull(),
 });
 
 export const presenceRelations = relations(presence, ({ one }) => ({
-	generus: one(generus, {
-		fields: [presence.generusId],
-		references: [generus.id],
-	}),
 	event: one(event, {
 		fields: [presence.eventId],
 		references: [event.id],
+	}),
+	generus: one(generus, {
+		fields: [presence.generusId],
+		references: [generus.id],
 	}),
 }));
 
@@ -201,12 +199,12 @@ export const user = createTable(
 			.notNull()
 			.unique(),
 		...timestamps,
-		name: text().notNull(),
 		email: text().notNull().unique(),
 		emailVerified: boolean()
 			.$defaultFn(() => false)
 			.notNull(),
 		image: text(),
+		name: text().notNull(),
 		role: role().notNull(),
 	},
 	(table) => [
@@ -222,14 +220,14 @@ export const userRelations = relations(user, ({ many }) => ({
 export const log = createTable(
 	"log",
 	{
+		createdAt: timestamp().defaultNow().notNull(),
+		description: text(),
+		event: logEvent().notNull(),
 		id: varchar()
 			.primaryKey()
 			.$defaultFn(() => uuid())
 			.notNull()
 			.unique(),
-		createdAt: timestamp().defaultNow().notNull(),
-		event: logEvent().notNull(),
-		description: text(),
 		userId: varchar().notNull(),
 	},
 	(table) => [
@@ -253,8 +251,8 @@ export const session = createTable("session", {
 		.unique(),
 	...timestamps,
 	expiresAt: timestamp().notNull(),
-	token: text().notNull().unique(),
 	ipAddress: text(),
+	token: text().notNull().unique(),
 	userAgent: text(),
 	userId: text()
 		.notNull()
@@ -268,18 +266,18 @@ export const account = createTable("account", {
 		.notNull()
 		.unique(),
 	...timestamps,
+	accessToken: text(),
+	accessTokenExpiresAt: timestamp(),
 	accountId: text().notNull(),
+	idToken: text(),
+	password: text(),
 	providerId: text().notNull(),
+	refreshToken: text(),
+	refreshTokenExpiresAt: timestamp(),
+	scope: text(),
 	userId: text()
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
-	accessToken: text(),
-	refreshToken: text(),
-	idToken: text(),
-	accessTokenExpiresAt: timestamp(),
-	refreshTokenExpiresAt: timestamp(),
-	scope: text(),
-	password: text(),
 });
 
 export const verification = createTable("verification", {
@@ -289,7 +287,7 @@ export const verification = createTable("verification", {
 		.notNull()
 		.unique(),
 	...timestamps,
+	expiresAt: timestamp().notNull(),
 	identifier: text().notNull(),
 	value: text().notNull(),
-	expiresAt: timestamp().notNull(),
 });

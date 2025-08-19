@@ -7,11 +7,7 @@ export type EventSelect = InferSelectModel<typeof event>;
 export type EventInsert = InferInsertModel<typeof event>;
 
 export const eventCreateSchema = z.object({
-	title: z
-		.string()
-		.nonempty("Judul tidak boleh kosong")
-		.max(255, "Judul maksimal 255 karakter"),
-	startDate: z.iso.datetime({ local: true }),
+	description: z.string().nullable().optional(),
 	endDate: z.iso.datetime({ local: true }),
 	latitude: z
 		.number()
@@ -23,7 +19,11 @@ export const eventCreateSchema = z.object({
 		.min(-180, "Longitude minimal -180")
 		.max(180, "Longitude maksimal 180")
 		.optional(),
-	description: z.string().nullable().optional(),
+	startDate: z.iso.datetime({ local: true }),
+	title: z
+		.string()
+		.nonempty("Judul tidak boleh kosong")
+		.max(255, "Judul maksimal 255 karakter"),
 });
 
 export const eventUpdateSchema = eventCreateSchema.extend({
@@ -31,13 +31,13 @@ export const eventUpdateSchema = eventCreateSchema.extend({
 });
 
 export const eventDefaultValue: EventInsert = {
-	id: "",
-	title: "",
-	startDate: new Date().toISOString(),
+	description: "",
 	endDate: new Date().toISOString(),
+	id: "",
 	latitude: 0,
 	longitude: 0,
-	description: "",
+	startDate: new Date().toISOString(),
+	title: "",
 };
 
 export const eventFilter = filterBase;

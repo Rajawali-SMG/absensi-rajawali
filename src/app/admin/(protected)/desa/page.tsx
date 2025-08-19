@@ -22,9 +22,9 @@ export default function DesaPage() {
 	const searchQuery = useSearchParams().get("q") || "";
 	const { data, isPending, isError, error } = api.desa.getAllPaginated.useQuery(
 		{
-			q: searchQuery,
 			limit: pagination.pageSize,
 			page: pagination.pageIndex,
+			q: searchQuery,
 		},
 	);
 	const [dialog, setDialog] = useState(false);
@@ -37,13 +37,13 @@ export default function DesaPage() {
 			toast.dismiss();
 			toast.error(error.message);
 		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
 		onSuccess: (data) => {
 			toast.dismiss();
 			utils.desa.getAllPaginated.invalidate();
 			toast.success(data.message);
-		},
-		onMutate: () => {
-			toast.loading("Loading...");
 		},
 	});
 	const utils = api.useUtils();
@@ -71,29 +71,29 @@ export default function DesaPage() {
 			accessorKey: "nama",
 		},
 		{
-			id: "aksi",
-			header: "Aksi",
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
-						<button type="button" onClick={() => handleEdit(row)}>
+						<button onClick={() => handleEdit(row)} type="button">
 							<Icon
-								icon="line-md:edit"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="line-md:edit"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleDelete(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
-								fontSize={20}
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
+			header: "Aksi",
+			id: "aksi",
 		},
 	];
 
@@ -109,10 +109,10 @@ export default function DesaPage() {
 				<Dialog
 					cancel="Batal"
 					confirm="Hapus"
-					title="Apakah Anda yakin ingin menghapus data ini?"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="Tindakan ini tidak dapat dibatalkan."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
 			{sheetCreate && (
@@ -126,22 +126,22 @@ export default function DesaPage() {
 			)}
 			<div className="flex justify-between">
 				<SearchBar
-					placeholder="Cari Nama Desa..."
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
+					placeholder="Cari Nama Desa..."
 				/>
-				<Button type="button" onClick={() => setSheetCreate(true)}>
+				<Button onClick={() => setSheetCreate(true)} type="button">
 					Tambah Desa
 				</Button>
 			</div>
 			<Table
-				isPending={isPending}
-				data={data?.data.items || []}
 				columns={columns}
-				rowCount={data?.data.meta.total || 0}
+				data={data?.data.items || []}
+				isPending={isPending}
 				onPaginationChange={setPagination}
 				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
 			/>
 		</>
 	);

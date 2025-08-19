@@ -27,9 +27,9 @@ export default function SheetUpdateKelompok({
 
 	const form = useForm({
 		defaultValues: {
+			desaId: selectedData.desaId,
 			id: selectedData.id,
 			nama: selectedData.nama,
-			desaId: selectedData.desaId,
 		},
 		onSubmit: ({ value }) => {
 			mutate(value);
@@ -42,8 +42,8 @@ export default function SheetUpdateKelompok({
 
 	const desaOptions =
 		data?.data.map((item) => ({
-			value: item.id,
 			label: item.nama,
+			value: item.id,
 		})) || [];
 
 	return (
@@ -52,30 +52,30 @@ export default function SheetUpdateKelompok({
 				<h1 className="text-2xl font-bold mb-6 text-gray-800">Update User</h1>
 
 				<form
+					className="space-y-4"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="space-y-4"
 				>
 					<div className="space-y-4">
 						<form.Field name="id">
 							{(field) => (
 								<>
 									<Input
-										label="ID"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="ID"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="KGR"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -86,18 +86,18 @@ export default function SheetUpdateKelompok({
 							{(field) => (
 								<>
 									<Input
-										label="Nama"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Nama"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -108,13 +108,13 @@ export default function SheetUpdateKelompok({
 							{(field) => (
 								<div className="space-y-1">
 									<Select
-										name={field.name}
 										label="Desa"
+										name={field.name}
+										onChange={(e) => field.handleChange(Number(e.target.value))}
 										options={desaOptions}
 										placeholder="Pilih Desa"
 										required={true}
 										value={field.state.value}
-										onChange={(e) => field.handleChange(Number(e.target.value))}
 									/>
 								</div>
 							)}
@@ -127,9 +127,9 @@ export default function SheetUpdateKelompok({
 						>
 							{([canSubmit, isSubmitting]) => (
 								<button
-									type="submit"
-									disabled={!canSubmit}
 									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+									disabled={!canSubmit}
+									type="submit"
 								>
 									{isSubmitting ? "Memproses..." : "Update"}
 								</button>
@@ -137,9 +137,9 @@ export default function SheetUpdateKelompok({
 						</form.Subscribe>
 
 						<button
-							type="button"
-							onClick={closeSheet}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+							onClick={closeSheet}
+							type="button"
 						>
 							Close
 						</button>

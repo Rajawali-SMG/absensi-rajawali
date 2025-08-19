@@ -5,12 +5,14 @@ import { Toaster } from "react-hot-toast";
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
-	title: "Absensi Rajawali",
-	description:
-		"Website Absensi Rajawali untuk mengelola absensi muda mudi dan juga sebagai database remaja daerah Semarang Timur dibuat dengan T3",
-	icons: [{ rel: "icon", url: "/logo-rajawali.png" }],
 	applicationName: "Absensi Rajawali",
 	authors: [{ name: "Abdul Aziz", url: "https://abdul-aziz.me" }],
+	category: "Absensi",
+	creator: "Abdul Aziz",
+	description:
+		"Website Absensi Rajawali untuk mengelola absensi muda mudi dan juga sebagai database remaja daerah Semarang Timur dibuat dengan T3",
+	generator: "Next.js",
+	icons: [{ rel: "icon", url: "/logo-rajawali.png" }],
 	keywords: [
 		"Absensi",
 		"Rajawali",
@@ -26,14 +28,12 @@ export const metadata: Metadata = {
 		"PostgreSQL",
 		"FullStack Web",
 	],
-	category: "Absensi",
-	creator: "Abdul Aziz",
-	generator: "Next.js",
 	pagination: {
-		previous: "https://example.com/admin/generus?page=1",
 		next: "https://example.com/admin/generus?page=3",
+		previous: "https://example.com/admin/generus?page=1",
 	},
 	publisher: "Abdul Aziz",
+	title: "Absensi Rajawali",
 };
 
 const geist = Geist({
@@ -45,7 +45,7 @@ export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en" className={`${geist.variable}`}>
+		<html className={`${geist.variable}`} lang="en">
 			<head>
 				<script src="https://unpkg.com/react-scan/dist/auto.global.js" />
 			</head>

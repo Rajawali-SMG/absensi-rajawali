@@ -22,7 +22,7 @@ export default function Dialog({
 				<p className="text-gray-800">{description}</p>
 				<div className="flex justify-end">
 					<Button onClick={handleCancel}>{cancel}</Button>
-					<Button type="button" onClick={handleConfirm}>
+					<Button onClick={handleConfirm} type="button">
 						{confirm}
 					</Button>
 				</div>

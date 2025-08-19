@@ -1,5 +1,4 @@
 import type {
-	ErrorResponse,
 	Pagination,
 	ResponseBase,
 	ResponseBaseArray,
@@ -13,10 +12,10 @@ export function formatResponse<T>(
 	error: null,
 ): ResponseBase<T> {
 	return {
-		success,
-		message,
 		data,
 		error,
+		message,
+		success,
 	};
 }
 
@@ -27,10 +26,10 @@ export function formatResponseArray<T>(
 	error: null,
 ): ResponseBaseArray<T> {
 	return {
-		success,
-		message,
 		data,
 		error,
+		message,
+		success,
 	};
 }
 
@@ -44,23 +43,9 @@ export function formatResponsePagination<T>(
 	error: null,
 ): ResponseBasePagination<T> {
 	return {
-		success,
-		message,
 		data,
 		error,
+		message,
+		success,
 	};
 }
-
-// export function formatErrorResponse(
-// 	message: string,
-// 	error: Error | null,
-// ): ResponseBase<null> {
-// 	const errorResponse =
-// 		error instanceof Error
-// 			? {
-// 					name: error.name,
-// 					message: error.message,
-// 				}
-// 			: error;
-// 	return formatResponse(false, message, null, errorResponse);
-// }

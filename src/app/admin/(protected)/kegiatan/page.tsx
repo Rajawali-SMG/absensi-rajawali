@@ -24,9 +24,9 @@ export default function KegiatanPage() {
 	const searchQuery = useSearchParams().get("q") || "";
 	const { data, isPending, error, isError } =
 		api.event.getAllPaginated.useQuery({
-			q: searchQuery,
 			limit: pagination.pageSize,
 			page: pagination.pageIndex,
+			q: searchQuery,
 		});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
@@ -94,32 +94,32 @@ export default function KegiatanPage() {
 			header: "Deskripsi",
 		},
 		{
-			id: "aksi",
-			header: "Aksi",
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
 						<Link href={`/qr/${row.id}`} target="_blank">
-							<Icon icon="bx:qr" fontSize={20} className="text-blue-500" />
+							<Icon className="text-blue-500" fontSize={20} icon="bx:qr" />
 						</Link>
-						<button type="button" onClick={() => handleEdit(row)}>
+						<button onClick={() => handleEdit(row)} type="button">
 							<Icon
-								icon="line-md:edit"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="line-md:edit"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleDelete(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
-								fontSize={20}
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
+			header: "Aksi",
+			id: "aksi",
 		},
 	];
 
@@ -135,10 +135,10 @@ export default function KegiatanPage() {
 				<Dialog
 					cancel="Batal"
 					confirm="Hapus"
-					title="Apakah Anda yakin ingin menghapus data ini?"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="Tindakan ini tidak dapat dibatalkan."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
 			{sheetCreate && (
@@ -158,17 +158,17 @@ export default function KegiatanPage() {
 					placeholder="Cari Kegiatan..."
 				/>
 				<ExportKegiatan />
-				<Button type="button" onClick={() => setSheetCreate(true)}>
+				<Button onClick={() => setSheetCreate(true)} type="button">
 					Tambah Kegiatan
 				</Button>
 			</div>
 			<Table
-				isPending={isPending}
-				data={data?.data.items || []}
 				columns={columns}
-				rowCount={data?.data.meta.total || 0}
+				data={data?.data.items || []}
+				isPending={isPending}
 				onPaginationChange={setPagination}
 				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
 			/>
 		</>
 	);

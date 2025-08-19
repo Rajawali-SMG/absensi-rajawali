@@ -15,7 +15,7 @@ export default function CustomSelect<
 >({ label, ...props }: CustomSelectProps<Option, IsMulti, Group>) {
 	return (
 		<div className="flex flex-col space-y-1">
-			<label htmlFor={label} className="text-sm font-medium text-gray-700">
+			<label className="text-sm font-medium text-gray-700" htmlFor={label}>
 				{label}
 			</label>
 			<Select {...props} isClearable />

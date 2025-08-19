@@ -27,30 +27,30 @@ export type SambungType = z.infer<typeof sambungSchema>;
 export type KeteranganType = z.infer<typeof keteranganSchema>;
 
 export const generusCreateSchema = z.object({
+	alamatAsal: z.string().optional().nullable(),
+	alamatTempatTinggal: z.string().nonempty("Alamat tidak boleh kosong"),
+	jenisKelamin: jenisKelaminSchema,
+	jenjang: jenjangSchema,
+	kelompokId: z.string().nonempty("Kelompok tidak boleh kosong"),
+	keterangan: keteranganSchema,
 	nama: z
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(255, "Nama maksimal 255 karakter"),
-	jenisKelamin: jenisKelaminSchema,
-	tempatLahir: z
-		.string()
-		.nonempty("Tempat Lahir tidak boleh kosong")
-		.max(50, "Tempat Lahir maksimal 50 karakter"),
-	tanggalLahir: z.iso.date(),
-	jenjang: jenjangSchema,
+	namaOrangTua: z.string().optional().nullable(),
 	nomerWhatsapp: z
 		.string()
 		.max(15, "Nomor WhatsApp maksimal 15 karakter")
 		.optional()
 		.nullable(),
-	pendidikanTerakhir: pendidikanTerakhirSchema,
-	namaOrangTua: z.string().optional().nullable(),
 	nomerWhatsappOrangTua: z.string().optional().nullable(),
+	pendidikanTerakhir: pendidikanTerakhirSchema,
 	sambung: sambungSchema,
-	alamatTempatTinggal: z.string().nonempty("Alamat tidak boleh kosong"),
-	keterangan: keteranganSchema,
-	alamatAsal: z.string().optional().nullable(),
-	kelompokId: z.string().nonempty("Kelompok tidak boleh kosong"),
+	tanggalLahir: z.iso.date(),
+	tempatLahir: z
+		.string()
+		.nonempty("Tempat Lahir tidak boleh kosong")
+		.max(50, "Tempat Lahir maksimal 50 karakter"),
 });
 
 export const generusUpdateSchema = generusCreateSchema.extend({
@@ -60,30 +60,30 @@ export const generusUpdateSchema = generusCreateSchema.extend({
 export const generusFilter = filterBase.extend({
 	jenisKelamin: z.union([jenisKelaminSchema, z.literal(""), z.undefined()]),
 	jenjang: z.union([jenjangSchema, z.literal(""), z.undefined()]),
+	kelompokId: z.string().optional(),
+	keterangan: z.union([keteranganSchema, z.literal(""), z.undefined()]),
 	pendidikanTerakhir: z.union([
 		pendidikanTerakhirSchema,
 		z.literal(""),
 		z.undefined(),
 	]),
 	sambung: z.union([sambungSchema, z.literal(""), z.undefined()]),
-	keterangan: z.union([keteranganSchema, z.literal(""), z.undefined()]),
-	kelompokId: z.string().optional(),
 });
 
 export const defaultGenerus: GenerusInsert = {
-	id: "",
-	nama: "",
-	jenisKelamin: "Laki-laki",
-	tempatLahir: "",
-	tanggalLahir: new Date().toDateString(),
-	jenjang: "Paud",
-	nomerWhatsapp: "",
-	pendidikanTerakhir: "PAUD",
-	namaOrangTua: "",
-	nomerWhatsappOrangTua: "",
-	sambung: "Tidak Aktif",
-	alamatTempatTinggal: "",
-	keterangan: "Pendatang",
 	alamatAsal: "",
+	alamatTempatTinggal: "",
+	id: "",
+	jenisKelamin: "Laki-laki",
+	jenjang: "Paud",
 	kelompokId: "",
+	keterangan: "Pendatang",
+	nama: "",
+	namaOrangTua: "",
+	nomerWhatsapp: "",
+	nomerWhatsappOrangTua: "",
+	pendidikanTerakhir: "PAUD",
+	sambung: "Tidak Aktif",
+	tanggalLahir: new Date().toDateString(),
+	tempatLahir: "",
 };

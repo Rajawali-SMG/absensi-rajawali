@@ -24,22 +24,22 @@ export default function UploadExcelDialog() {
 	const handleDownloadTemplate = () => {
 		const ws = XLSX.utils.json_to_sheet([
 			{
-				nama: "Abdul Rahman",
-				jenisKelamin: "Laki-laki",
-				tempatLahir: "Yogyakarta",
-				tanggalLahir: "2006-01-01",
-				jenjang: "Paud",
-				nomerWhatsapp: "+628123456789",
-				pendidikanTerakhir: "SD",
-				namaOrangTua: "Orang Tua",
-				nomerWhatsappOrangTua: "+628123456789",
-				sambung: "Sambung",
-				alamatTempatTinggal:
-					"Jl. Kanguru Utara VII, Gayamsari, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50248",
-				keterangan: "Aktif",
 				alamatAsal:
 					"Jl. Kanguru Utara VII, Gayamsari, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50248",
+				alamatTempatTinggal:
+					"Jl. Kanguru Utara VII, Gayamsari, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50248",
+				jenisKelamin: "Laki-laki",
+				jenjang: "Paud",
 				kelompokId: "1",
+				keterangan: "Aktif",
+				nama: "Abdul Rahman",
+				namaOrangTua: "Orang Tua",
+				nomerWhatsapp: "+628123456789",
+				nomerWhatsappOrangTua: "+628123456789",
+				pendidikanTerakhir: "SD",
+				sambung: "Sambung",
+				tanggalLahir: "2006-01-01",
+				tempatLahir: "Yogyakarta",
 			},
 		]);
 		const wb = XLSX.utils.book_new();
@@ -51,8 +51,8 @@ export default function UploadExcelDialog() {
 		<div>
 			{/* Trigger Button */}
 			<button
-				onClick={() => setOpen(true)}
 				className="px-4 py-2 bg-blue-600 text-white rounded"
+				onClick={() => setOpen(true)}
 			>
 				Upload Excel
 			</button>
@@ -63,8 +63,8 @@ export default function UploadExcelDialog() {
 					<div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
 						{/* Close Button */}
 						<button
-							onClick={() => setOpen(false)}
 							className="absolute top-2 right-2 text-gray-500 hover:text-black"
+							onClick={() => setOpen(false)}
 						>
 							✕
 						</button>
@@ -73,18 +73,18 @@ export default function UploadExcelDialog() {
 
 						{/* Download Template */}
 						<button
-							onClick={handleDownloadTemplate}
 							className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded mb-4"
+							onClick={handleDownloadTemplate}
 						>
 							Download Template XLSX
 						</button>
 
 						{/* File Input */}
 						<input
-							type="file"
 							accept=".xlsx,.xls"
-							onChange={(e) => setFile(e.target.files?.[0] || null)}
 							className="w-full border rounded p-2 mb-4"
+							onChange={(e) => setFile(e.target.files?.[0] || null)}
+							type="file"
 						/>
 
 						{/* Status Messages */}
@@ -103,9 +103,9 @@ export default function UploadExcelDialog() {
 						{/* Upload Button */}
 						<div className="mt-4 flex justify-end">
 							<button
-								onClick={handleUpload}
-								disabled={!file || uploadMutation.isLoading}
 								className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+								disabled={!file || uploadMutation.isLoading}
+								onClick={handleUpload}
 							>
 								Upload
 							</button>

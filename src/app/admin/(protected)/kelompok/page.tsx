@@ -37,10 +37,10 @@ export default function KelompokPage() {
 		isError,
 		error,
 	} = api.kelompok.getAllPaginated.useQuery({
-		q: searchQuery,
+		desaId: desaParam,
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
-		desaId: desaParam,
+		q: searchQuery,
 	});
 	const mutation = api.kelompok.deleteKelompok.useMutation({
 		onError: ({ message }) => {
@@ -80,29 +80,29 @@ export default function KelompokPage() {
 			accessorKey: "nama",
 		},
 		{
-			id: "aksi",
-			header: "Aksi",
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
-						<button type="button" onClick={() => handleEdit(row)}>
+						<button onClick={() => handleEdit(row)} type="button">
 							<Icon
-								icon="line-md:edit"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="line-md:edit"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleDelete(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
-								fontSize={20}
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
+			header: "Aksi",
+			id: "aksi",
 		},
 	];
 	const {
@@ -113,8 +113,8 @@ export default function KelompokPage() {
 
 	const desaOptions =
 		desaData?.data.map((item) => ({
-			value: item.id,
 			label: item.nama,
+			value: item.id,
 		})) || [];
 
 	useEffect(() => {
@@ -135,10 +135,10 @@ export default function KelompokPage() {
 				<Dialog
 					cancel="Batal"
 					confirm="Hapus"
-					title="Apakah Anda yakin ingin menghapus data ini?"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="Tindakan ini tidak dapat dibatalkan."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
 			{sheetCreate && (
@@ -153,43 +153,43 @@ export default function KelompokPage() {
 			{sheetFilter && (
 				<SheetFilter
 					closeSheet={() => setSheetFilter(false)}
-					submitFilter={() => setSheetFilter(false)}
 					resetFilter={() => {
 						setDesaParam("");
 						setSheetFilter(false);
 					}}
+					submitFilter={() => setSheetFilter(false)}
 				>
 					<CustomSelect
-						placeHolderEnabled={true}
-						name="desa_id"
 						label="Desa"
+						name="desa_id"
+						onChange={(e) => setDesaParam(e.target.value)}
 						options={desaOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Desa"
 						value={desaParam}
-						onChange={(e) => setDesaParam(e.target.value)}
 					/>
 				</SheetFilter>
 			)}
 			<div className="flex justify-between mb-4">
 				<SearchBar
-					placeholder="Cari kelompok..."
 					className="w-full max-w-lg"
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
+					placeholder="Cari kelompok..."
 				/>
 				<Button onClick={() => setSheetFilter(true)}>Filter</Button>
-				<Button type="button" onClick={() => setSheetCreate(true)}>
+				<Button onClick={() => setSheetCreate(true)} type="button">
 					Tambah Kelompok
 				</Button>
 			</div>
 			<Table
-				isPending={isPending}
-				data={kelompokData?.data.items || []}
 				columns={columns}
-				rowCount={kelompokData?.data.meta.total || 0}
+				data={kelompokData?.data.items || []}
+				isPending={isPending}
 				onPaginationChange={setPagination}
 				pagination={pagination}
+				rowCount={kelompokData?.data.meta.total || 0}
 			/>
 		</>
 	);

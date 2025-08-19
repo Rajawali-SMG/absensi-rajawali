@@ -41,30 +41,30 @@ export default function SheetCreateDesa({
 				</h1>
 
 				<form
+					className="space-y-4"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="space-y-4"
 				>
 					<div className="space-y-4">
 						<form.Field name="nama">
 							{(field) => (
 								<>
 									<Input
-										label="Nama"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Nama"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -78,9 +78,9 @@ export default function SheetCreateDesa({
 						>
 							{([canSubmit, isSubmitting]) => (
 								<button
-									type="submit"
-									disabled={!canSubmit}
 									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+									disabled={!canSubmit}
+									type="submit"
 								>
 									{isSubmitting ? "Memproses..." : "Buat"}
 								</button>
@@ -88,9 +88,9 @@ export default function SheetCreateDesa({
 						</form.Subscribe>
 
 						<button
-							type="button"
-							onClick={closeSheet}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+							onClick={closeSheet}
+							type="button"
 						>
 							Close
 						</button>

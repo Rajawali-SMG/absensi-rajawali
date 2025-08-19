@@ -50,14 +50,14 @@ export default function GenerusPage() {
 	const [keteranganParam, setKeteranganParam] = useState<KeteranganType>();
 	const { data, isPending, isError, error } =
 		api.generus.getAllPaginated.useQuery({
-			q: searchQuery,
-			limit: pagination.pageSize,
-			page: pagination.pageIndex,
 			jenisKelamin: jenisKelaminParam,
 			jenjang: jenjangParam,
-			pendidikanTerakhir: pendidikanTerakhirParam,
-			sambung: sambungParam,
 			keterangan: keteranganParam,
+			limit: pagination.pageSize,
+			page: pagination.pageIndex,
+			pendidikanTerakhir: pendidikanTerakhirParam,
+			q: searchQuery,
+			sambung: sambungParam,
 		});
 	const utils = api.useUtils();
 
@@ -101,34 +101,34 @@ export default function GenerusPage() {
 			accessorKey: "keterangan",
 		},
 		{
-			id: "aksi",
-			header: "Aksi",
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
 						<button
-							type="button"
 							onClick={() => {
 								return navigate.push(`/admin/generus/update/${row.id}`);
 							}}
+							type="button"
 						>
 							<Icon
-								icon="line-md:edit"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="line-md:edit"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleDelete(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
-								fontSize={20}
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
+			header: "Aksi",
+			id: "aksi",
 		},
 	];
 
@@ -144,16 +144,15 @@ export default function GenerusPage() {
 				<Dialog
 					cancel="Batal"
 					confirm="Hapus"
-					title="Apakah Anda yakin ingin menghapus data ini?"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="Tindakan ini tidak dapat dibatalkan."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
 			{sheetFilter && (
 				<SheetFilter
 					closeSheet={() => setSheetFilter(false)}
-					submitFilter={() => setSheetFilter(false)}
 					resetFilter={() => {
 						setJenisKelaminParam(undefined);
 						setJenjangParam(undefined);
@@ -162,68 +161,69 @@ export default function GenerusPage() {
 						setKeteranganParam(undefined);
 						setSheetFilter(false);
 					}}
+					submitFilter={() => setSheetFilter(false)}
 				>
 					<Select
-						placeHolderEnabled={true}
-						name="jenis_kelamin"
 						label="Jenis Kelamin"
-						options={jenisKelaminOptions}
-						placeholder="Pilih Jenis Kelamin"
-						value={jenisKelaminParam}
+						name="jenis_kelamin"
 						onChange={(e) =>
 							setJenisKelaminParam(e.target.value as JenisKelaminType)
 						}
+						options={jenisKelaminOptions}
+						placeHolderEnabled={true}
+						placeholder="Pilih Jenis Kelamin"
+						value={jenisKelaminParam}
 					/>
 					<Select
-						placeHolderEnabled={true}
-						name="jenjang"
 						label="Jenjang"
+						name="jenjang"
+						onChange={(e) => setJenjangParam(e.target.value as JenjangType)}
 						options={jenjangOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Jenjang"
 						value={jenjangParam}
-						onChange={(e) => setJenjangParam(e.target.value as JenjangType)}
 					/>
 					<Select
-						placeHolderEnabled={true}
-						name="pendidikan_terakhir"
 						label="Pendidikan Terakhir"
-						options={pendidikanTerakhirOptions}
-						placeholder="Pilih Pendidikan Terakhir"
-						value={pendidikanTerakhirParam}
+						name="pendidikan_terakhir"
 						onChange={(e) =>
 							setPendidikanTerakhirParam(
 								e.target.value as PendidikanTerakhirType,
 							)
 						}
+						options={pendidikanTerakhirOptions}
+						placeHolderEnabled={true}
+						placeholder="Pilih Pendidikan Terakhir"
+						value={pendidikanTerakhirParam}
 					/>
 					<Select
-						placeHolderEnabled={true}
-						name="sambung"
 						label="Sambung"
+						name="sambung"
+						onChange={(e) => setSambungParam(e.target.value as SambungType)}
 						options={sambungOptions}
+						placeHolderEnabled={true}
 						placeholder="Pilih Sambung"
 						value={sambungParam}
-						onChange={(e) => setSambungParam(e.target.value as SambungType)}
 					/>
 					<Select
-						placeHolderEnabled={true}
-						name="keterangan"
 						label="Keterangan"
-						options={keteranganOptions}
-						placeholder="Pilih Keterangan"
-						value={keteranganParam}
+						name="keterangan"
 						onChange={(e) =>
 							setKeteranganParam(e.target.value as KeteranganType)
 						}
+						options={keteranganOptions}
+						placeHolderEnabled={true}
+						placeholder="Pilih Keterangan"
+						value={keteranganParam}
 					/>
 				</SheetFilter>
 			)}
 			<div className="flex justify-between">
 				<SearchBar
-					placeholder="Cari Nama Generus"
 					onSearchChange={() => {
 						setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 					}}
+					placeholder="Cari Nama Generus"
 				/>
 				<UploadExcelDialog />
 				<ExportGenerus />
@@ -231,12 +231,12 @@ export default function GenerusPage() {
 				<Link href="/admin/generus/create">Tambah Generus</Link>
 			</div>
 			<Table
-				isPending={isPending}
-				data={data?.data.items || []}
 				columns={columns}
-				rowCount={data?.data.meta.total || 0}
+				data={data?.data.items || []}
+				isPending={isPending}
 				onPaginationChange={setPagination}
 				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
 			/>
 		</>
 	);

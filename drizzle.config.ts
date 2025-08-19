@@ -3,13 +3,13 @@ import { defineConfig } from "drizzle-kit";
 import { env } from "@/env";
 
 export default defineConfig({
-	schema: "./src/server/db/schema.ts",
-	dialect: "postgresql",
+	casing: "snake_case",
 	dbCredentials: {
 		url: env.DATABASE_URL,
 	},
+	dialect: "postgresql",
 	out: "./drizzle",
-	tablesFilter: ["absensi-rajawali-t3-drizzle_*"],
+	schema: "./src/server/db/schema.ts",
 	strict: true,
-	casing: "snake_case",
+	tablesFilter: ["absensi-rajawali-t3-drizzle_*"],
 });

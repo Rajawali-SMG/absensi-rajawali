@@ -24,9 +24,9 @@ export default function QrPage({
 
 	useEffect(() => {
 		toast.promise(promise, {
+			error: error?.message,
 			loading: "Loading...",
 			success: eventData?.message,
-			error: error?.message,
 		});
 	}, [eventData, error, promise]);
 

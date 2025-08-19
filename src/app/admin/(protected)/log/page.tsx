@@ -16,9 +16,9 @@ export default function LogPage() {
 	});
 	const searchQuery = useSearchParams().get("q") || "";
 	const { data, isPending, error, isError } = api.log.getAllPaginated.useQuery({
-		q: searchQuery,
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
+		q: searchQuery,
 	});
 
 	const columns: ColumnDef<LogSelect>[] = [
@@ -57,12 +57,12 @@ export default function LogPage() {
 				/>
 			</div>
 			<Table
-				isPending={isPending}
-				data={data?.data.items || []}
 				columns={columns}
-				rowCount={data?.data.meta.total || 0}
+				data={data?.data.items || []}
+				isPending={isPending}
 				onPaginationChange={setPagination}
 				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
 			/>
 		</>
 	);

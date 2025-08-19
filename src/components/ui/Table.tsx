@@ -33,17 +33,17 @@ export default function Table<
 	pagination,
 }: Props<T>) {
 	const table = useReactTable({
-		data,
 		columns,
+		data,
 		getCoreRowModel: getCoreRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		manualFiltering: true,
 		manualPagination: true,
-		rowCount,
 		onPaginationChange,
+		rowCount,
 		state: {
 			pagination,
 		},
-		manualFiltering: true,
-		getFilteredRowModel: getFilteredRowModel(),
 	});
 
 	return (
@@ -53,7 +53,7 @@ export default function Table<
 					{table.getHeaderGroups().map((headerGroup) => (
 						<tr key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
-								<th key={header.id} className="px-6 py-3">
+								<th className="px-6 py-3" key={header.id}>
 									{flexRender(
 										header.column.columnDef.header,
 										header.getContext(),
@@ -67,9 +67,9 @@ export default function Table<
 					{isPending
 						? Skeleton(table)
 						: table.getRowModel().rows.map((row) => (
-								<tr key={row.id} className="border-b">
+								<tr className="border-b" key={row.id}>
 									{row.getVisibleCells().map((cell) => (
-										<td key={cell.id} className="px-6 py-4">
+										<td className="px-6 py-4" key={cell.id}>
 											{flexRender(
 												cell.column.columnDef.cell,
 												cell.getContext(),
@@ -83,30 +83,30 @@ export default function Table<
 					<tr>
 						<td>
 							<Button
-								type="button"
-								onClick={() => table.previousPage()}
 								disabled={!table.getCanPreviousPage()}
+								onClick={() => table.previousPage()}
+								type="button"
 							>
 								Previous
 							</Button>
 							<Button
-								type="button"
-								onClick={() => table.nextPage()}
 								disabled={!table.getCanNextPage()}
+								onClick={() => table.nextPage()}
+								type="button"
 							>
 								Next
 							</Button>
 							<Select
 								name="pageSize"
+								onChange={(e) => table.setPageSize(Number(e.target.value))}
 								options={[
-									{ value: 10, label: "10" },
-									{ value: 20, label: "20" },
-									{ value: 50, label: "50" },
-									{ value: 100, label: "100" },
+									{ label: "10", value: 10 },
+									{ label: "20", value: 20 },
+									{ label: "50", value: 50 },
+									{ label: "100", value: 100 },
 								]}
 								placeholder="Select Page Size"
 								value={table.getState().pagination.pageSize}
-								onChange={(e) => table.setPageSize(Number(e.target.value))}
 							/>
 							<p>Total Page: {table.getPageCount()}</p>
 							<p>Total Row: {table.getRowCount()}</p>

@@ -15,10 +15,10 @@ export default function NotFoundPage() {
 				<Link href="/admin/dashboard">Kembali</Link>
 			</div>
 			<Image
+				alt="404 ilustration"
+				height={500}
 				src="/404-ilustration.png"
 				width={500}
-				height={500}
-				alt="404 ilustration"
 			/>
 		</div>
 	);

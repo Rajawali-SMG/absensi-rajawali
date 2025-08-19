@@ -38,10 +38,10 @@ export default function ExportGenerus() {
 		{
 			jenisKelamin: jenisKelaminParam,
 			jenjang: jenjangParam,
+			kelompokId: kelompokIdParam,
+			keterangan: keteranganParam,
 			pendidikanTerakhir: pendidikanTerakhirParam,
 			sambung: sambungParam,
-			keterangan: keteranganParam,
-			kelompokId: kelompokIdParam,
 		},
 		{
 			enabled: false,
@@ -80,14 +80,14 @@ export default function ExportGenerus() {
 
 	const kelompokOptions =
 		kelompokData?.data.map((item) => ({
-			value: item.id,
-			label: item.nama,
 			isDisabled: false,
+			label: item.nama,
+			value: item.id,
 		})) || [];
 
 	if (!isClient) {
 		return (
-			<Button type="button" onClick={() => setOpenModal(true)}>
+			<Button onClick={() => setOpenModal(true)} type="button">
 				Export
 			</Button>
 		);
@@ -95,7 +95,7 @@ export default function ExportGenerus() {
 
 	return (
 		<>
-			<Button type="button" onClick={() => setOpenModal(true)}>
+			<Button onClick={() => setOpenModal(true)} type="button">
 				Export
 			</Button>
 			<div
@@ -105,11 +105,11 @@ export default function ExportGenerus() {
 					<h2 className="text-xl font-bold">Export</h2>
 					<div className="flex flex-col gap-y-2">
 						<CustomSelect
-							label="Kelompok"
 							isLoading={kelompokIsLoading}
+							label="Kelompok"
+							onChange={(e) => setKelompokIdParam(e?.value || "")}
 							options={kelompokOptions}
 							placeholder="Pilih Kelompok"
-							onChange={(e) => setKelompokIdParam(e?.value || "")}
 							value={
 								kelompokOptions.find(
 									(option) => option.value === kelompokIdParam,
@@ -118,11 +118,11 @@ export default function ExportGenerus() {
 						/>
 						<CustomSelect
 							label="Jenis Kelamin"
-							options={jenisKelaminOptions}
-							placeholder="Pilih Jenis Kelamin"
 							onChange={(e) =>
 								setJenisKelaminParam(e?.value as JenisKelaminType)
 							}
+							options={jenisKelaminOptions}
+							placeholder="Pilih Jenis Kelamin"
 							value={
 								jenisKelaminOptions.find(
 									(option) => option.value === jenisKelaminParam,
@@ -131,9 +131,9 @@ export default function ExportGenerus() {
 						/>
 						<CustomSelect
 							label="Jenjang"
+							onChange={(e) => setJenjangParam(e?.value as JenjangType)}
 							options={jenjangOptions}
 							placeholder="Pilih Jenjang"
-							onChange={(e) => setJenjangParam(e?.value as JenjangType)}
 							value={
 								jenjangOptions.find(
 									(option) => option.value === jenjangParam,
@@ -142,11 +142,11 @@ export default function ExportGenerus() {
 						/>
 						<CustomSelect
 							label="Pendidikan Terakhir"
-							options={pendidikanTerakhirOptions}
-							placeholder="Pilih Pendidikan Terakhir"
 							onChange={(e) =>
 								setPendidikanTerakhirParam(e?.value as PendidikanTerakhirType)
 							}
+							options={pendidikanTerakhirOptions}
+							placeholder="Pilih Pendidikan Terakhir"
 							value={
 								pendidikanTerakhirOptions.find(
 									(option) => option.value === pendidikanTerakhirParam,
@@ -155,9 +155,9 @@ export default function ExportGenerus() {
 						/>
 						<CustomSelect
 							label="Sambung"
+							onChange={(e) => setSambungParam(e?.value as SambungType)}
 							options={sambungOptions}
 							placeholder="Pilih Sambung"
-							onChange={(e) => setSambungParam(e?.value as SambungType)}
 							value={
 								sambungOptions.find(
 									(option) => option.value === sambungParam,
@@ -166,9 +166,9 @@ export default function ExportGenerus() {
 						/>
 						<CustomSelect
 							label="Keterangan"
+							onChange={(e) => setKeteranganParam(e?.value as KeteranganType)}
 							options={keteranganOptions}
 							placeholder="Pilih Keterangan"
-							onChange={(e) => setKeteranganParam(e?.value as KeteranganType)}
 							value={
 								keteranganOptions.find(
 									(option) => option.value === keteranganParam,

@@ -38,14 +38,14 @@ export default function IzinPage({
 	});
 	const form = useForm({
 		defaultValues: {
-			generusId: "",
 			eventId: id,
+			generusId: "",
 			status: "Izin",
 		},
 		onSubmit: ({ value }) => {
 			mutate({
-				generusId: value.generusId,
 				eventId: id,
+				generusId: value.generusId,
 				status: "Izin",
 			});
 		},
@@ -76,32 +76,32 @@ export default function IzinPage({
 		switch (eventData?.data.status) {
 			case "not-started":
 				return {
-					icon: <Icon icon="material-symbols:clock" className="w-6 h-6" />,
-					title: "Absensi Belum Dimulai",
-					subtitle: `Absensi akan dibuka pada ${eventData?.data.startDate} WIB`,
 					bgColor: "bg-amber-50",
-					textColor: "text-amber-700",
 					borderColor: "border-amber-200",
+					icon: <Icon className="w-6 h-6" icon="material-symbols:clock" />,
+					subtitle: `Absensi akan dibuka pada ${eventData?.data.startDate} WIB`,
+					textColor: "text-amber-700",
+					title: "Absensi Belum Dimulai",
 				};
 			case "ended":
 				return {
-					icon: <Icon icon="material-symbols:cancel" className="w-6 h-6" />,
-					title: "Absensi Telah Ditutup",
-					subtitle: `Waktu absensi berakhir pada ${eventData?.data.endDate} WIB`,
 					bgColor: "bg-red-50",
-					textColor: "text-red-700",
 					borderColor: "border-red-200",
+					icon: <Icon className="w-6 h-6" icon="material-symbols:cancel" />,
+					subtitle: `Waktu absensi berakhir pada ${eventData?.data.endDate} WIB`,
+					textColor: "text-red-700",
+					title: "Absensi Telah Ditutup",
 				};
 			default:
 				return {
-					icon: (
-						<Icon icon="material-symbols:check_circle" className="w-6 h-6" />
-					),
-					title: "Absensi Sedang Berlangsung",
-					subtitle: "Silakan pilih peserta yang Izin",
 					bgColor: "bg-green-50",
-					textColor: "text-green-700",
 					borderColor: "border-green-200",
+					icon: (
+						<Icon className="w-6 h-6" icon="material-symbols:check_circle" />
+					),
+					subtitle: "Silakan pilih peserta yang Izin",
+					textColor: "text-green-700",
+					title: "Absensi Sedang Berlangsung",
 				};
 		}
 	};
@@ -110,9 +110,9 @@ export default function IzinPage({
 
 	const generusOptions =
 		presenceData?.data.map((item) => ({
-			value: item.generusId,
-			label: `${item.generusName} - ${item.kelompokName}`,
 			isDisabled: item.isDisabled,
+			label: `${item.generusName} - ${item.kelompokName}`,
+			value: item.generusId,
 		})) || [];
 
 	let distance = 0;
@@ -143,8 +143,8 @@ export default function IzinPage({
 						<div className="text-green-100 space-y-1">
 							<div className="flex items-center justify-center gap-2">
 								<Icon
-									icon="material-symbols:calendar-today"
 									className="w-4 h-4"
+									icon="material-symbols:calendar-today"
 								/>
 								<span>{eventData?.data.startDate}</span>
 							</div>
@@ -180,8 +180,8 @@ export default function IzinPage({
 					<div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
 						<div className="flex items-start gap-2">
 							<Icon
-								icon="material-symbols:location_on"
 								className="w-5 h-5 text-blue-600 mt-0.5"
+								icon="material-symbols:location_on"
 							/>
 							<div>
 								<div className="font-semibold text-blue-900">
@@ -196,8 +196,8 @@ export default function IzinPage({
 					distance > radius ? (
 						<div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 text-center text-red-700">
 							<Icon
-								icon="material-symbols:warning"
 								className="w-12 h-12 mx-auto mb-3 text-red-500"
+								icon="material-symbols:warning"
 							/>
 							<div className="font-bold text-lg mb-2">Lokasi Tidak Valid</div>
 							<p className="text-sm mb-4">
@@ -205,14 +205,14 @@ export default function IzinPage({
 								mendekati lokasi acara untuk melakukan absensi.
 							</p>
 							<button
-								type="button"
-								onClick={geo.getPosition}
 								className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
 								disabled={
 									!geo.isGeolocationAvailable || !geo.isGeolocationEnabled
 								}
+								onClick={geo.getPosition}
+								type="button"
 							>
-								<Icon icon="material-symbols:refresh" className={`w-4 h-4`} />
+								<Icon className={`w-4 h-4`} icon="material-symbols:refresh" />
 								Periksa Lokasi Lagi
 							</button>
 						</div>
@@ -231,8 +231,8 @@ export default function IzinPage({
 									<div className="bg-gray-50 rounded-xl p-6">
 										<h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
 											<Icon
-												icon="material-symbols:people"
 												className="w-5 h-5"
+												icon="material-symbols:people"
 											/>
 											Pilih Peserta Izin
 										</h2>
@@ -241,13 +241,13 @@ export default function IzinPage({
 												<CustomSelect
 													label="Pilih Peserta"
 													name={field.name}
-													options={generusOptions}
 													onChange={(e) => field.handleChange(e?.value || "")}
+													options={generusOptions}
+													placeholder="Pilih peserta..."
+													required={true}
 													value={generusOptions.find(
 														(option) => option.value === field.state.value,
 													)}
-													required={true}
-													placeholder="Pilih peserta..."
 												/>
 											)}
 										</form.Field>
@@ -258,7 +258,7 @@ export default function IzinPage({
 											]}
 										>
 											{([canSubmit, isSubmitting]) => (
-												<Button type="submit" disabled={!canSubmit}>
+												<Button disabled={!canSubmit} type="submit">
 													{isSubmitting ? "Memproses..." : "Kirim"}
 												</Button>
 											)}

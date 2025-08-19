@@ -28,9 +28,9 @@ export default function SheetUpdateUser({
 
 	const form = useForm({
 		defaultValues: {
+			email: selectedData.email,
 			id: selectedData.id,
 			name: selectedData.name,
-			email: selectedData.email,
 		},
 		onSubmit: async ({ value }) => {
 			mutate(value);
@@ -47,30 +47,30 @@ export default function SheetUpdateUser({
 				<h1 className="text-2xl font-bold mb-6 text-gray-800">Update User</h1>
 
 				<form
+					className="space-y-4"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="space-y-4"
 				>
 					<div className="space-y-4">
 						<form.Field name="name">
 							{(field) => (
 								<>
 									<Input
-										label="Nama"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Nama"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -81,18 +81,18 @@ export default function SheetUpdateUser({
 							{(field) => (
 								<>
 									<Input
-										label="Email"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Email"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="john.doe@example.com"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -106,9 +106,9 @@ export default function SheetUpdateUser({
 						>
 							{([canSubmit, isSubmitting]) => (
 								<Button
-									type="submit"
-									disabled={!canSubmit}
 									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+									disabled={!canSubmit}
+									type="submit"
 								>
 									{isSubmitting ? "Memproses..." : "Update"}
 								</Button>
@@ -116,9 +116,9 @@ export default function SheetUpdateUser({
 						</form.Subscribe>
 
 						<button
-							type="button"
-							onClick={closeSheet}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+							onClick={closeSheet}
+							type="button"
 						>
 							Close
 						</button>

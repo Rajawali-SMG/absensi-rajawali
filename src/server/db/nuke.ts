@@ -1,12 +1,9 @@
 // scripts/nuke-db.ts
-import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { env } from "@/env";
 
 async function nukeDatabase() {
 	const client = postgres(env.DATABASE_URL);
-	const db = drizzle(client);
-
 	try {
 		console.log("🚨 Starting database nuke operation...");
 

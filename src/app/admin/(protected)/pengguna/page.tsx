@@ -23,9 +23,9 @@ export default function PenggunaPage() {
 	});
 	const { data, isPending, error, isError } = api.user.getAllPaginated.useQuery(
 		{
-			q: searchParams.get("q") || "",
 			limit: pagination.pageSize,
 			page: pagination.pageIndex,
+			q: searchParams.get("q") || "",
 		},
 	);
 	const [sheetCreate, setSheetCreate] = useState(false);
@@ -75,36 +75,36 @@ export default function PenggunaPage() {
 			accessorKey: "name",
 		},
 		{
-			id: "aksi",
-			header: "Aksi",
 			cell: (props) => {
 				const row = props.row.original;
 				return (
 					<div className="flex space-x-2">
-						<button type="button" onClick={() => handleChangeUser(row)}>
+						<button onClick={() => handleChangeUser(row)} type="button">
 							<Icon
-								icon="material-symbols:person-outline-rounded"
-								fontSize={20}
 								className="text-blue-500"
+								fontSize={20}
+								icon="material-symbols:person-outline-rounded"
 							/>
 						</button>
-						<button type="button" onClick={() => handleChangePassword(row)}>
+						<button onClick={() => handleChangePassword(row)} type="button">
 							<Icon
-								icon="material-symbols:password-rounded"
-								fontSize={20}
 								className="text-orange-500"
+								fontSize={20}
+								icon="material-symbols:password-rounded"
 							/>
 						</button>
-						<button type="button" onClick={() => handleDelete(row)}>
+						<button onClick={() => handleDelete(row)} type="button">
 							<Icon
-								icon="mynaui:trash"
-								fontSize={20}
 								className="text-red-500"
+								fontSize={20}
+								icon="mynaui:trash"
 							/>
 						</button>
 					</div>
 				);
 			},
+			header: "Aksi",
+			id: "aksi",
 		},
 	];
 
@@ -120,10 +120,10 @@ export default function PenggunaPage() {
 				<Dialog
 					cancel="Batal"
 					confirm="Hapus"
-					title="Apakah Anda yakin ingin menghapus data ini?"
+					description="Tindakan ini tidak dapat dibatalkan."
 					handleCancel={() => setDialog(false)}
 					handleConfirm={handleDeleteConfirm}
-					description="Tindakan ini tidak dapat dibatalkan."
+					title="Apakah Anda yakin ingin menghapus data ini?"
 				/>
 			)}
 			{sheetCreate && (
@@ -148,17 +148,17 @@ export default function PenggunaPage() {
 					}}
 					placeholder="Cari nama pengguna..."
 				/>
-				<Button type="button" onClick={() => setSheetCreate(true)}>
+				<Button onClick={() => setSheetCreate(true)} type="button">
 					Tambah Pengguna
 				</Button>
 			</div>
 			<Table
-				isPending={isPending}
-				data={data?.data.items || []}
 				columns={columns}
-				rowCount={data?.data.meta.total || 0}
+				data={data?.data.items || []}
+				isPending={isPending}
 				onPaginationChange={setPagination}
 				pagination={pagination}
+				rowCount={data?.data.meta.total || 0}
 			/>
 		</>
 	);

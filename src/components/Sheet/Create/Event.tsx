@@ -42,30 +42,30 @@ export default function SheetCreateEvent({
 				</h1>
 
 				<form
+					className="space-y-4"
 					onSubmit={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="space-y-4"
 				>
 					<div className="space-y-4">
 						<form.Field name="title">
 							{(field) => (
 								<>
 									<Input
-										label="Title"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Title"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -76,18 +76,18 @@ export default function SheetCreateEvent({
 							{(field) => (
 								<>
 									<Input
-										label="Start Date"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="datetime-local"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="Start Date"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="datetime-local"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -98,18 +98,18 @@ export default function SheetCreateEvent({
 							{(field) => (
 								<>
 									<Input
-										label="End Date"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="datetime-local"
-										name={field.name}
 										id={field.name}
-										value={field.state.value}
+										label="End Date"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="datetime-local"
+										value={field.state.value}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -119,18 +119,18 @@ export default function SheetCreateEvent({
 							{(field) => (
 								<>
 									<Input
-										label="Latitude"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="number"
-										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										label="Latitude"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="number"
+										value={field.state.value || ""}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -141,18 +141,18 @@ export default function SheetCreateEvent({
 							{(field) => (
 								<>
 									<Input
-										label="Longitude"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="number"
-										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										label="Longitude"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
 										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="number"
+										value={field.state.value || ""}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -163,17 +163,17 @@ export default function SheetCreateEvent({
 							{(field) => (
 								<>
 									<Input
-										label="Deskripsi"
-										variant="secondary"
+										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
-										type="text"
-										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										label="Deskripsi"
+										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+										type="text"
+										value={field.state.value || ""}
+										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -187,9 +187,9 @@ export default function SheetCreateEvent({
 						>
 							{([canSubmit, isSubmitting]) => (
 								<button
-									type="submit"
-									disabled={!canSubmit}
 									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+									disabled={!canSubmit}
+									type="submit"
 								>
 									{isSubmitting ? "Memproses..." : "Update"}
 								</button>
@@ -197,9 +197,9 @@ export default function SheetCreateEvent({
 						</form.Subscribe>
 
 						<button
-							type="button"
-							onClick={closeSheet}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+							onClick={closeSheet}
+							type="button"
 						>
 							Close
 						</button>
