@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq, ilike, or } from "drizzle-orm";
+import { and, count, eq, ilike } from "drizzle-orm";
 import {
 	formatResponse,
 	formatResponseArray,
@@ -11,10 +11,70 @@ import {
 	kelompokFilter,
 	kelompokUpdateSchema,
 } from "@/types/kelompok";
-import { generus, kelompok } from "../../db/schema";
+import { generus, kelompok, log } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const kelompokRouter = createTRPCRouter({
+	createKelompok: protectedProcedure
+		.input(kelompokCreateSchema)
+		.mutation(async ({ ctx, input }) => {
+			const existingKelompok = await ctx.db.query.kelompok.findFirst({
+				where: eq(kelompok.nama, input.nama),
+			});
+
+			if (existingKelompok) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Nama sudah didaftarkan, silahkan gunakan nama lain",
+				});
+			}
+			const data = await ctx.db.insert(kelompok).values(input);
+
+			await ctx.db.insert(log).values({
+				description: `Menambahkan Data Kelompok: ${input.nama}`,
+				event: "Create",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(
+				true,
+				"Berhasil menambahkan data Kelompok",
+				data,
+				null,
+			);
+		}),
+
+	deleteKelompok: protectedProcedure
+		.input(idBase)
+		.mutation(async ({ ctx, input }) => {
+			const relatedGenerus = await ctx.db.query.generus.findFirst({
+				where: eq(generus.kelompokId, input.id),
+			});
+
+			if (relatedGenerus) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Generus terkait ditemukan",
+				});
+			}
+
+			const data = await ctx.db
+				.delete(kelompok)
+				.where(eq(kelompok.id, input.id));
+
+			await ctx.db.insert(log).values({
+				description: `Menghapus Data Kelompok: ${input.id}`,
+				event: "Delete",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(
+				true,
+				"Berhasil menghapus data Kelompok",
+				data,
+				null,
+			);
+		}),
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.kelompok.findMany();
 
@@ -34,11 +94,11 @@ export const kelompokRouter = createTRPCRouter({
 			const data = await ctx.db.query.kelompok.findMany({
 				limit,
 				offset: page * limit,
+				orderBy: (kelompok, { desc }) => [desc(kelompok.createdAt)],
 				where: and(
 					input.q ? ilike(kelompok.nama, `%${input.q}%`) : undefined,
 					input.desaId ? eq(kelompok.desaId, input.desaId) : undefined,
 				),
-				orderBy: (kelompok, { desc }) => [desc(kelompok.createdAt)],
 			});
 
 			const [total] = await ctx.db.select({ count: count() }).from(kelompok);
@@ -49,7 +109,7 @@ export const kelompokRouter = createTRPCRouter({
 			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Kelompok",
-				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				{ items: data, meta: { limit, page, total: totalCount, totalPages } },
 				null,
 			);
 		}),
@@ -76,29 +136,6 @@ export const kelompokRouter = createTRPCRouter({
 			);
 		}),
 
-	createKelompok: protectedProcedure
-		.input(kelompokCreateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const existingKelompok = await ctx.db.query.kelompok.findFirst({
-				where: eq(kelompok.nama, input.nama),
-			});
-
-			if (existingKelompok) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "Nama sudah didaftarkan, silahkan gunakan nama lain",
-				});
-			}
-			const data = await ctx.db.insert(kelompok).values(input);
-
-			return formatResponse(
-				true,
-				"Berhasil menambahkan data Kelompok",
-				data,
-				null,
-			);
-		}),
-
 	updateKelompok: protectedProcedure
 		.input(kelompokUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
@@ -113,35 +150,15 @@ export const kelompokRouter = createTRPCRouter({
 				.set(input)
 				.where(eq(kelompok.id, input.id));
 
+			await ctx.db.insert(log).values({
+				description: `Mengubah Data Kelompok: ${input.nama}`,
+				event: "Update",
+				userId: ctx.session.user.email,
+			});
+
 			return formatResponse(
 				true,
 				"Berhasil mengubah data Kelompok",
-				data,
-				null,
-			);
-		}),
-
-	deleteKelompok: protectedProcedure
-		.input(idBase)
-		.mutation(async ({ ctx, input }) => {
-			const relatedGenerus = await ctx.db.query.generus.findFirst({
-				where: eq(generus.kelompokId, input.id),
-			});
-
-			if (relatedGenerus) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "Data Generus terkait ditemukan",
-				});
-			}
-
-			const data = await ctx.db
-				.delete(kelompok)
-				.where(eq(kelompok.id, input.id));
-
-			return formatResponse(
-				true,
-				"Berhasil menghapus data Kelompok",
 				data,
 				null,
 			);

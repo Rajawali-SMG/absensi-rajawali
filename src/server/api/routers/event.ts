@@ -11,10 +11,78 @@ import {
 	eventFilter,
 	eventUpdateSchema,
 } from "@/types/event";
-import { event, presence } from "../../db/schema";
+import { event, log, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const eventRouter = createTRPCRouter({
+	countGenerus: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
+		const [hadir] = await ctx.db
+			.select({ count: count() })
+			.from(presence)
+			.where(and(eq(presence.eventId, input.id), eq(presence.status, "Hadir")));
+
+		const [izin] = await ctx.db
+			.select({ count: count() })
+			.from(presence)
+			.where(and(eq(presence.eventId, input.id), eq(presence.status, "Izin")));
+
+		return formatResponse(
+			true,
+			"Berhasil mendapatkan semua data Generus",
+			{ hadir: hadir?.count ?? 0, izin: izin?.count ?? 0 },
+			null,
+		);
+	}),
+
+	createEvent: protectedProcedure
+		.input(eventCreateSchema)
+		.mutation(async ({ ctx, input }) => {
+			const existingEvent = await ctx.db.query.event.findFirst({
+				where: eq(event.title, input.title),
+			});
+
+			if (existingEvent) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Judul sudah didaftarkan, silahkan gunakan judul lain",
+				});
+			}
+
+			const data = await ctx.db.insert(event).values(input);
+
+			await ctx.db.insert(log).values({
+				description: `Menambahkan Data Event: ${input.title}`,
+				event: "Create",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(
+				true,
+				"Berhasil menambahkan data Event",
+				data,
+				null,
+			);
+		}),
+
+	deleteEvent: protectedProcedure
+		.input(idBase)
+		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
+			const data = await ctx.db.delete(event).where(eq(event.id, input.id));
+
+			await ctx.db.insert(log).values({
+				description: `Menghapus Data Event: ${input.id}`,
+				event: "Delete",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(true, "Berhasil menghapus data Event", data, null);
+		}),
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.event.findMany();
 
@@ -45,7 +113,7 @@ export const eventRouter = createTRPCRouter({
 			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Event",
-				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				{ items: data, meta: { limit, page, total: totalCount, totalPages } },
 				null,
 			);
 		}),
@@ -82,30 +150,6 @@ export const eventRouter = createTRPCRouter({
 			);
 		}),
 
-	createEvent: protectedProcedure
-		.input(eventCreateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const existingEvent = await ctx.db.query.event.findFirst({
-				where: eq(event.title, input.title),
-			});
-
-			if (existingEvent) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "Judul sudah didaftarkan, silahkan gunakan judul lain",
-				});
-			}
-
-			const data = await ctx.db.insert(event).values(input);
-
-			return formatResponse(
-				true,
-				"Berhasil menambahkan data Event",
-				data,
-				null,
-			);
-		}),
-
 	updateEvent: protectedProcedure
 		.input(eventUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
@@ -120,39 +164,12 @@ export const eventRouter = createTRPCRouter({
 				.set(input)
 				.where(eq(event.id, input.id));
 
+			await ctx.db.insert(log).values({
+				description: `Mengubah Data Event: ${input.title}`,
+				event: "Update",
+				userId: ctx.session.user.email,
+			});
+
 			return formatResponse(true, "Berhasil mengubah data Event", data, null);
 		}),
-
-	deleteEvent: protectedProcedure
-		.input(idBase)
-		.mutation(async ({ ctx, input }) => {
-			if (!input.id) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "ID tidak ditemukan",
-				});
-			}
-			const data = await ctx.db.delete(event).where(eq(event.id, input.id));
-
-			return formatResponse(true, "Berhasil menghapus data Event", data, null);
-		}),
-
-	countGenerus: publicProcedure.input(idBase).query(async ({ ctx, input }) => {
-		const [hadir] = await ctx.db
-			.select({ count: count() })
-			.from(presence)
-			.where(and(eq(presence.eventId, input.id), eq(presence.status, "Hadir")));
-
-		const [izin] = await ctx.db
-			.select({ count: count() })
-			.from(presence)
-			.where(and(eq(presence.eventId, input.id), eq(presence.status, "Izin")));
-
-		return formatResponse(
-			true,
-			"Berhasil mendapatkan semua data Generus",
-			{ hadir: hadir?.count ?? 0, izin: izin?.count ?? 0 },
-			null,
-		);
-	}),
 });

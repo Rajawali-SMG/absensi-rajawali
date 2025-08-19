@@ -16,71 +16,6 @@ import { generus, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const presenceRouter = createTRPCRouter({
-	getAll: protectedProcedure.query(async ({ ctx }) => {
-		const data = await ctx.db.query.presence.findMany();
-
-		return formatResponseArray(
-			true,
-			"Berhasil mendapatkan semua data Presensi",
-			data,
-			null,
-		);
-	}),
-
-	getAllPaginated: protectedProcedure
-		.input(presenceFilter)
-		.query(async ({ ctx, input }) => {
-			const limit = input.limit ?? 9;
-			const page = input.page ?? 0;
-			const data = await ctx.db.query.presence.findMany({
-				limit,
-				offset: page * limit,
-				orderBy: (presence, { desc }) => [desc(presence.createdAt)],
-			});
-
-			const [total] = await ctx.db.select({ count: count() }).from(presence);
-
-			const totalCount = total?.count ?? 0;
-			const totalPages = Math.ceil(totalCount / limit);
-
-			return formatResponsePagination(
-				true,
-				"Berhasil mendapatkan data Presensi",
-				{
-					items: data,
-					meta: {
-						total: totalCount,
-						page,
-						limit,
-						totalPages,
-					},
-				},
-				null,
-			);
-		}),
-
-	getOnePresence: protectedProcedure
-		.input(idBase)
-		.query(async ({ ctx, input }) => {
-			const data = await ctx.db.query.presence.findFirst({
-				where: eq(presence.id, input.id),
-			});
-
-			if (!data) {
-				throw new TRPCError({
-					code: "NOT_FOUND",
-					message: "Data Presensi tidak ditemukan",
-				});
-			}
-
-			return formatResponse(
-				true,
-				"Berhasil mendapatkan data Presensi",
-				data,
-				null,
-			);
-		}),
-
 	createPresence: publicProcedure
 		.input(presenceCreateSchema)
 		.mutation(async ({ ctx, input }) => {
@@ -103,29 +38,6 @@ export const presenceRouter = createTRPCRouter({
 			return formatResponse(
 				true,
 				"Berhasil menambahkan data Presensi",
-				data,
-				null,
-			);
-		}),
-
-	updatePresence: protectedProcedure
-		.input(presenceUpdateSchema)
-		.mutation(async ({ ctx, input }) => {
-			if (!input.id) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "ID tidak ditemukan",
-				});
-			}
-
-			const data = await ctx.db
-				.update(presence)
-				.set(input)
-				.where(eq(presence.id, input.id));
-
-			return formatResponse(
-				true,
-				"Berhasil mengubah data Presensi",
 				data,
 				null,
 			);
@@ -174,6 +86,93 @@ export const presenceRouter = createTRPCRouter({
 			return formatResponse(
 				true,
 				"Berhasil mendapatkan data Presensi",
+				data,
+				null,
+			);
+		}),
+	getAll: protectedProcedure.query(async ({ ctx }) => {
+		const data = await ctx.db.query.presence.findMany();
+
+		return formatResponseArray(
+			true,
+			"Berhasil mendapatkan semua data Presensi",
+			data,
+			null,
+		);
+	}),
+
+	getAllPaginated: protectedProcedure
+		.input(presenceFilter)
+		.query(async ({ ctx, input }) => {
+			const limit = input.limit ?? 9;
+			const page = input.page ?? 0;
+			const data = await ctx.db.query.presence.findMany({
+				limit,
+				offset: page * limit,
+				orderBy: (presence, { desc }) => [desc(presence.createdAt)],
+			});
+
+			const [total] = await ctx.db.select({ count: count() }).from(presence);
+
+			const totalCount = total?.count ?? 0;
+			const totalPages = Math.ceil(totalCount / limit);
+
+			return formatResponsePagination(
+				true,
+				"Berhasil mendapatkan data Presensi",
+				{
+					items: data,
+					meta: {
+						limit,
+						page,
+						total: totalCount,
+						totalPages,
+					},
+				},
+				null,
+			);
+		}),
+
+	getOnePresence: protectedProcedure
+		.input(idBase)
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.presence.findFirst({
+				where: eq(presence.id, input.id),
+			});
+
+			if (!data) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Data Presensi tidak ditemukan",
+				});
+			}
+
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Presensi",
+				data,
+				null,
+			);
+		}),
+
+	updatePresence: protectedProcedure
+		.input(presenceUpdateSchema)
+		.mutation(async ({ ctx, input }) => {
+			if (!input.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "ID tidak ditemukan",
+				});
+			}
+
+			const data = await ctx.db
+				.update(presence)
+				.set(input)
+				.where(eq(presence.id, input.id));
+
+			return formatResponse(
+				true,
+				"Berhasil mengubah data Presensi",
 				data,
 				null,
 			);

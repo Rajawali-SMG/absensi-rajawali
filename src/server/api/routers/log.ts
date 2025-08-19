@@ -27,11 +27,11 @@ export const logRouter = createTRPCRouter({
 			const data = await ctx.db.query.log.findMany({
 				limit,
 				offset: page * limit,
+				orderBy: (log, { desc }) => [desc(log.createdAt)],
 				where: and(
 					input.q ? ilike(log.event, `%${input.q}%`) : undefined,
 					input.q ? ilike(log.description, `%${input.q}%`) : undefined,
 				),
-				orderBy: (log, { desc }) => [desc(log.createdAt)],
 			});
 
 			const [total] = await ctx.db.select({ count: count() }).from(log);
@@ -42,7 +42,7 @@ export const logRouter = createTRPCRouter({
 			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Log",
-				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				{ items: data, meta: { limit, page, total: totalCount, totalPages } },
 				null,
 			);
 		}),

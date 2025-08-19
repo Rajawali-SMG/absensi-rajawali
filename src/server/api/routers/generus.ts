@@ -12,12 +12,49 @@ import {
 	generusFilter,
 	generusUpdateSchema,
 } from "@/types/generus";
-import { generus, kelompok, presence } from "../../db/schema";
+import { generus, kelompok, log, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const generusRouter = createTRPCRouter({
+	createGenerus: protectedProcedure
+		.input(generusCreateSchema)
+		.mutation(async ({ ctx, input }) => {
+			const data = await ctx.db.insert(generus).values(input);
+
+			await ctx.db.insert(log).values({
+				description: `Menambahkan Data Generus: ${input.nama}`,
+				event: "Create",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(
+				true,
+				"Berhasil menambahkan data Generus",
+				data,
+				null,
+			);
+		}),
+
+	deleteGenerus: protectedProcedure
+		.input(idBase)
+		.mutation(async ({ ctx, input }) => {
+			const data = await ctx.db.delete(generus).where(eq(generus.id, input.id));
+
+			await ctx.db.insert(log).values({
+				description: `Menghapus Data Generus: ${input.id}`,
+				event: "Delete",
+				userId: ctx.session.user.email,
+			});
+
+			return formatResponse(
+				true,
+				"Berhasil menghapus data Generus",
+				data,
+				null,
+			);
+		}),
 	getAll: protectedProcedure
-		.input(generusFilter.omit({ q: true, page: true, limit: true }))
+		.input(generusFilter.omit({ limit: true, page: true, q: true }))
 		.query(async ({ ctx, input }) => {
 			const data = await ctx.db.query.generus.findMany({
 				where: and(
@@ -53,8 +90,8 @@ export const generusRouter = createTRPCRouter({
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.generus.findMany({
 				limit,
-				orderBy: (generus, { desc }) => [desc(generus.createdAt)],
 				offset: page * limit,
+				orderBy: (generus, { desc }) => [desc(generus.createdAt)],
 				where: and(
 					ilike(generus.nama, `%${input.q}%`),
 					input.jenisKelamin
@@ -79,7 +116,22 @@ export const generusRouter = createTRPCRouter({
 			return formatResponsePagination(
 				true,
 				"Berhasil mendapatkan data Generus",
-				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
+				{ items: data, meta: { limit, page, total: totalCount, totalPages } },
+				null,
+			);
+		}),
+
+	getEventAttendancebyGenerus: protectedProcedure
+		.input(idBase)
+		.query(async ({ ctx, input }) => {
+			const data = await ctx.db.query.presence.findMany({
+				where: eq(presence.generusId, input.id),
+			});
+
+			return formatResponse(
+				true,
+				"Berhasil mendapatkan data Presensi",
+				data,
 				null,
 			);
 		}),
@@ -106,19 +158,6 @@ export const generusRouter = createTRPCRouter({
 			);
 		}),
 
-	createGenerus: protectedProcedure
-		.input(generusCreateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(generus).values(input);
-
-			return formatResponse(
-				true,
-				"Berhasil menambahkan data Generus",
-				data,
-				null,
-			);
-		}),
-
 	updateGenerus: protectedProcedure
 		.input(generusUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
@@ -133,32 +172,31 @@ export const generusRouter = createTRPCRouter({
 				.set(input)
 				.where(eq(generus.id, input.id));
 
+			await ctx.db.insert(log).values({
+				description: `Mengubah Data Generus: ${input.nama}`,
+				event: "Update",
+				userId: ctx.session.user.email,
+			});
+
 			return formatResponse(true, "Berhasil mengubah data Generus", data, null);
 		}),
 
-	deleteGenerus: protectedProcedure
-		.input(idBase)
+	uploadGenerus: protectedProcedure
+		.input(z.array(generusCreateSchema))
 		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.delete(generus).where(eq(generus.id, input.id));
+			const data = await ctx.db.insert(generus).values(input);
 
-			return formatResponse(
-				true,
-				"Berhasil menghapus data Generus",
-				data,
-				null,
-			);
-		}),
-
-	getEventAttendancebyGenerus: protectedProcedure
-		.input(idBase)
-		.query(async ({ ctx, input }) => {
-			const data = await ctx.db.query.presence.findMany({
-				where: eq(presence.generusId, input.id),
+			input.map((gen) => {
+				ctx.db.insert(log).values({
+					description: `Menambahkan Data Generus: ${gen.nama}`,
+					event: "Create",
+					userId: ctx.session.user.email,
+				});
 			});
 
 			return formatResponse(
 				true,
-				"Berhasil mendapatkan data Presensi",
+				"Berhasil menambahkan data Generus",
 				data,
 				null,
 			);
@@ -203,17 +241,4 @@ export const generusRouter = createTRPCRouter({
 			null,
 		);
 	}),
-
-	uploadGenerus: protectedProcedure
-		.input(z.array(generusCreateSchema))
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(generus).values(input);
-
-			return formatResponse(
-				true,
-				"Berhasil menambahkan data Generus",
-				data,
-				null,
-			);
-		}),
 });
