@@ -110,7 +110,7 @@ export default function SheetUpdateKelompok({
 									<Select
 										label="Desa"
 										name={field.name}
-										onChange={(e) => field.handleChange(Number(e.target.value))}
+										onChange={(e) => field.handleChange(e.target.value)}
 										options={desaOptions}
 										placeholder="Pilih Desa"
 										required={true}
