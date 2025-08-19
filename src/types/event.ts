@@ -8,7 +8,7 @@ export type EventInsert = InferInsertModel<typeof event>;
 
 export const eventCreateSchema = z.object({
 	description: z.string().nullable().optional(),
-	endDate: z.iso.datetime({ local: true }),
+	endDate: z.string(),
 	latitude: z
 		.number()
 		.min(-90, "Latitude minimal -90")
@@ -19,7 +19,7 @@ export const eventCreateSchema = z.object({
 		.min(-180, "Longitude minimal -180")
 		.max(180, "Longitude maksimal 180")
 		.optional(),
-	startDate: z.iso.datetime({ local: true }),
+	startDate: z.string(),
 	title: z
 		.string()
 		.nonempty("Judul tidak boleh kosong")

@@ -34,9 +34,44 @@ export default function ExportKegiatan() {
 			return;
 		}
 
-		const worksheet = XLSX.utils.json_to_sheet(presenceData?.data || []);
+		const total = presenceData?.data.data.length || 0;
+		const hadirCount = presenceData?.data.hadir || 0;
+		const izinCount = presenceData?.data.izin || 0;
+		const tidakHadirCount = total - hadirCount - izinCount;
+
+		const rows = [
+			{
+				Count: hadirCount,
+				Percentage: total
+					? `${((hadirCount / total) * 100).toFixed(2)}%`
+					: "0%",
+				Rekap: "Hadir",
+			},
+			{
+				Count: izinCount,
+				Percentage: total ? `${((izinCount / total) * 100).toFixed(2)}%` : "0%",
+				Rekap: "Izin",
+			},
+			{
+				Count: tidakHadirCount,
+				Percentage: total
+					? `${((tidakHadirCount / total) * 100).toFixed(2)}%`
+					: "0%",
+				Rekap: "Tidak Hadir",
+			},
+			{
+				Count: total,
+				Rekap: "Total",
+			},
+		];
+
+		const worksheetData = XLSX.utils.json_to_sheet(
+			presenceData?.data.data || [],
+		);
+		const worksheetTotal = XLSX.utils.json_to_sheet(rows);
 		const workbook = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(workbook, worksheet, "Presence");
+		XLSX.utils.book_append_sheet(workbook, worksheetData, "Data");
+		XLSX.utils.book_append_sheet(workbook, worksheetTotal, "Total");
 		XLSX.writeFile(
 			workbook,
 			`${eventData?.data.find((item) => item.id === eventIdParam)?.title}.xlsx`,

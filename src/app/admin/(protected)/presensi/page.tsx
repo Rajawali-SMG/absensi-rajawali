@@ -23,11 +23,11 @@ export default function PresensiPage() {
 			accessorKey: "id",
 		},
 		{
-			accessorKey: "event_id",
+			accessorKey: "eventId",
 			header: "Event ID",
 		},
 		{
-			accessorKey: "generus_id",
+			accessorKey: "generusId",
 			header: "Generus ID",
 		},
 		{

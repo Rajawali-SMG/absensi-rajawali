@@ -83,6 +83,7 @@ export const eventRouter = createTRPCRouter({
 
 			return formatResponse(true, "Berhasil menghapus data Event", data, null);
 		}),
+
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.event.findMany();
 

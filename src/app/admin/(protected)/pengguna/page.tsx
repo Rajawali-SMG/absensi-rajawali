@@ -75,6 +75,9 @@ export default function PenggunaPage() {
 			accessorKey: "name",
 		},
 		{
+			accessorKey: "email",
+		},
+		{
 			cell: (props) => {
 				const row = props.row.original;
 				return (

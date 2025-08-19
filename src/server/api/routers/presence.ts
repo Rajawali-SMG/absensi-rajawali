@@ -83,13 +83,31 @@ export const presenceRouter = createTRPCRouter({
 				});
 			}
 
+			const [hadir] = await ctx.db
+				.select({ count: count() })
+				.from(presence)
+				.where(
+					and(
+						eq(presence.eventId, input.eventId),
+						eq(presence.status, "Hadir"),
+					),
+				);
+
+			const [izin] = await ctx.db
+				.select({ count: count() })
+				.from(presence)
+				.where(
+					and(eq(presence.eventId, input.eventId), eq(presence.status, "Izin")),
+				);
+
 			return formatResponse(
 				true,
 				"Berhasil mendapatkan data Presensi",
-				data,
+				{ data, hadir: hadir?.count ?? 0, izin: izin?.count ?? 0 },
 				null,
 			);
 		}),
+
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.presence.findMany();
 
