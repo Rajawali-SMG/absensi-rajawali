@@ -56,28 +56,6 @@ export default function SheetCreateKelompok({
 					className="space-y-4"
 				>
 					<div className="space-y-4">
-						<form.Field name="code">
-							{(field) => (
-								<>
-									<Input
-										label="Kode"
-										variant="secondary"
-										htmlFor={field.name}
-										type="text"
-										name={field.name}
-										id={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="KGR"
-										required={true}
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
-
 						<form.Field name="nama">
 							{(field) => (
 								<>
@@ -108,12 +86,12 @@ export default function SheetCreateKelompok({
 										options={desaOptions}
 										isLoading={desaIsLoading}
 										onChange={(option) => {
-											field.handleChange(Number(option?.value || ""));
+											field.handleChange(option?.value || "");
 											console.log(option);
 										}}
 										value={
 											desaOptions.find(
-												(option) => option.value === String(field.state.value),
+												(option) => option.value === field.state.value,
 											) || null
 										}
 									/>

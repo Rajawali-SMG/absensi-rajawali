@@ -27,12 +27,12 @@ export const userCreateSchema = z.object({
 
 export const userUpdateSchema = userCreateSchema
 	.extend({
-		id: z.uuid().nonempty("ID tidak boleh kosong"),
+		id: z.string().nonempty("ID tidak boleh kosong"),
 	})
 	.omit({ password: true });
 
 export const userUpdatePasswordSchema = z.object({
-	id: z.uuid().nonempty("ID tidak boleh kosong"),
+	id: z.string().nonempty("ID tidak boleh kosong"),
 	password: z
 		.string()
 		.nonempty("Password tidak boleh kosong")

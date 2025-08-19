@@ -40,7 +40,7 @@ export default function KelompokPage() {
 		q: searchQuery,
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
-		desaId: Number(desaParam),
+		desaId: desaParam,
 	});
 	const mutation = api.kelompok.deleteKelompok.useMutation({
 		onError: ({ message }) => {

@@ -35,7 +35,7 @@ export default function LogPage() {
 			header: "Description",
 		},
 		{
-			accessorKey: "user_id",
+			accessorKey: "userId",
 			header: "User ID",
 		},
 	];

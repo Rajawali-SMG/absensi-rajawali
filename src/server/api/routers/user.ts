@@ -38,6 +38,7 @@ export const userRouter = createTRPCRouter({
 				limit,
 				offset: page * limit,
 				where: and(input.q ? ilike(user.name, `%${input.q}%`) : undefined),
+				orderBy: (user, { desc }) => [desc(user.createdAt)],
 			});
 
 			const [total] = await ctx.db.select({ count: count() }).from(user);

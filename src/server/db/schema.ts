@@ -49,6 +49,7 @@ export const jenjang = pgEnum("jenjang", [
 	"Remaja",
 	"Pra Nikah",
 ]);
+export const logEvent = pgEnum("log_event", ["Create", "Update", "Delete"]);
 
 const timestamps = {
 	createdAt: timestamp().defaultNow().notNull(),
@@ -61,7 +62,11 @@ const timestamps = {
 export const desa = createTable(
 	"desa",
 	{
-		id: serial().primaryKey().notNull().unique(),
+		id: varchar()
+			.primaryKey()
+			.$defaultFn(() => uuid())
+			.notNull()
+			.unique(),
 		...timestamps,
 		nama: varchar({ length: 256 }).unique().notNull(),
 	},
@@ -82,8 +87,7 @@ export const kelompok = createTable(
 			.$defaultFn(() => uuid()),
 		...timestamps,
 		nama: varchar({ length: 50 }).unique().notNull(),
-		code: varchar({ length: 3 }).notNull().unique(),
-		desaId: integer().notNull(),
+		desaId: varchar().notNull(),
 	},
 	(table) => [
 		index("nama_kelompok_idx").on(table.nama),
@@ -154,9 +158,9 @@ export const event = createTable(
 		title: varchar({ length: 255 }).notNull().unique(),
 		startDate: timestamp({ mode: "string" }).notNull(),
 		endDate: timestamp({ mode: "string" }).notNull(),
-		latitude: doublePrecision().default(-7.03226199678915),
-		longitude: doublePrecision().default(110.46708185437986),
-		description: varchar(),
+		latitude: doublePrecision().default(-7.03226199678915).notNull(),
+		longitude: doublePrecision().default(110.46708185437986).notNull(),
+		description: text(),
 	},
 	(table) => [index("title_event_idx").on(table.title)],
 );
@@ -224,7 +228,7 @@ export const log = createTable(
 			.notNull()
 			.unique(),
 		createdAt: timestamp().defaultNow().notNull(),
-		event: varchar({ length: 255 }).notNull(),
+		event: logEvent().notNull(),
 		description: text(),
 		userId: varchar().notNull(),
 	},

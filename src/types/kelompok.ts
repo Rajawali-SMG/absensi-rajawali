@@ -11,25 +11,19 @@ export const kelompokCreateSchema = z.object({
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(50, "Nama maksimal 50 karakter"),
-	code: z
-		.string()
-		.nonempty("Kode tidak boleh kosong")
-		.min(3, "Kode minimal 3 karakter")
-		.max(3, "Kode maksimal 3 karakter"),
-	desaId: z.number().min(1, "Desa tidak boleh kosong"),
+	desaId: z.string().nonempty("Desa tidak boleh kosong"),
 });
 
 export const kelompokUpdateSchema = kelompokCreateSchema.extend({
-	id: z.uuid().nonempty("ID tidak boleh kosong"),
+	id: z.string().nonempty("ID tidak boleh kosong"),
 });
 
 export const kelompokFilter = filterBase.extend({
-	desaId: z.number().optional(),
+	desaId: z.string().optional(),
 });
 
 export const kelompokDefaultValue: KelompokInsert = {
 	id: "",
 	nama: "",
-	code: "",
-	desaId: 0,
+	desaId: "",
 };

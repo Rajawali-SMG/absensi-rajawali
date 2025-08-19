@@ -31,7 +31,7 @@ export default function DesaPage() {
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
 	const [selectedData, setSelectedData] = useState<DesaSelect | null>(null);
-	const [deleteId, setDeleteId] = useState<number>(0);
+	const [deleteId, setDeleteId] = useState("");
 	const mutation = api.desa.deleteDesa.useMutation({
 		onError: (error) => {
 			toast.dismiss();
@@ -50,7 +50,7 @@ export default function DesaPage() {
 	const handleDeleteConfirm = () => {
 		mutation.mutate({ id: deleteId });
 		setDialog(false);
-		setDeleteId(0);
+		setDeleteId("");
 	};
 
 	const handleDelete = (row: DesaSelect) => {
@@ -101,7 +101,7 @@ export default function DesaPage() {
 		if (isError) {
 			toast.error(error.message);
 		}
-	}, [isError]);
+	}, [isError, error]);
 
 	return (
 		<>

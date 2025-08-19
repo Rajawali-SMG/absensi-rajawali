@@ -11,7 +11,7 @@ import {
 	kelompokFilter,
 	kelompokUpdateSchema,
 } from "@/types/kelompok";
-import { kelompok } from "../../db/schema";
+import { generus, kelompok } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const kelompokRouter = createTRPCRouter({
@@ -38,6 +38,7 @@ export const kelompokRouter = createTRPCRouter({
 					input.q ? ilike(kelompok.nama, `%${input.q}%`) : undefined,
 					input.desaId ? eq(kelompok.desaId, input.desaId) : undefined,
 				),
+				orderBy: (kelompok, { desc }) => [desc(kelompok.createdAt)],
 			});
 
 			const [total] = await ctx.db.select({ count: count() }).from(kelompok);
@@ -79,14 +80,13 @@ export const kelompokRouter = createTRPCRouter({
 		.input(kelompokCreateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const existingKelompok = await ctx.db.query.kelompok.findFirst({
-				where: or(eq(kelompok.code, input.code), eq(kelompok.nama, input.nama)),
+				where: eq(kelompok.nama, input.nama),
 			});
 
 			if (existingKelompok) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message:
-						"Code atau nama sudah didaftarkan, silahkan gunakan kode lain",
+					message: "Nama sudah didaftarkan, silahkan gunakan nama lain",
 				});
 			}
 			const data = await ctx.db.insert(kelompok).values(input);
@@ -124,6 +124,17 @@ export const kelompokRouter = createTRPCRouter({
 	deleteKelompok: protectedProcedure
 		.input(idBase)
 		.mutation(async ({ ctx, input }) => {
+			const relatedGenerus = await ctx.db.query.generus.findFirst({
+				where: eq(generus.kelompokId, input.id),
+			});
+
+			if (relatedGenerus) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Generus terkait ditemukan",
+				});
+			}
+
 			const data = await ctx.db
 				.delete(kelompok)
 				.where(eq(kelompok.id, input.id));

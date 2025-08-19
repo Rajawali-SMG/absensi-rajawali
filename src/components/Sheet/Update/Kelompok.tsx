@@ -29,7 +29,6 @@ export default function SheetUpdateKelompok({
 		defaultValues: {
 			id: selectedData.id,
 			nama: selectedData.nama,
-			code: selectedData.code,
 			desaId: selectedData.desaId,
 		},
 		onSubmit: ({ value }) => {

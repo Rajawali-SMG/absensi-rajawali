@@ -35,6 +35,7 @@ export const presenceRouter = createTRPCRouter({
 			const data = await ctx.db.query.presence.findMany({
 				limit,
 				offset: page * limit,
+				orderBy: (presence, { desc }) => [desc(presence.createdAt)],
 			});
 
 			const [total] = await ctx.db.select({ count: count() }).from(presence);

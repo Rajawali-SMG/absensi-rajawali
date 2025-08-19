@@ -104,7 +104,7 @@ export default function SheetCreateEvent({
 										type="datetime-local"
 										name={field.name}
 										id={field.name}
-										value={field.state.value || ""}
+										value={field.state.value}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"

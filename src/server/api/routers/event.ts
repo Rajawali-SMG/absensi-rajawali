@@ -34,6 +34,7 @@ export const eventRouter = createTRPCRouter({
 			const data = await ctx.db.query.event.findMany({
 				limit,
 				offset: page * limit,
+				orderBy: (event, { desc }) => [desc(event.createdAt)],
 			});
 
 			const [total] = await ctx.db.select({ count: count() }).from(event);

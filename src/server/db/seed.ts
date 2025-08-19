@@ -1,7 +1,10 @@
+import { faker } from "@faker-js/faker/locale/id_ID";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { reset, seed } from "drizzle-seed";
-import { v4 as uuidv4 } from "uuid";
 import { env } from "@/env";
+import type { DesaInsert } from "@/types/desa";
+import type { EventInsert } from "@/types/event";
+import type { GenerusInsert } from "@/types/generus";
+import type { KelompokInsert } from "@/types/kelompok";
 import { auth } from "../auth";
 import {
 	account,
@@ -19,142 +22,192 @@ import {
 async function main() {
 	console.log("Seeding started⏳");
 	const db = drizzle(env.DATABASE_URL, { casing: "snake_case" });
-	const uuids: string[] = Array.from({ length: 19 }, () => uuidv4());
-	const kelompok_code = [
-		"SML",
-		"SRT",
-		"FTM",
-		"ZBR",
-		"KKS",
-		"SGW",
-		"PSR",
-		"LMP",
-		"KGR",
-		"KRA",
-		"PDS",
-		"SRJ",
-		"MJG",
-		"GRH",
-		"GNS",
-		"BGA",
-		"BNK",
-		"MKT",
-		"SHD",
-	];
-	await reset(db, {
-		desa,
-		kelompok,
-		generus,
-		log,
-		presence,
-		user,
-		event,
-		account,
-		verification,
-		session,
-	});
-	await seed(
-		db,
+
+	await db.delete(desa);
+	const desaData: DesaInsert[] = [
 		{
-			desa,
-			kelompok,
-			generus,
-			log,
-			presence,
-			event,
+			nama: "Sendang Mulyo",
 		},
-		{ count: 25 },
-	).refine((f) => ({
-		desa: {
-			columns: {
-				nama: f.valuesFromArray({
-					values: ["Sendang Mulyo", "Kokosan", "Kanguru", "Graha Mukti"],
-				}),
-			},
-			count: 4,
+		{
+			nama: "Kokosan",
 		},
-		kelompok: {
-			columns: {
-				id: f.valuesFromArray({
-					values: uuids,
-				}),
-				nama: f.valuesFromArray({
-					values: [
-						"Sendang Mulyo",
-						"Sambiroto",
-						"Fatmawati",
-						"Zebra",
-						"Kokosan",
-						"Sendang Guwo",
-						"Pancur Sari",
-						"Lamper Tengah",
-						"Kanguru",
-						"Karang Anyar",
-						"Pandansari",
-						"Sambirejo",
-						"Menjangan",
-						"Graha Mukti",
-						"Ganesha",
-						"Banget Ayu",
-						"Genuk Indah",
-						"Muktiharjo",
-						"Syuhada",
-					],
-				}),
-				code: f.valuesFromArray({
-					values: kelompok_code,
-				}),
-				desaId: f.valuesFromArray({
-					values: [1, 2, 3, 4],
-				}),
-			},
-			count: 19,
+		{
+			nama: "Kanguru",
 		},
-		generus: {
-			columns: {
-				id: f.uuid(),
-				generusId: f.string({ isUnique: true }),
-				nama: f.fullName(),
-				tempatLahir: f.city(),
-				nomerWhatsapp: f.phoneNumber({ template: "+628##########" }),
-				namaOrangTua: f.fullName(),
-				nomerWhatsappOrangTua: f.phoneNumber({
-					template: "+628##########",
-				}),
-				alamatTempatTinggal: f.streetAddress(),
-				alamatAsal: f.streetAddress(),
-				kelompokId: f.valuesFromArray({
-					values: uuids,
-				}),
-			},
+		{
+			nama: "Graha Mukti",
 		},
-		log: {
-			columns: {
-				id: f.uuid(),
-				event: f.valuesFromArray({
-					values: ["Login", "Logout", "Register", "Update", "Delete"],
-				}),
-				description: f.loremIpsum(),
-				userId: f.uuid(),
-			},
+	];
+	await db.insert(desa).values(desaData);
+
+	const desaIds = await db.select({ id: desa.id }).from(desa);
+	await db.delete(kelompok);
+	const kelompokData: KelompokInsert[] = [
+		{
+			id: faker.string.uuid(),
+			nama: "Sendang Mulyo",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
-		event: {
-			columns: {
-				id: f.uuid(),
-				description: f.loremIpsum(),
-			},
+		{
+			id: faker.string.uuid(),
+			nama: "Sambiroto",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
-		presence: {
-			columns: {
-				id: f.uuid(),
-				status: f.valuesFromArray({
-					values: ["Hadir", "Izin", "Tidak Hadir"],
-				}),
-				generusId: f.uuid(),
-				eventId: f.uuid(),
-			},
+		{
+			id: faker.string.uuid(),
+			nama: "Fatmawati",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
 		},
-	}));
+		{
+			id: faker.string.uuid(),
+			nama: "Zebra",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Kokosan",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Sendang Guwo",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Pancur Sari",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Lamper Tengah",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Kanguru",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Karang Anyar",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Pandansari",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Sambirejo",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Menjangan",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Graha Mukti",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Ganesha",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Banget Ayu",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Genuk Indah",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Muktiharjo",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+		{
+			id: faker.string.uuid(),
+			nama: "Syuhada",
+			desaId: faker.helpers.arrayElement(desaIds.map((d) => d.id)),
+		},
+	];
+	await db.insert(kelompok).values(kelompokData);
+
+	const kelompokIds = await db.select({ id: kelompok.id }).from(kelompok);
+
+	await db.delete(generus);
+	const generusData: GenerusInsert[] = [];
+	for (let i = 1; i <= 25; i++) {
+		generusData.push({
+			nama: faker.person.fullName(),
+			jenisKelamin: faker.helpers.arrayElement(["Laki-laki", "Perempuan"]),
+			tempatLahir: faker.location.city(),
+			tanggalLahir: faker.date.birthdate().toDateString(),
+			jenjang: faker.helpers.arrayElement([
+				"Paud",
+				"Caberawit",
+				"Pra Remaja",
+				"Remaja",
+				"Pra Nikah",
+				"Remaja",
+				"Pra Nikah",
+			]),
+			pendidikanTerakhir: faker.helpers.arrayElement([
+				"PAUD",
+				"TK",
+				"SD",
+				"SMP",
+				"SMA/SMK",
+				"D1-D3",
+				"S1/D4",
+				"S2",
+				"S3",
+			]),
+			alamatTempatTinggal: faker.location.streetAddress(),
+			alamatAsal: faker.location.streetAddress(),
+			nomerWhatsapp: faker.phone.number({ style: "international" }),
+			nomerWhatsappOrangTua: faker.phone.number({ style: "international" }),
+			namaOrangTua: faker.person.fullName(),
+			sambung: faker.helpers.arrayElement(["Aktif", "Tidak Aktif"]),
+			keterangan: faker.helpers.arrayElement(["Pendatang", "Pribumi"]),
+			kelompokId: faker.helpers.arrayElement(
+				kelompokIds.map((k) => k.id) ?? [],
+			),
+		});
+	}
+	await db.insert(generus).values(generusData);
+
+	await db.delete(event);
+	const eventData: EventInsert[] = [];
+	for (let i = 1; i <= 25; i++) {
+		const title = `${faker.food.spice()} - ${faker.string.alphanumeric(6)}`;
+		eventData.push({
+			title,
+			startDate: faker.date.past().toISOString(),
+			endDate: faker.date.future().toISOString(),
+			latitude: faker.location.latitude({ precision: 1 }),
+			longitude: faker.location.longitude({ precision: 1 }),
+			description: faker.lorem.sentence({ min: 1, max: 5 }),
+		});
+	}
+	await db.insert(event).values(eventData);
+
+	await db.delete(log);
+	await db.delete(presence);
+	await db.delete(session);
+	await db.delete(user);
+	await db.delete(verification);
+	await db.delete(account);
+	await db.delete(session);
+
 	await auth.api.signUpEmail({
 		body: {
 			name: "test",

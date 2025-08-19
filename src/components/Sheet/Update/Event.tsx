@@ -88,7 +88,7 @@ export default function SheetUpdateEvent({
 										label="Start Date"
 										variant="secondary"
 										htmlFor={field.name}
-										type="date"
+										type="datetime-local"
 										name={field.name}
 										id={field.name}
 										value={field.state.value}
@@ -110,7 +110,7 @@ export default function SheetUpdateEvent({
 										label="End Date"
 										variant="secondary"
 										htmlFor={field.name}
-										type="date"
+										type="datetime-local"
 										name={field.name}
 										id={field.name}
 										value={field.state.value || ""}

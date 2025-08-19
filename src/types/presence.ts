@@ -17,7 +17,7 @@ export const presenceCreateSchema = z.object({
 });
 
 export const presenceUpdateSchema = presenceCreateSchema.extend({
-	id: z.uuid().nonempty("ID tidak boleh kosong"),
+	id: z.string().nonempty("ID tidak boleh kosong"),
 });
 
 export const presenceFilter = filterBase.omit({

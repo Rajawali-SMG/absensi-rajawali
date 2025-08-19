@@ -1,12 +1,9 @@
-import { TRPCError } from "@trpc/server";
-import { and, count, eq, ilike } from "drizzle-orm";
+import { and, count, ilike } from "drizzle-orm";
 import {
-	formatResponse,
 	formatResponseArray,
 	formatResponsePagination,
 } from "@/helper/response.helper";
-import { idBase } from "@/types";
-import { logCreateSchema, logFilter, logUpdateSchema } from "@/types/log";
+import { logFilter } from "@/types/log";
 import { log } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -34,6 +31,7 @@ export const logRouter = createTRPCRouter({
 					input.q ? ilike(log.event, `%${input.q}%`) : undefined,
 					input.q ? ilike(log.description, `%${input.q}%`) : undefined,
 				),
+				orderBy: (log, { desc }) => [desc(log.createdAt)],
 			});
 
 			const [total] = await ctx.db.select({ count: count() }).from(log);
@@ -47,54 +45,5 @@ export const logRouter = createTRPCRouter({
 				{ items: data, meta: { total: totalCount, page, limit, totalPages } },
 				null,
 			);
-		}),
-
-	getOneLog: protectedProcedure.input(idBase).query(async ({ ctx, input }) => {
-		const data = await ctx.db.query.log.findFirst({
-			where: eq(log.id, input.id),
-		});
-
-		if (!data) {
-			throw new TRPCError({
-				code: "NOT_FOUND",
-				message: "Data Log tidak ditemukan",
-			});
-		}
-
-		return formatResponse(true, "Berhasil mendapatkan data Log", data, null);
-	}),
-
-	createLog: protectedProcedure
-		.input(logCreateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(log).values(input);
-
-			return formatResponse(true, "Berhasil menambahkan data Log", data, null);
-		}),
-
-	updateLog: protectedProcedure
-		.input(logUpdateSchema)
-		.mutation(async ({ ctx, input }) => {
-			if (!input.id) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "ID tidak ditemukan",
-				});
-			}
-
-			const data = await ctx.db
-				.update(log)
-				.set(input)
-				.where(eq(log.id, input.id));
-
-			return formatResponse(true, "Berhasil mengubah data Log", data, null);
-		}),
-
-	deleteLog: protectedProcedure
-		.input(idBase)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.delete(log).where(eq(log.id, input.id));
-
-			return formatResponse(true, "Berhasil menghapus data Log", data, null);
 		}),
 });

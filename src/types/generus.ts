@@ -50,11 +50,11 @@ export const generusCreateSchema = z.object({
 	alamatTempatTinggal: z.string().nonempty("Alamat tidak boleh kosong"),
 	keterangan: keteranganSchema,
 	alamatAsal: z.string().optional().nullable(),
-	kelompokId: z.uuid().nonempty("Kelompok tidak boleh kosong"),
+	kelompokId: z.string().nonempty("Kelompok tidak boleh kosong"),
 });
 
 export const generusUpdateSchema = generusCreateSchema.extend({
-	id: z.uuid().nonempty("ID tidak boleh kosong"),
+	id: z.string().nonempty("ID tidak boleh kosong"),
 });
 
 export const generusFilter = filterBase.extend({
