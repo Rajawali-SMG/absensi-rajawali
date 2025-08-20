@@ -35,9 +35,13 @@ export default function KegiatanPage() {
 	const [deleteId, setDeleteId] = useState("");
 	const utils = api.useUtils();
 
-	const mutation = api.event.deleteEvent.useMutation({
-		onError: (error) => {
-			toast.error(error.message);
+	const {
+		mutateAsync,
+		data: deleteData,
+		error: deleteError,
+	} = api.event.deleteEvent.useMutation({
+		onSuccess: () => {
+			utils.event.getAllPaginated.invalidate();
 		},
 	});
 
@@ -47,15 +51,11 @@ export default function KegiatanPage() {
 	};
 
 	const handleDeleteConfirm = () => {
-		mutation.mutate(
-			{ id: deleteId },
-			{
-				onSuccess: (data) => {
-					utils.event.getAllPaginated.invalidate();
-					toast.success(data.message);
-				},
-			},
-		);
+		toast.promise(mutateAsync({ id: deleteId }), {
+			error: deleteError?.message,
+			loading: "Loading...",
+			success: deleteData?.message,
+		});
 		setDialog(false);
 		setDeleteId("");
 	};

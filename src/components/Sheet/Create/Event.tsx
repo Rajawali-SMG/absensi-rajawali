@@ -12,13 +12,8 @@ export default function SheetCreateEvent({
 }) {
 	const utils = api.useUtils();
 
-	const { mutate } = api.event.createEvent.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-
-		onSuccess: ({ message }) => {
-			toast.success(message);
+	const { mutateAsync, error, data } = api.event.createEvent.useMutation({
+		onSuccess: () => {
 			utils.event.getAllPaginated.invalidate();
 			closeSheet();
 		},
@@ -27,7 +22,11 @@ export default function SheetCreateEvent({
 	const form = useForm({
 		defaultValues: eventDefaultValue,
 		onSubmit: ({ value }) => {
-			mutate(value);
+			toast.promise(mutateAsync(value), {
+				error: error?.message,
+				loading: "Loading...",
+				success: data?.message,
+			});
 		},
 		validators: {
 			onSubmit: eventCreateSchema,

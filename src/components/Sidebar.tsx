@@ -116,7 +116,7 @@ export default function Sidebar() {
 				<Dialog
 					cancel="Tidak"
 					confirm="Ya, Logout"
-					description="Apakah yakin kamu mau login?"
+					description="Apakah yakin kamu mau logout?"
 					handleCancel={() => setLogoutDialog(false)}
 					handleConfirm={handleLogout}
 					title="Logout"

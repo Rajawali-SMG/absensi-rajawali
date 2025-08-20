@@ -33,13 +33,13 @@ export default function GenerusCreatePage() {
 	const router = useRouter();
 	const utils = api.useUtils();
 
-	const { mutate } = api.generus.createGenerus.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-		onSuccess: ({ message }) => {
+	const {
+		mutateAsync,
+		data: createData,
+		error: createError,
+	} = api.generus.createGenerus.useMutation({
+		onSuccess: () => {
 			utils.generus.getAllPaginated.invalidate();
-			toast.success(message);
 			router.push("/admin/generus");
 		},
 	});
@@ -53,7 +53,11 @@ export default function GenerusCreatePage() {
 	const form = useForm({
 		defaultValues: defaultGenerus,
 		onSubmit: ({ value }) => {
-			mutate(value);
+			toast.promise(mutateAsync(value), {
+				error: createError?.message,
+				loading: "Loading...",
+				success: createData?.message,
+			});
 		},
 		validators: {
 			onSubmit: generusCreateSchema,

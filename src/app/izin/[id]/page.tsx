@@ -26,14 +26,17 @@ export default function IzinPage({
 	} = api.event.getOneEventPublic.useQuery({
 		id,
 	});
-	const { mutate } = api.presence.createPresence.useMutation({
+	const {
+		mutateAsync,
+		data: createData,
+		error: createError,
+	} = api.presence.createPresence.useMutation({
 		onError: ({ message }) => {
 			toast.error(message);
 		},
-		onSuccess: ({ message }) => {
+		onSuccess: () => {
 			utils.generus.withKelompok.invalidate();
 			utils.event.countGenerus.invalidate();
-			toast.success(message);
 		},
 	});
 	const form = useForm({
@@ -43,11 +46,18 @@ export default function IzinPage({
 			status: "Izin",
 		},
 		onSubmit: ({ value }) => {
-			mutate({
-				eventId: id,
-				generusId: value.generusId,
-				status: "Izin",
-			});
+			toast.promise(
+				mutateAsync({
+					eventId: id,
+					generusId: value.generusId,
+					status: "Izin",
+				}),
+				{
+					error: createError?.message,
+					loading: "Loading...",
+					success: createData?.message,
+				},
+			);
 		},
 	});
 	const { data: presenceData } = api.generus.withKelompok.useQuery({

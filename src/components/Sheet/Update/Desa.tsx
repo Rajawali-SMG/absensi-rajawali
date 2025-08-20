@@ -14,13 +14,9 @@ export default function SheetUpdateDesa({
 }) {
 	const utils = api.useUtils();
 
-	const { mutate } = api.desa.updateDesa.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-		onSuccess: ({ message }) => {
+	const { mutateAsync, error, data } = api.desa.updateDesa.useMutation({
+		onSuccess: () => {
 			utils.desa.getAllPaginated.invalidate();
-			toast.success(message);
 		},
 	});
 
@@ -30,7 +26,11 @@ export default function SheetUpdateDesa({
 			nama: selectedData.nama,
 		},
 		onSubmit: ({ value }) => {
-			mutate(value);
+			toast.promise(mutateAsync(value), {
+				error: error?.message,
+				loading: "Loading...",
+				success: data?.message,
+			});
 			closeSheet();
 		},
 		validators: {

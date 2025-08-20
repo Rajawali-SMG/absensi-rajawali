@@ -26,19 +26,14 @@ export default function AbsenPage({
 	} = api.event.getOneEventPublic.useQuery({
 		id,
 	});
-	const { mutate } = api.presence.createPresence.useMutation({
-		onError: ({ message }) => {
-			toast.dismiss();
-			toast.error(message);
-		},
-		onMutate: () => {
-			toast.loading("Loading...");
-		},
-		onSuccess: ({ message }) => {
-			toast.dismiss();
+	const {
+		mutateAsync,
+		data,
+		error: mutateError,
+	} = api.presence.createPresence.useMutation({
+		onSuccess: () => {
 			utils.generus.withKelompok.invalidate();
 			utils.event.countGenerus.invalidate();
-			toast.success(message);
 		},
 	});
 
@@ -49,11 +44,18 @@ export default function AbsenPage({
 			status: "Hadir",
 		},
 		onSubmit: ({ value }) => {
-			mutate({
-				eventId: id,
-				generusId: value.generusId,
-				status: "Hadir",
-			});
+			toast.promise(
+				mutateAsync({
+					eventId: id,
+					generusId: value.generusId,
+					status: "Hadir",
+				}),
+				{
+					error: mutateError?.message,
+					loading: "Loading...",
+					success: data?.message,
+				},
+			);
 		},
 	});
 	const { data: presenceData } = api.generus.withKelompok.useQuery({

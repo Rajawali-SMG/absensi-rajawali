@@ -61,18 +61,22 @@ export default function GenerusPage() {
 		});
 	const utils = api.useUtils();
 
-	const mutation = api.generus.deleteGenerus.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-		onSuccess: ({ message }) => {
+	const {
+		mutateAsync,
+		data: deleteData,
+		error: deleteError,
+	} = api.generus.deleteGenerus.useMutation({
+		onSuccess: () => {
 			utils.generus.getAllPaginated.invalidate();
-			toast.success(message);
 		},
 	});
 
 	const handleDeleteConfirm = () => {
-		mutation.mutate({ id: deleteId });
+		toast.promise(mutateAsync({ id: deleteId }), {
+			error: deleteError?.message,
+			loading: "Loading...",
+			success: deleteData?.message,
+		});
 		setDialog(false);
 		setDeleteId("");
 	};

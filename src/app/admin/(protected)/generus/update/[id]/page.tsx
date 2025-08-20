@@ -55,16 +55,16 @@ export default function GenerusUpdatePage({
 	} = api.kelompok.getAll.useQuery();
 	const utils = api.useUtils();
 
-	const { mutate } = api.generus.updateGenerus.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-		onSuccess: ({ message }) => {
+	const {
+		mutateAsync,
+		data: updateData,
+		error: updateError,
+	} = api.generus.updateGenerus.useMutation({
+		onSuccess: () => {
 			utils.generus.getAllPaginated.invalidate();
 			utils.generus.getOneGenerus.invalidate({
 				id: id,
 			});
-			toast.success(message);
 			router.push("/admin/generus");
 		},
 	});
@@ -72,10 +72,17 @@ export default function GenerusUpdatePage({
 	const form = useForm({
 		defaultValues: generusData?.data || defaultGenerus,
 		onSubmit: ({ value }) => {
-			mutate({
-				...value,
-				id: id,
-			});
+			toast.promise(
+				mutateAsync({
+					...value,
+					id: id,
+				}),
+				{
+					error: updateError?.message,
+					loading: "Loading...",
+					success: updateData?.message,
+				},
+			);
 		},
 
 		validators: {

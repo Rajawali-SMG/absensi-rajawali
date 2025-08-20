@@ -40,7 +40,7 @@ export default function LoginPage() {
 		<div className="flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900">
 			<Image
 				alt="Logo Rajawali"
-				className="h-24 mb-10"
+				className="	mb-10"
 				height={200}
 				src="/logo-rajawali.png"
 				width={200}

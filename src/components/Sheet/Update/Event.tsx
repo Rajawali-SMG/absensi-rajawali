@@ -14,14 +14,9 @@ export default function SheetUpdateEvent({
 }) {
 	const utils = api.useUtils();
 
-	const { mutate } = api.event.updateEvent.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-
-		onSuccess: ({ message }) => {
+	const { mutateAsync, error, data } = api.event.updateEvent.useMutation({
+		onSuccess: () => {
 			utils.event.getAllPaginated.invalidate();
-			toast.success(message);
 			closeSheet();
 		},
 	});
@@ -37,7 +32,11 @@ export default function SheetUpdateEvent({
 			title: selectedData.title,
 		},
 		onSubmit: ({ value }) => {
-			mutate(value);
+			toast.promise(mutateAsync(value), {
+				error: error?.message,
+				loading: "Loading...",
+				success: data?.message,
+			});
 			closeSheet();
 		},
 		validators: {

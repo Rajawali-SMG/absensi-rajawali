@@ -13,13 +13,13 @@ export default function SheetCreateKelompok({
 }) {
 	const utils = api.useUtils();
 	const { data, isLoading: desaIsLoading } = api.desa.getAll.useQuery();
-	const { mutate } = api.kelompok.createKelompok.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-		onSuccess: ({ message }) => {
+	const {
+		mutateAsync,
+		error,
+		data: createData,
+	} = api.kelompok.createKelompok.useMutation({
+		onSuccess: () => {
 			utils.kelompok.getAllPaginated.invalidate();
-			toast.success(message);
 			closeSheet();
 		},
 	});
@@ -27,7 +27,11 @@ export default function SheetCreateKelompok({
 	const form = useForm({
 		defaultValues: kelompokDefaultValue,
 		onSubmit: ({ value }) => {
-			mutate(value);
+			toast.promise(mutateAsync(value), {
+				error: error?.message,
+				loading: "Loading...",
+				success: createData?.message,
+			});
 		},
 		validators: {
 			onSubmit: kelompokCreateSchema,

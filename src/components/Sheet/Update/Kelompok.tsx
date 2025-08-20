@@ -15,13 +15,13 @@ export default function SheetUpdateKelompok({
 }) {
 	const utils = api.useUtils();
 	const { data } = api.desa.getAll.useQuery();
-	const { mutate } = api.kelompok.updateKelompok.useMutation({
-		onError: ({ message }) => {
-			toast.error(message);
-		},
-		onSuccess: ({ message }) => {
+	const {
+		mutateAsync,
+		error,
+		data: updateData,
+	} = api.kelompok.updateKelompok.useMutation({
+		onSuccess: () => {
 			utils.kelompok.getAllPaginated.invalidate();
-			toast.success(message);
 		},
 	});
 
@@ -33,7 +33,11 @@ export default function SheetUpdateKelompok({
 			nama: selectedData.nama,
 		},
 		onSubmit: ({ value }) => {
-			mutate(value);
+			toast.promise(mutateAsync(value), {
+				error: error?.message,
+				loading: "Loading...",
+				success: updateData?.message,
+			});
 			closeSheet();
 		},
 		validators: {
