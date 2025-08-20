@@ -75,6 +75,7 @@ export const kelompokRouter = createTRPCRouter({
 				null,
 			);
 		}),
+
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.kelompok.findMany();
 
@@ -89,19 +90,24 @@ export const kelompokRouter = createTRPCRouter({
 	getAllPaginated: protectedProcedure
 		.input(kelompokFilter)
 		.query(async ({ ctx, input }) => {
+			const whereFilter = and(
+				input.q ? ilike(kelompok.nama, `%${input.q}%`) : undefined,
+				input.desaId ? eq(kelompok.desaId, input.desaId) : undefined,
+			);
+
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.kelompok.findMany({
 				limit,
 				offset: page * limit,
 				orderBy: (kelompok, { desc }) => [desc(kelompok.updatedAt)],
-				where: and(
-					input.q ? ilike(kelompok.nama, `%${input.q}%`) : undefined,
-					input.desaId ? eq(kelompok.desaId, input.desaId) : undefined,
-				),
+				where: whereFilter,
 			});
 
-			const [total] = await ctx.db.select({ count: count() }).from(kelompok);
+			const [total] = await ctx.db
+				.select({ count: count() })
+				.from(kelompok)
+				.where(whereFilter);
 
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);

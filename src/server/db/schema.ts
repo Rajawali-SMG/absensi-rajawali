@@ -85,7 +85,9 @@ export const kelompok = createTable(
 			.$defaultFn(() => uuid()),
 		...timestamps,
 		code: varchar({ length: 3 }).notNull().unique(),
-		desaId: varchar().notNull(),
+		desaId: varchar()
+			.notNull()
+			.references(() => desa.id),
 		nama: varchar({ length: 50 }).unique().notNull(),
 	},
 	(table) => [
@@ -208,10 +210,7 @@ export const user = createTable(
 		name: text().notNull(),
 		role: role().notNull(),
 	},
-	(table) => [
-		index("name_user_idx").on(table.name),
-		// index("role_user_idx").on(table.role),
-	],
+	(table) => [index("name_user_idx").on(table.name)],
 );
 
 export const userRelations = relations(user, ({ many }) => ({

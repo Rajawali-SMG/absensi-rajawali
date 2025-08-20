@@ -12,8 +12,17 @@ export default function SheetCreateDesa({
 }) {
 	const utils = api.useUtils();
 
-	const { mutateAsync, error, data } = api.desa.createDesa.useMutation({
-		onSuccess: () => {
+	const { mutate } = api.desa.createDesa.useMutation({
+		onError: (error) => {
+			toast.dismiss();
+			toast.error(error.message);
+		},
+		onMutate({ nama }) {
+			toast.loading(`Membuat desa ${nama}`);
+		},
+		onSuccess: ({ message }) => {
+			toast.dismiss();
+			toast.success(message);
 			utils.desa.getAllPaginated.invalidate();
 			closeSheet();
 		},
@@ -22,11 +31,7 @@ export default function SheetCreateDesa({
 	const form = useForm({
 		defaultValues: desaDefaultValue,
 		onSubmit: ({ value }) => {
-			toast.promise(mutateAsync(value), {
-				error: error?.message,
-				loading: "Loading...",
-				success: data?.message,
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: desaCreateSchema,

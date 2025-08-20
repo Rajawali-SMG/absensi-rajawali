@@ -91,16 +91,23 @@ export const userRouter = createTRPCRouter({
 	getAllPaginated: protectedProcedure
 		.input(userFilter)
 		.query(async ({ ctx, input }) => {
+			const whereFilter = and(
+				input.q ? ilike(user.name, `%${input.q}%`) : undefined,
+			);
+
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.user.findMany({
 				limit,
 				offset: page * limit,
 				orderBy: (user, { desc }) => [desc(user.updatedAt)],
-				where: and(input.q ? ilike(user.name, `%${input.q}%`) : undefined),
+				where: whereFilter,
 			});
 
-			const [total] = await ctx.db.select({ count: count() }).from(user);
+			const [total] = await ctx.db
+				.select({ count: count() })
+				.from(user)
+				.where(whereFilter);
 
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);

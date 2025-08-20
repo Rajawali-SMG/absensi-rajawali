@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, ilike, ne } from "drizzle-orm";
 import {
 	formatResponse,
 	formatResponseArray,
@@ -98,15 +98,21 @@ export const eventRouter = createTRPCRouter({
 	getAllPaginated: protectedProcedure
 		.input(eventFilter)
 		.query(async ({ ctx, input }) => {
+			const whereFilter = ilike(event.title, `%${input.q}%`);
+
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.event.findMany({
 				limit,
 				offset: page * limit,
 				orderBy: (event, { desc }) => [desc(event.updatedAt)],
+				where: whereFilter,
 			});
 
-			const [total] = await ctx.db.select({ count: count() }).from(event);
+			const [total] = await ctx.db
+				.select({ count: count() })
+				.from(event)
+				.where(whereFilter);
 
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
@@ -154,6 +160,17 @@ export const eventRouter = createTRPCRouter({
 	updateEvent: protectedProcedure
 		.input(eventUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			const existingEvent = await ctx.db.query.event.findFirst({
+				where: and(eq(event.title, input.title), ne(event.id, input.id)),
+			});
+
+			if (existingEvent) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Judul sudah didaftarkan, silahkan gunakan judul lain",
+				});
+			}
+
 			if (!input.id) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",

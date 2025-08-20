@@ -86,29 +86,32 @@ export const generusRouter = createTRPCRouter({
 	getAllPaginated: protectedProcedure
 		.input(generusFilter)
 		.query(async ({ ctx, input }) => {
+			const whereFilter = and(
+				ilike(generus.nama, `%${input.q}%`),
+				input.jenisKelamin
+					? eq(generus.jenisKelamin, input.jenisKelamin)
+					: undefined,
+				input.jenjang ? eq(generus.jenjang, input.jenjang) : undefined,
+				input.pendidikanTerakhir
+					? eq(generus.pendidikanTerakhir, input.pendidikanTerakhir)
+					: undefined,
+				input.sambung ? eq(generus.sambung, input.sambung) : undefined,
+				input.keterangan ? eq(generus.keterangan, input.keterangan) : undefined,
+			);
+
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
 			const data = await ctx.db.query.generus.findMany({
 				limit,
 				offset: page * limit,
 				orderBy: (generus, { desc }) => [desc(generus.updatedAt)],
-				where: and(
-					ilike(generus.nama, `%${input.q}%`),
-					input.jenisKelamin
-						? eq(generus.jenisKelamin, input.jenisKelamin)
-						: undefined,
-					input.jenjang ? eq(generus.jenjang, input.jenjang) : undefined,
-					input.pendidikanTerakhir
-						? eq(generus.pendidikanTerakhir, input.pendidikanTerakhir)
-						: undefined,
-					input.sambung ? eq(generus.sambung, input.sambung) : undefined,
-					input.keterangan
-						? eq(generus.keterangan, input.keterangan)
-						: undefined,
-				),
+				where: whereFilter,
 			});
 
-			const [total] = await ctx.db.select({ count: count() }).from(generus);
+			const [total] = await ctx.db
+				.select({ count: count() })
+				.from(generus)
+				.where(whereFilter);
 
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);

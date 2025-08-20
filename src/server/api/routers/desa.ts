@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq, ilike } from "drizzle-orm";
+import { and, count, eq, ilike, ne } from "drizzle-orm";
 import {
 	formatResponse,
 	formatResponseArray,
@@ -73,6 +73,8 @@ export const desaRouter = createTRPCRouter({
 	getAllPaginated: protectedProcedure
 		.input(desaFilter)
 		.query(async ({ ctx, input }) => {
+			const whereFilter = ilike(desa.nama, `%${input.q}%`);
+
 			const limit = input.limit ?? 9;
 			const page = input.page ?? 0;
 
@@ -80,10 +82,13 @@ export const desaRouter = createTRPCRouter({
 				limit,
 				offset: page * limit,
 				orderBy: (desa, { desc }) => [desc(desa.updatedAt)],
-				where: ilike(desa.nama, `%${input.q}%`),
+				where: whereFilter,
 			});
 
-			const [total] = await ctx.db.select({ count: count() }).from(desa);
+			const [total] = await ctx.db
+				.select({ count: count() })
+				.from(desa)
+				.where(whereFilter);
 
 			const totalCount = total?.count ?? 0;
 			const totalPages = Math.ceil(totalCount / limit);
@@ -118,7 +123,7 @@ export const desaRouter = createTRPCRouter({
 		.input(desaUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
 			const existingDesa = await ctx.db.query.desa.findFirst({
-				where: eq(desa.nama, input.nama),
+				where: and(eq(desa.nama, input.nama), ne(desa.id, input.id)),
 			});
 			if (existingDesa) {
 				throw new TRPCError({

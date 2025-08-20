@@ -31,22 +31,23 @@ export default function DesaPage() {
 	const [sheetUpdate, setSheetUpdate] = useState(false);
 	const [selectedData, setSelectedData] = useState<DesaSelect | null>(null);
 	const [deleteId, setDeleteId] = useState("");
-	const {
-		mutateAsync,
-		data: deleteData,
-		error: deleteError,
-	} = api.desa.deleteDesa.useMutation({
-		onSuccess: () => {
+	const { mutate } = api.desa.deleteDesa.useMutation({
+		onError: (error) => {
+			toast.dismiss();
+			toast.error(error.message);
+		},
+		onMutate() {
+			toast.loading("Menghapus desa");
+		},
+		onSuccess: ({ message }) => {
 			utils.desa.getAllPaginated.invalidate();
+			toast.dismiss();
+			toast.success(message);
 		},
 	});
 	const utils = api.useUtils();
 	const handleDeleteConfirm = () => {
-		toast.promise(mutateAsync({ id: deleteId }), {
-			error: deleteError?.message,
-			loading: "Loading...",
-			success: deleteData?.message,
-		});
+		mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};
