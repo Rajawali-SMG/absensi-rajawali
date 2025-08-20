@@ -1,14 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import { api } from "../trpc/react";
+import type { GenerusUploadRow } from "../types/generus";
 import Button from "./ui/Button";
 
 export default function UploadExcelDialog() {
 	const [open, setOpen] = useState(false);
 	const [file, setFile] = useState<File | null>(null);
-	const uploadMutation = api.generus.uploadGenerus.useMutation();
+	const uploadMutation = api.generus.uploadGenerus.useMutation({
+		onError: (error) => {
+			toast.error(error.message);
+		},
+		onSuccess: () => {
+			toast.success("Data Generus berhasil diupload");
+			setOpen(false);
+		},
+	});
 
 	const handleUpload = async () => {
 		if (!file) return;
@@ -17,9 +27,9 @@ export default function UploadExcelDialog() {
 		const workbook = XLSX.read(data, { type: "array" });
 		const sheetName = workbook.SheetNames[0];
 		const worksheet = workbook.Sheets[sheetName!];
-		const json = XLSX.utils.sheet_to_json(worksheet!);
+		const json = XLSX.utils.sheet_to_json<GenerusUploadRow>(worksheet!);
 
-		uploadMutation.mutate(json as any);
+		uploadMutation.mutate(json);
 	};
 
 	const handleDownloadTemplate = () => {
@@ -29,16 +39,16 @@ export default function UploadExcelDialog() {
 					"Jl. Kanguru Utara VII, Gayamsari, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50248",
 				alamatTempatTinggal:
 					"Jl. Kanguru Utara VII, Gayamsari, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50248",
+				code: "001",
 				jenisKelamin: "Laki-laki",
 				jenjang: "Paud",
-				kelompokId: "1",
-				keterangan: "Aktif",
+				keterangan: "Pendatang",
 				nama: "Abdul Rahman",
 				namaOrangTua: "Orang Tua",
 				nomerWhatsapp: "+628123456789",
 				nomerWhatsappOrangTua: "+628123456789",
 				pendidikanTerakhir: "SD",
-				sambung: "Sambung",
+				sambung: "Aktif",
 				tanggalLahir: "2006-01-01",
 				tempatLahir: "Yogyakarta",
 			},

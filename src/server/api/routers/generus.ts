@@ -182,17 +182,60 @@ export const generusRouter = createTRPCRouter({
 		}),
 
 	uploadGenerus: protectedProcedure
-		.input(z.array(generusCreateSchema))
+		.input(
+			z.array(
+				generusCreateSchema.omit({ kelompokId: true }).extend({
+					code: z.string(),
+				}),
+			),
+		)
 		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(generus).values(input);
-
-			input.map((gen) => {
-				ctx.db.insert(log).values({
-					description: `Menambahkan Data Generus: ${gen.nama}`,
-					event: "Create",
-					userId: ctx.session.user.email,
+			if (!input[0]?.code) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Code tidak ditemukan",
 				});
+			}
+
+			const kelompokData = await ctx.db.query.kelompok.findFirst({
+				where: eq(kelompok.code, input[0]?.code),
 			});
+
+			if (!kelompokData) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Kelompok tidak ditemukan",
+				});
+			}
+
+			if (input.length < 1) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Generus tidak ditemukan",
+				});
+			}
+
+			// insert generus
+			const data = await ctx.db
+				.insert(generus)
+				.values(
+					input.map((gen) => ({
+						...gen,
+						kelompokId: kelompokData.id,
+					})),
+				)
+				.returning(); // biar dapat data hasil insert
+
+			// insert log untuk tiap generus
+			await Promise.all(
+				input.map((gen) =>
+					ctx.db.insert(log).values({
+						description: `Menambahkan Data Generus: ${gen.nama}`,
+						event: "Create",
+						userId: ctx.session.user.email,
+					}),
+				),
+			);
 
 			return formatResponse(
 				true,

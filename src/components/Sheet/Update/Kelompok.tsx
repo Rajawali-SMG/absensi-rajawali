@@ -27,6 +27,7 @@ export default function SheetUpdateKelompok({
 
 	const form = useForm({
 		defaultValues: {
+			code: selectedData.code,
 			desaId: selectedData.desaId,
 			id: selectedData.id,
 			nama: selectedData.nama,
@@ -47,7 +48,7 @@ export default function SheetUpdateKelompok({
 		})) || [];
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">
 			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
 				<h1 className=" font-bold mb-6 text-gray-800">Update User</h1>
 
@@ -60,18 +61,18 @@ export default function SheetUpdateKelompok({
 					}}
 				>
 					<div className="space-y-4">
-						<form.Field name="id">
+						<form.Field name="nama">
 							{(field) => (
 								<>
 									<Input
 										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
 										id={field.name}
-										label="ID"
+										label="Nama"
 										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="KGR"
+										placeholder="John Doe"
 										required={true}
 										type="text"
 										value={field.state.value}
@@ -82,14 +83,14 @@ export default function SheetUpdateKelompok({
 							)}
 						</form.Field>
 
-						<form.Field name="nama">
+						<form.Field name="code">
 							{(field) => (
 								<>
 									<Input
 										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
 										htmlFor={field.name}
 										id={field.name}
-										label="Nama"
+										label="Kode"
 										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}

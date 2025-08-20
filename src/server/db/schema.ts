@@ -84,6 +84,7 @@ export const kelompok = createTable(
 			.unique()
 			.$defaultFn(() => uuid()),
 		...timestamps,
+		code: varchar({ length: 3 }).notNull().unique(),
 		desaId: varchar().notNull(),
 		nama: varchar({ length: 50 }).unique().notNull(),
 	},

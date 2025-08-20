@@ -13,6 +13,9 @@ import { filterBase } from ".";
 
 export type GenerusSelect = InferSelectModel<typeof generus>;
 export type GenerusInsert = InferInsertModel<typeof generus>;
+export type GenerusUploadRow = GenerusInsert & {
+	code: string;
+};
 
 const jenisKelaminSchema = createSelectSchema(jenisKelamin);
 export const jenjangSchema = createSelectSchema(jenjang);

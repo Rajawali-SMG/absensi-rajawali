@@ -7,6 +7,10 @@ export type KelompokSelect = InferSelectModel<typeof kelompok>;
 export type KelompokInsert = InferInsertModel<typeof kelompok>;
 
 export const kelompokCreateSchema = z.object({
+	code: z
+		.string()
+		.nonempty("Kode tidak boleh kosong")
+		.max(3, "Kode maksimal 3 karakter"),
 	desaId: z.string().nonempty("Desa tidak boleh kosong"),
 	nama: z
 		.string()
@@ -23,6 +27,7 @@ export const kelompokFilter = filterBase.extend({
 });
 
 export const kelompokDefaultValue: KelompokInsert = {
+	code: "",
 	desaId: "",
 	id: "",
 	nama: "",

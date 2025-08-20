@@ -80,6 +80,9 @@ export default function KelompokPage() {
 			accessorKey: "nama",
 		},
 		{
+			accessorKey: "code",
+		},
+		{
 			cell: (props) => {
 				const row = props.row.original;
 				return (
