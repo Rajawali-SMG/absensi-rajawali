@@ -3,7 +3,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
@@ -14,6 +14,7 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { UserSelect } from "@/types/user";
+import useToastError from "@/utils/useToastError";
 
 export default function PenggunaPage() {
 	const searchParams = useSearchParams();
@@ -21,13 +22,11 @@ export default function PenggunaPage() {
 		pageIndex: 0,
 		pageSize: 10,
 	});
-	const { data, isPending, error, isError } = api.user.getAllPaginated.useQuery(
-		{
-			limit: pagination.pageSize,
-			page: pagination.pageIndex,
-			q: searchParams.get("q") || "",
-		},
-	);
+	const { data, isPending, error } = api.user.getAllPaginated.useQuery({
+		limit: pagination.pageSize,
+		page: pagination.pageIndex,
+		q: searchParams.get("q") || "",
+	});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
 	const [sheetUpdatePassword, setSheetUpdatePassword] = useState(false);
@@ -115,11 +114,7 @@ export default function PenggunaPage() {
 		},
 	];
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(error);
 
 	return (
 		<>

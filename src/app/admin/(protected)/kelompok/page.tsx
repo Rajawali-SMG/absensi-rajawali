@@ -15,6 +15,7 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { KelompokSelect } from "@/types/kelompok";
+import useToastError from "@/utils/useToastError";
 
 export default function KelompokPage() {
 	const [desaParam, setDesaParam] = useState("");
@@ -34,7 +35,6 @@ export default function KelompokPage() {
 	const {
 		data: kelompokData,
 		isPending,
-		isError,
 		error,
 	} = api.kelompok.getAllPaginated.useQuery({
 		desaId: desaParam,
@@ -120,11 +120,8 @@ export default function KelompokPage() {
 			value: item.id,
 		})) || [];
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(error);
+	useToastError(desaError);
 
 	useEffect(() => {
 		if (isDesaError) {

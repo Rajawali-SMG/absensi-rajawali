@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import ExportKegiatan from "@/components/ExportKegiatan";
@@ -15,6 +15,7 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { EventSelect } from "@/types/event";
+import useToastError from "@/utils/useToastError";
 
 export default function KegiatanPage() {
 	const [pagination, setPagination] = useState({
@@ -22,12 +23,11 @@ export default function KegiatanPage() {
 		pageSize: 10,
 	});
 	const searchQuery = useSearchParams().get("q") || "";
-	const { data, isPending, error, isError } =
-		api.event.getAllPaginated.useQuery({
-			limit: pagination.pageSize,
-			page: pagination.pageIndex,
-			q: searchQuery,
-		});
+	const { data, isPending, error } = api.event.getAllPaginated.useQuery({
+		limit: pagination.pageSize,
+		page: pagination.pageIndex,
+		q: searchQuery,
+	});
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
 	const [selectedData, setSelectedData] = useState<EventSelect | null>(null);
@@ -123,11 +123,7 @@ export default function KegiatanPage() {
 		},
 	];
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(error);
 
 	return (
 		<>

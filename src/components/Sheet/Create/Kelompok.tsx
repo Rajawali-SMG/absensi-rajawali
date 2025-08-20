@@ -4,6 +4,7 @@ import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { kelompokCreateSchema, kelompokDefaultValue } from "@/types/kelompok";
+import useToastError from "@/utils/useToastError";
 import CustomSelect from "../../CustomSelect";
 
 export default function SheetCreateKelompok({
@@ -12,7 +13,11 @@ export default function SheetCreateKelompok({
 	closeSheet: () => void;
 }) {
 	const utils = api.useUtils();
-	const { data, isLoading: desaIsLoading } = api.desa.getAll.useQuery();
+	const {
+		data,
+		isLoading: desaIsLoading,
+		error: desaError,
+	} = api.desa.getAll.useQuery();
 	const {
 		mutateAsync,
 		error,
@@ -43,6 +48,8 @@ export default function SheetCreateKelompok({
 			label: item.nama,
 			value: String(item.id),
 		})) || [];
+
+	useToastError(desaError);
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">

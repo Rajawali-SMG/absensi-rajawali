@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 import { api } from "@/trpc/react";
 import { calculateDistance } from "@/utils/calculateDistance";
 import useLocation from "@/utils/useLocation";
+import useToastError from "@/utils/useToastError";
 
 export default function IzinPage({
 	params,
@@ -21,7 +22,6 @@ export default function IzinPage({
 	const {
 		data: eventData,
 		error,
-		isError,
 		isPending,
 	} = api.event.getOneEventPublic.useQuery({
 		id,
@@ -60,12 +60,14 @@ export default function IzinPage({
 			);
 		},
 	});
-	const { data: presenceData } = api.generus.withKelompok.useQuery({
-		id,
-	});
-	const { data: presenceCount } = api.event.countGenerus.useQuery({
-		id,
-	});
+	const { data: presenceData, error: presenceError } =
+		api.generus.withKelompok.useQuery({
+			id,
+		});
+	const { data: presenceCount, error: presenceCountError } =
+		api.event.countGenerus.useQuery({
+			id,
+		});
 	const geo = useGeolocated({
 		positionOptions: {
 			enableHighAccuracy: true,
@@ -76,11 +78,9 @@ export default function IzinPage({
 	const latitude = eventData?.data.latitude;
 	const longitude = eventData?.data.longitude;
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(error);
+	useToastError(presenceError);
+	useToastError(presenceCountError);
 
 	const getStatusConfig = () => {
 		switch (eventData?.data.status) {

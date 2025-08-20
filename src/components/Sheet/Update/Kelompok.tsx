@@ -4,6 +4,7 @@ import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { type KelompokSelect, kelompokUpdateSchema } from "@/types/kelompok";
+import useToastError from "@/utils/useToastError";
 import CustomSelect from "../../CustomSelect";
 
 export default function SheetUpdateKelompok({
@@ -14,7 +15,7 @@ export default function SheetUpdateKelompok({
 	selectedData: KelompokSelect;
 }) {
 	const utils = api.useUtils();
-	const { data } = api.desa.getAll.useQuery();
+	const { data, error: desaError } = api.desa.getAll.useQuery();
 	const {
 		mutateAsync,
 		error,
@@ -50,6 +51,8 @@ export default function SheetUpdateKelompok({
 			label: item.nama,
 			value: item.id,
 		})) || [];
+
+	useToastError(desaError);
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">

@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import ExportGenerus from "@/components/ExportGenerus";
@@ -30,6 +30,7 @@ import type {
 	PendidikanTerakhirType,
 	SambungType,
 } from "@/types/generus";
+import useToastError from "@/utils/useToastError";
 
 export default function GenerusPage() {
 	const searchQuery = useSearchParams().get("q") || "";
@@ -48,17 +49,16 @@ export default function GenerusPage() {
 		useState<PendidikanTerakhirType>();
 	const [sambungParam, setSambungParam] = useState<SambungType>();
 	const [keteranganParam, setKeteranganParam] = useState<KeteranganType>();
-	const { data, isPending, isError, error } =
-		api.generus.getAllPaginated.useQuery({
-			jenisKelamin: jenisKelaminParam,
-			jenjang: jenjangParam,
-			keterangan: keteranganParam,
-			limit: pagination.pageSize,
-			page: pagination.pageIndex,
-			pendidikanTerakhir: pendidikanTerakhirParam,
-			q: searchQuery,
-			sambung: sambungParam,
-		});
+	const { data, isPending, error } = api.generus.getAllPaginated.useQuery({
+		jenisKelamin: jenisKelaminParam,
+		jenjang: jenjangParam,
+		keterangan: keteranganParam,
+		limit: pagination.pageSize,
+		page: pagination.pageIndex,
+		pendidikanTerakhir: pendidikanTerakhirParam,
+		q: searchQuery,
+		sambung: sambungParam,
+	});
 	const utils = api.useUtils();
 
 	const {
@@ -136,11 +136,7 @@ export default function GenerusPage() {
 		},
 	];
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(error);
 
 	return (
 		<>

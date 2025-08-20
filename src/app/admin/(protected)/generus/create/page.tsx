@@ -3,7 +3,6 @@
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import toast from "react-hot-toast";
 import CustomSelect from "@/components/CustomSelect";
 import TextError from "@/components/TextError";
@@ -27,9 +26,10 @@ import {
 	type PendidikanTerakhirType,
 	type SambungType,
 } from "@/types/generus";
+import useToastError from "@/utils/useToastError";
 
 export default function GenerusCreatePage() {
-	const { data, isPending, isError, error } = api.kelompok.getAll.useQuery();
+	const { data, isPending, error } = api.kelompok.getAll.useQuery();
 	const router = useRouter();
 	const utils = api.useUtils();
 
@@ -64,11 +64,7 @@ export default function GenerusCreatePage() {
 		},
 	});
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(error);
 
 	return (
 		<div className="w-full">

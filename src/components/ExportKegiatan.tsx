@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import Button from "@/components/ui/Button";
 import { api } from "@/trpc/react";
+import useToastError from "../utils/useToastError";
 import CustomSelect from "./CustomSelect";
 
 export default function ExportKegiatan() {
@@ -10,7 +11,6 @@ export default function ExportKegiatan() {
 	const [eventIdParam, setEventIdParam] = useState("");
 	const {
 		data: kelompokData,
-		isError: kelompokIsError,
 		error: kelompokError,
 		isLoading: kelompokIsLoading,
 	} = api.kelompok.getAll.useQuery();
@@ -24,7 +24,7 @@ export default function ExportKegiatan() {
 			enabled: false,
 		},
 	);
-	const { data: eventData } = api.event.getAll.useQuery();
+	const { data: eventData, error: eventError } = api.event.getAll.useQuery();
 	const handleExport = async () => {
 		setOpenModal(false);
 		const { data: presenceData, isError, error } = await refetch();
@@ -81,14 +81,6 @@ export default function ExportKegiatan() {
 		setEventIdParam("");
 	};
 	const [openModal, setOpenModal] = useState(false);
-	const [isClient, setIsClient] = useState(false);
-
-	useEffect(() => {
-		if (kelompokIsError) {
-			toast.error(kelompokError.message);
-		}
-		setIsClient(true);
-	}, [kelompokIsError, kelompokError]);
 
 	const kelompokOptions =
 		kelompokData?.data.map((item) => ({
@@ -102,13 +94,8 @@ export default function ExportKegiatan() {
 			value: item.id,
 		})) || [];
 
-	if (!isClient) {
-		return (
-			<Button onClick={() => setOpenModal(true)} type="button">
-				Export
-			</Button>
-		);
-	}
+	useToastError(kelompokError);
+	useToastError(eventError);
 
 	return (
 		<>

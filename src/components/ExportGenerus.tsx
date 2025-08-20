@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import Button from "@/components/ui/Button";
@@ -17,6 +17,7 @@ import type {
 	PendidikanTerakhirType,
 	SambungType,
 } from "@/types/generus";
+import useToastError from "../utils/useToastError";
 import CustomSelect from "./CustomSelect";
 
 export default function ExportGenerus() {
@@ -30,7 +31,6 @@ export default function ExportGenerus() {
 	const [kelompokIdParam, setKelompokIdParam] = useState("");
 	const {
 		data: kelompokData,
-		isError: kelompokIsError,
 		error: kelompokError,
 		isLoading: kelompokIsLoading,
 	} = api.kelompok.getAll.useQuery();
@@ -69,14 +69,8 @@ export default function ExportGenerus() {
 		setSambungParam(undefined);
 	};
 	const [openModal, setOpenModal] = useState(false);
-	const [isClient, setIsClient] = useState(false);
 
-	useEffect(() => {
-		if (kelompokIsError) {
-			toast.error(kelompokError.message);
-		}
-		setIsClient(true);
-	}, [kelompokIsError, kelompokError]);
+	useToastError(kelompokError);
 
 	const kelompokOptions =
 		kelompokData?.data.map((item) => ({
@@ -84,14 +78,6 @@ export default function ExportGenerus() {
 			label: item.nama,
 			value: item.id,
 		})) || [];
-
-	if (!isClient) {
-		return (
-			<Button onClick={() => setOpenModal(true)} type="button">
-				Export
-			</Button>
-		);
-	}
 
 	return (
 		<>

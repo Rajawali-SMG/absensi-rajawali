@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 import { api } from "@/trpc/react";
 import { calculateDistance } from "@/utils/calculateDistance";
 import useLocation from "@/utils/useLocation";
+import useToastError from "@/utils/useToastError";
 
 export default function AbsenPage({
 	params,
@@ -58,12 +59,7 @@ export default function AbsenPage({
 			);
 		},
 	});
-	const { data: presenceData } = api.generus.withKelompok.useQuery({
-		id,
-	});
-	const { data: presenceCount } = api.event.countGenerus.useQuery({
-		id,
-	});
+
 	const geo = useGeolocated({
 		positionOptions: {
 			enableHighAccuracy: true,
@@ -74,12 +70,27 @@ export default function AbsenPage({
 	const latitude = eventData?.data.latitude;
 	const longitude = eventData?.data.longitude;
 
+	const {
+		data: presenceData,
+		error: presenceError,
+		isLoading: presenceLoading,
+	} = api.generus.withKelompok.useQuery({
+		id,
+	});
+	const { data: presenceCount, error: presenceCountError } =
+		api.event.countGenerus.useQuery({
+			id,
+		});
+
 	useEffect(() => {
 		toast.promise(promise, {
 			error: error?.message,
 			loading: "Loading...",
 		});
 	}, [promise, error]);
+
+	useToastError(presenceError);
+	useToastError(presenceCountError);
 
 	const getStatusConfig = () => {
 		switch (eventData?.data.status) {
@@ -246,6 +257,7 @@ export default function AbsenPage({
 										<form.Field name="generusId">
 											{(field) => (
 												<CustomSelect
+													isLoading={presenceLoading}
 													label={field.name}
 													onChange={(e) => field.handleChange(e?.value || "")}
 													options={generusOptions}

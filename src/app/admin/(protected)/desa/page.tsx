@@ -3,7 +3,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import SearchBar from "@/components/SearchBar";
@@ -13,6 +13,7 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { api } from "@/trpc/react";
 import type { DesaSelect } from "@/types/desa";
+import useToastError from "@/utils/useToastError";
 
 export default function DesaPage() {
 	const [pagination, setPagination] = useState({
@@ -20,13 +21,11 @@ export default function DesaPage() {
 		pageSize: 10,
 	});
 	const searchQuery = useSearchParams().get("q") || "";
-	const { data, isPending, isError, error } = api.desa.getAllPaginated.useQuery(
-		{
-			limit: pagination.pageSize,
-			page: pagination.pageIndex,
-			q: searchQuery,
-		},
-	);
+	const { data, isPending, error } = api.desa.getAllPaginated.useQuery({
+		limit: pagination.pageSize,
+		page: pagination.pageIndex,
+		q: searchQuery,
+	});
 	const [dialog, setDialog] = useState(false);
 	const [sheetCreate, setSheetCreate] = useState(false);
 	const [sheetUpdate, setSheetUpdate] = useState(false);
@@ -96,11 +95,7 @@ export default function DesaPage() {
 		},
 	];
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(error);
 
 	return (
 		<>

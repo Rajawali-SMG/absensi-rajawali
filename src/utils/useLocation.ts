@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export default function useLocation(latitude?: number, longitude?: number) {
 	const { data: locationData } = useQuery({
@@ -13,6 +14,10 @@ export default function useLocation(latitude?: number, longitude?: number) {
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
+		throwOnError: ({ message }) => {
+			toast.error(message);
+			return false;
+		},
 	});
 	return locationData;
 }

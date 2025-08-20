@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import navigation from "next/navigation";
-import { use, useEffect } from "react";
+import { use } from "react";
 import toast from "react-hot-toast";
 import CustomSelect from "@/components/CustomSelect";
 import TextError from "@/components/TextError";
@@ -27,6 +27,7 @@ import {
 	type PendidikanTerakhirType,
 	type SambungType,
 } from "@/types/generus";
+import useToastError from "@/utils/useToastError";
 
 export default function GenerusUpdatePage({
 	params,
@@ -35,23 +36,22 @@ export default function GenerusUpdatePage({
 }) {
 	const { id } = use(params);
 	const router = navigation.useRouter();
-	const { data: generusData } = api.generus.getOneGenerus.useQuery(
-		{
-			id: id,
-		},
-		{
-			enabled: !!id,
-			throwOnError: ({ message }) => {
-				toast.error(message);
-				navigation.notFound();
+	const { data: generusData, error: generusError } =
+		api.generus.getOneGenerus.useQuery(
+			{
+				id: id,
 			},
-		},
-	);
+			{
+				enabled: !!id,
+				throwOnError: () => {
+					navigation.notFound();
+				},
+			},
+		);
 	const {
 		data: kelompokData,
 		isPending,
-		error,
-		isError,
+		error: kelompokError,
 	} = api.kelompok.getAll.useQuery();
 	const utils = api.useUtils();
 
@@ -96,11 +96,8 @@ export default function GenerusUpdatePage({
 			value: item.id,
 		})) || [];
 
-	useEffect(() => {
-		if (isError) {
-			toast.error(error.message);
-		}
-	}, [isError, error]);
+	useToastError(generusError);
+	useToastError(kelompokError);
 
 	return (
 		<div className="w-full">
