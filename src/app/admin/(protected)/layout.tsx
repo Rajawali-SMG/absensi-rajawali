@@ -14,7 +14,7 @@ export default function ProtectedLayout({
 		<div className="flex">
 			<Sidebar />
 			<div className="flex-1 p-5 bg-white overflow-x-auto">
-				<h1 className="text-2xl font-bold pb-2">{pathname}</h1>
+				<h1 className="font-bold pb-2">{pathname}</h1>
 				<Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
 			</div>
 		</div>

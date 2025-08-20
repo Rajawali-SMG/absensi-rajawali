@@ -144,9 +144,7 @@ export default function AbsenPage({
 				{/* Header Card */}
 				<div className="bg-white rounded-t-2xl shadow-xl overflow-hidden">
 					<div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-8 text-center">
-						<h1 className="text-2xl md:text-3xl font-bold mb-2">
-							{eventData?.data.title}
-						</h1>
+						<h1 className="font-bold mb-2">{eventData?.data.title}</h1>
 						<div className="text-green-100 space-y-1">
 							<div className="flex items-center justify-center gap-2">
 								<Icon
@@ -168,7 +166,7 @@ export default function AbsenPage({
 					{isPending ? (
 						<div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
 							<div className="flex items-center justify-center gap-2 mb-2">
-								<span className="font-bold text-lg">Loading...</span>
+								<span className="font-bold">Loading...</span>
 							</div>
 						</div>
 					) : (
@@ -177,9 +175,9 @@ export default function AbsenPage({
 						>
 							<div className="flex items-center justify-center gap-2 mb-2">
 								{statusConfig.icon}
-								<span className="font-bold text-lg">{statusConfig.title}</span>
+								<span className="font-bold">{statusConfig.title}</span>
 							</div>
-							<p className="text-sm opacity-80">{statusConfig.subtitle}</p>
+							<p className="opacity-80">{statusConfig.subtitle}</p>
 						</div>
 					)}
 
@@ -207,7 +205,7 @@ export default function AbsenPage({
 								icon="material-symbols:warning"
 							/>
 							<div className="font-bold text-lg mb-2">Lokasi Tidak Valid</div>
-							<p className="text-sm mb-4">
+							<p className="mb-4">
 								Anda berada di luar radius dari lokasi kegiatan. Silakan
 								mendekati lokasi acara untuk melakukan absensi.
 							</p>
@@ -236,7 +234,7 @@ export default function AbsenPage({
 									className={`space-y-6 transition-opacity ${geo.isGeolocationAvailable && geo.isGeolocationEnabled ? "" : "opacity-50 pointer-events-none"}`}
 								>
 									<div className="bg-gray-50 rounded-xl p-6">
-										<h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+										<h2 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
 											<Icon
 												className="w-5 h-5"
 												icon="material-symbols:people"

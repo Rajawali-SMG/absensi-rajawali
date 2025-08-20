@@ -34,11 +34,9 @@ export default function SheetCreateDesa({
 	});
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">
 			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-				<h1 className="text-2xl font-bold mb-6 text-gray-800">
-					Buat Data Desa
-				</h1>
+				<h1 className=" font-bold mb-6 text-gray-800">Buat Data Desa</h1>
 
 				<form
 					className="space-y-4"

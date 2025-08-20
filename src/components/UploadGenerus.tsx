@@ -68,7 +68,7 @@ export default function UploadExcelDialog() {
 							✕
 						</Button>
 
-						<h2 className="text-lg font-bold mb-4">Upload Data Generus</h2>
+						<h2 className="font-bold mb-4">Upload Data Generus</h2>
 
 						{/* Download Template */}
 						<Button

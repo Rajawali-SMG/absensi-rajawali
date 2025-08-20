@@ -119,7 +119,7 @@ export default function ExportKegiatan() {
 				className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300 ${openModal ? "translate-y-0" : "translate-y-full"}`}
 			>
 				<div className="bg-white p-4">
-					<h2 className="text-xl font-bold">Export</h2>
+					<h2 className="font-bold">Export</h2>
 					<div className="flex flex-col gap-y-2">
 						<CustomSelect
 							isLoading={kelompokIsLoading}

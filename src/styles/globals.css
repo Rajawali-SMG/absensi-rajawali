@@ -1,6 +1,34 @@
 @import "tailwindcss";
+@plugin "tailwind-clamp";
 
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@layer base {
+  h1 {
+    font-size: clamp(1.116rem, 1.419vw + 0.761rem, 1.896rem);
+  }
+  h2 {
+    font-size: clamp(1.065rem, 1.163vw + 0.774rem, 1.704rem);
+  }
+  h3 {
+    font-size: clamp(1.021rem, 0.928vw + 0.789rem, 1.532rem);
+  }
+  h4 {
+    font-size: clamp(0.984rem, 0.715vw + 0.805rem, 1.377rem);
+  }
+  h5 {
+    font-size: clamp(0.952rem, 0.519vw + 0.822rem, 1.238rem);
+  }
+  h6 {
+    font-size: clamp(0.927rem, 0.338vw + 0.843rem, 1.113rem);
+  }
+  p {
+    font-size: clamp(0.909rem, 0.165vw + 0.868rem, 1rem);
+  }
+  span {
+    font-size: clamp(0.817rem, 0.149vw + 0.78rem, 0.899rem);
+  }
 }

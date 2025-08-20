@@ -41,7 +41,7 @@ export default function SheetUpdateDesa({
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-				<h1 className="text-2xl font-bold mb-6 text-gray-800">Update User</h1>
+				<h1 className=" font-bold mb-6 text-gray-800">Update User</h1>
 
 				<form
 					className="space-y-4"

@@ -93,9 +93,7 @@ export default function GenerusUpdatePage({
 
 	return (
 		<div className="w-full">
-			<h1 className="text-2xl font-bold mb-6 text-gray-800">
-				Perbarui Data Generus
-			</h1>
+			<h1 className="font-bold mb-6 text-gray-800">Perbarui Data Generus</h1>
 
 			<form
 				className="space-y-4"
