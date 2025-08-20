@@ -4,7 +4,7 @@ import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { type KelompokSelect, kelompokUpdateSchema } from "@/types/kelompok";
-import Select from "../../ui/Select";
+import CustomSelect from "../../CustomSelect";
 
 export default function SheetUpdateKelompok({
 	closeSheet,
@@ -107,17 +107,20 @@ export default function SheetUpdateKelompok({
 
 						<form.Field name="desaId">
 							{(field) => (
-								<div className="space-y-1">
-									<Select
+								<>
+									<CustomSelect
 										label="Desa"
 										name={field.name}
-										onChange={(e) => field.handleChange(e.target.value)}
+										onChange={(e) => field.handleChange(e?.value || "")}
 										options={desaOptions}
 										placeholder="Pilih Desa"
 										required={true}
-										value={field.state.value}
+										value={desaOptions.find(
+											(option) => option.value === field.state.value,
+										)}
 									/>
-								</div>
+									<TextError field={field} />
+								</>
 							)}
 						</form.Field>
 					</div>

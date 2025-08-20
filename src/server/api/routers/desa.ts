@@ -79,7 +79,7 @@ export const desaRouter = createTRPCRouter({
 			const data = await ctx.db.query.desa.findMany({
 				limit,
 				offset: page * limit,
-				orderBy: (desa, { desc }) => [desc(desa.createdAt)],
+				orderBy: (desa, { desc }) => [desc(desa.updatedAt)],
 				where: ilike(desa.nama, `%${input.q}%`),
 			});
 

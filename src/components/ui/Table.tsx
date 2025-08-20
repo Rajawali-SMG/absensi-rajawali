@@ -43,7 +43,7 @@ export default function Table<T extends Record<string, unknown>>({
 	});
 
 	return (
-		<div className="overflow-auto">
+		<div className="overflow-auto p-2">
 			<table className="w-full text-left text-sm text-gray-500">
 				<thead className="text-xs text-gray-700 uppercase bg-gray-50">
 					{table.getHeaderGroups().map((headerGroup) => (
@@ -77,7 +77,7 @@ export default function Table<T extends Record<string, unknown>>({
 				</tbody>
 				<tfoot>
 					<tr>
-						<td>
+						<td className="pt-5">
 							<Button
 								disabled={!table.getCanPreviousPage()}
 								onClick={() => table.previousPage()}
@@ -104,7 +104,7 @@ export default function Table<T extends Record<string, unknown>>({
 								placeholder="Select Page Size"
 								value={table.getState().pagination.pageSize}
 							/>
-							<p>Total Page: {table.getPageCount()}</p>
+							<p className="pt-2 pb-1">Total Page: {table.getPageCount()}</p>
 							<p>Total Row: {table.getRowCount()}</p>
 						</td>
 					</tr>

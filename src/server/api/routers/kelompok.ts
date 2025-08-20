@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq, ilike } from "drizzle-orm";
+import { and, count, eq, ilike, ne, or } from "drizzle-orm";
 import {
 	formatResponse,
 	formatResponseArray,
@@ -94,7 +94,7 @@ export const kelompokRouter = createTRPCRouter({
 			const data = await ctx.db.query.kelompok.findMany({
 				limit,
 				offset: page * limit,
-				orderBy: (kelompok, { desc }) => [desc(kelompok.createdAt)],
+				orderBy: (kelompok, { desc }) => [desc(kelompok.updatedAt)],
 				where: and(
 					input.q ? ilike(kelompok.nama, `%${input.q}%`) : undefined,
 					input.desaId ? eq(kelompok.desaId, input.desaId) : undefined,
@@ -139,6 +139,19 @@ export const kelompokRouter = createTRPCRouter({
 	updateKelompok: protectedProcedure
 		.input(kelompokUpdateSchema)
 		.mutation(async ({ ctx, input }) => {
+			const existingKelompok = await ctx.db.query.kelompok.findFirst({
+				where: and(
+					or(eq(kelompok.nama, input.nama), eq(kelompok.code, input.code)),
+					ne(kelompok.id, input.id),
+				),
+			});
+			if (existingKelompok) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Data Kelompok sudah ada",
+				});
+			}
+
 			if (!input.id) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
@@ -148,7 +161,8 @@ export const kelompokRouter = createTRPCRouter({
 			const data = await ctx.db
 				.update(kelompok)
 				.set(input)
-				.where(eq(kelompok.id, input.id));
+				.where(eq(kelompok.id, input.id))
+				.returning();
 
 			await ctx.db.insert(log).values({
 				description: `Mengubah Data Kelompok: ${input.nama}`,

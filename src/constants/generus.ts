@@ -1,5 +1,5 @@
 export const jenisKelaminOptions = [
-	{ label: "Laki-Laki", value: "Laki-Laki" },
+	{ label: "Laki-laki", value: "Laki-laki" },
 	{ label: "Perempuan", value: "Perempuan" },
 ];
 

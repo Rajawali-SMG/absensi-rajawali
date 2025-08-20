@@ -5,6 +5,7 @@ import Link from "next/link";
 import navigation from "next/navigation";
 import { use, useEffect } from "react";
 import toast from "react-hot-toast";
+import CustomSelect from "@/components/CustomSelect";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -60,6 +61,9 @@ export default function GenerusUpdatePage({
 		},
 		onSuccess: ({ message }) => {
 			utils.generus.getAllPaginated.invalidate();
+			utils.generus.getOneGenerus.invalidate({
+				id: id,
+			});
 			toast.success(message);
 			router.push("/admin/generus");
 		},
@@ -128,7 +132,7 @@ export default function GenerusUpdatePage({
 
 					<form.Field name="jenisKelamin">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									label="Jenis Kelamin"
 									name={field.name}
@@ -140,7 +144,8 @@ export default function GenerusUpdatePage({
 									required={true}
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -188,7 +193,7 @@ export default function GenerusUpdatePage({
 
 					<form.Field name="jenjang">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									label="Jenjang"
 									name={field.name}
@@ -200,7 +205,8 @@ export default function GenerusUpdatePage({
 									required={true}
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -227,7 +233,7 @@ export default function GenerusUpdatePage({
 
 					<form.Field name="pendidikanTerakhir">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									label="Pendidikan Terakhir"
 									name={field.name}
@@ -239,7 +245,8 @@ export default function GenerusUpdatePage({
 									required={true}
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -287,7 +294,7 @@ export default function GenerusUpdatePage({
 
 					<form.Field name="sambung">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									label="Sambung"
 									name={field.name}
@@ -299,7 +306,8 @@ export default function GenerusUpdatePage({
 									required={true}
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -326,7 +334,7 @@ export default function GenerusUpdatePage({
 
 					<form.Field name="keterangan">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									label="Keterangan"
 									name={field.name}
@@ -338,7 +346,8 @@ export default function GenerusUpdatePage({
 									required={true}
 									value={field.state.value || ""}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -354,7 +363,6 @@ export default function GenerusUpdatePage({
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
-									required={true}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -365,18 +373,21 @@ export default function GenerusUpdatePage({
 
 					<form.Field name="kelompokId">
 						{(field) => (
-							<div className="space-y-1">
-								<Select
-									disabled={isPending}
+							<>
+								<CustomSelect
+									isDisabled={isPending}
 									label="Kelompok"
 									name={field.name}
-									onChange={(e) => field.handleChange(e.target.value)}
+									onChange={(e) => field.handleChange(e?.value || "")}
 									options={kelompokOptions}
 									placeholder="Pilih Kelompok"
 									required={true}
-									value={field.state.value}
+									value={kelompokOptions.find(
+										(option) => option.value === field.state.value,
+									)}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 				</div>

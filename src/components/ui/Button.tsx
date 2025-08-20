@@ -10,7 +10,7 @@ type ButtonProps = DetailedHTMLProps<
 };
 
 const buttonVariants = cva(
-	"font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:ring-4 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+	"font-medium rounded-lg text-sm cursor-pointer px-5 py-2.5 me-2 mb-2 focus:ring-4 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
 	{
 		defaultVariants: {
 			variant: "primary",

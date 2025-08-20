@@ -96,7 +96,7 @@ export const userRouter = createTRPCRouter({
 			const data = await ctx.db.query.user.findMany({
 				limit,
 				offset: page * limit,
-				orderBy: (user, { desc }) => [desc(user.createdAt)],
+				orderBy: (user, { desc }) => [desc(user.updatedAt)],
 				where: and(input.q ? ilike(user.name, `%${input.q}%`) : undefined),
 			});
 
@@ -161,7 +161,7 @@ export const userRouter = createTRPCRouter({
 				.from(user)
 				.where(eq(user.email, input.email));
 
-			if (existingUser.length > 0) {
+			if (existingUser) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Email sudah terdaftar",

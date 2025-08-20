@@ -91,7 +91,7 @@ export const generusRouter = createTRPCRouter({
 			const data = await ctx.db.query.generus.findMany({
 				limit,
 				offset: page * limit,
-				orderBy: (generus, { desc }) => [desc(generus.createdAt)],
+				orderBy: (generus, { desc }) => [desc(generus.updatedAt)],
 				where: and(
 					ilike(generus.nama, `%${input.q}%`),
 					input.jenisKelamin
