@@ -114,7 +114,7 @@ export const generus = createTable(
 			.unique(),
 		...timestamps,
 		alamatAsal: varchar({ length: 255 }),
-		alamatTempatTinggal: varchar({ length: 255 }).notNull(),
+		alamatTempatTinggal: varchar({ length: 255 }),
 		jenisKelamin: jenisKelamin().notNull(),
 		jenjang: jenjang().notNull(),
 		kelompokId: varchar().notNull(),
@@ -123,10 +123,10 @@ export const generus = createTable(
 		namaOrangTua: varchar({ length: 255 }),
 		nomerWhatsapp: varchar({ length: 15 }),
 		nomerWhatsappOrangTua: varchar({ length: 15 }),
-		pendidikanTerakhir: pendidikanTerakhir().notNull(),
+		pendidikanTerakhir: pendidikanTerakhir(),
 		sambung: sambung().notNull(),
-		tanggalLahir: date({ mode: "string" }).notNull(),
-		tempatLahir: varchar({ length: 50 }).notNull(),
+		tanggalLahir: date({ mode: "string" }),
+		tempatLahir: varchar({ length: 50 }),
 	},
 	(table) => [
 		index("nama_generus_idx").on(table.nama),
@@ -174,6 +174,7 @@ export const presence = createTable("presence", {
 	createdAt: timestamp().defaultNow().notNull(),
 	eventId: varchar({ length: 255 }).notNull(),
 	generusId: varchar({ length: 255 }).notNull(),
+	generusName: varchar({ length: 255 }).notNull(),
 	id: varchar()
 		.primaryKey()
 		.$defaultFn(() => uuid())

@@ -42,6 +42,7 @@ export default function AbsenPage({
 		defaultValues: {
 			eventId: id,
 			generusId: "",
+			generusName: "",
 			status: "Hadir",
 		},
 		onSubmit: ({ value }) => {
@@ -49,6 +50,7 @@ export default function AbsenPage({
 				mutateAsync({
 					eventId: id,
 					generusId: value.generusId,
+					generusName: value.generusName,
 					status: "Hadir",
 				}),
 				{

@@ -33,7 +33,21 @@ export const presenceRouter = createTRPCRouter({
 				});
 			}
 
-			const data = await ctx.db.insert(presence).values(input);
+			const generusData = await ctx.db.query.generus.findFirst({
+				where: eq(generus.id, input.generusId),
+			});
+
+			if (!generusData) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Data Generus tidak ditemukan",
+				});
+			}
+
+			const data = await ctx.db.insert(presence).values({
+				...input,
+				generusName: generusData.nama,
+			});
 
 			return formatResponse(
 				true,
@@ -68,7 +82,7 @@ export const presenceRouter = createTRPCRouter({
 					status: presence.status,
 				})
 				.from(presence)
-				.innerJoin(generus, eq(presence.generusId, generus.id))
+				.leftJoin(generus, eq(presence.generusId, generus.id))
 				.where(
 					or(
 						eq(presence.eventId, input.eventId),

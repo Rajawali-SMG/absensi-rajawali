@@ -12,12 +12,16 @@ export default function CustomSelect<
 	Option,
 	IsMulti extends boolean = false,
 	Group extends GroupBase<Option> = GroupBase<Option>,
->({ label, ...props }: CustomSelectProps<Option, IsMulti, Group>) {
+>({
+	label,
+	required = true,
+	...props
+}: CustomSelectProps<Option, IsMulti, Group>) {
 	return (
 		<div className="flex flex-col space-y-1">
 			<label className="text-sm font-medium text-gray-700" htmlFor={label}>
 				{label}
-				{props.required && <span className="text-red-500"> *</span>}
+				{required && <span className="text-red-500"> *</span>}
 			</label>
 			<Select {...props} isClearable required />
 		</div>

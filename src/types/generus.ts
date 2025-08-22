@@ -30,8 +30,8 @@ export type SambungType = z.infer<typeof sambungSchema>;
 export type KeteranganType = z.infer<typeof keteranganSchema>;
 
 export const generusCreateSchema = z.object({
-	alamatAsal: z.string().optional().nullable(),
-	alamatTempatTinggal: z.string().nonempty("Alamat tidak boleh kosong"),
+	alamatAsal: z.string().nullable().optional(),
+	alamatTempatTinggal: z.string().nullable().optional(),
 	jenisKelamin: jenisKelaminSchema,
 	jenjang: jenjangSchema,
 	kelompokId: z.string().nonempty("Kelompok tidak boleh kosong"),
@@ -40,20 +40,21 @@ export const generusCreateSchema = z.object({
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(255, "Nama maksimal 255 karakter"),
-	namaOrangTua: z.string().optional().nullable(),
+	namaOrangTua: z.string().nullable().optional(),
 	nomerWhatsapp: z
 		.string()
 		.max(15, "Nomor WhatsApp maksimal 15 karakter")
-		.optional()
-		.nullable(),
-	nomerWhatsappOrangTua: z.string().optional().nullable(),
-	pendidikanTerakhir: pendidikanTerakhirSchema,
+		.nullable()
+		.optional(),
+	nomerWhatsappOrangTua: z.string().nullable().optional(),
+	pendidikanTerakhir: pendidikanTerakhirSchema.nullable().optional(),
 	sambung: sambungSchema,
-	tanggalLahir: z.iso.date(),
+	tanggalLahir: z.iso.date().nullable().optional(),
 	tempatLahir: z
 		.string()
-		.nonempty("Tempat Lahir tidak boleh kosong")
-		.max(50, "Tempat Lahir maksimal 50 karakter"),
+		.max(50, "Tempat Lahir maksimal 50 karakter")
+		.nullable()
+		.optional(),
 });
 
 export const generusUpdateSchema = generusCreateSchema.extend({

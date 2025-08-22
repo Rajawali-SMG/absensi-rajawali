@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import Dialog from "@/components/Dialog";
 import Button from "@/components/ui/Button";
 import { signOut } from "../server/auth/auth-client";
+import { api } from "../trpc/react";
 
 export default function Sidebar() {
 	const [logoutDialog, setLogoutDialog] = useState(false);
@@ -27,6 +28,7 @@ export default function Sidebar() {
 			},
 		});
 	};
+	const profile = api.user.getProfile.useQuery();
 
 	return (
 		<div className="bg-gray-50 h-screen w-fit flex flex-col shadow-md sticky top-0">
@@ -103,7 +105,10 @@ export default function Sidebar() {
 					</Link>
 				</li>
 			</ul>
-			<div className="py-4 px-8 mt-auto">
+			<div className="py-4 px-8 mt-auto flex flex-col gap-y-2">
+				<span className="text-gray-800 text-center">
+					{profile.data?.data?.name}
+				</span>
 				<Button
 					className="w-full"
 					onClick={() => setLogoutDialog(true)}

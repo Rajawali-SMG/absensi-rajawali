@@ -135,6 +135,14 @@ export const userRouter = createTRPCRouter({
 		return formatResponse(true, "Berhasil mendapatkan data User", data, null);
 	}),
 
+	getProfile: protectedProcedure.query(async ({ ctx }) => {
+		const data = await ctx.db.query.user.findFirst({
+			where: eq(user.id, ctx.session.user.id),
+		});
+
+		return formatResponse(true, "Berhasil mendapatkan data User", data, null);
+	}),
+
 	updatePasswordUser: protectedProcedure
 		.input(userUpdatePasswordSchema)
 		.mutation(async ({ ctx, input }) => {

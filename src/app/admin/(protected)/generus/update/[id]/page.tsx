@@ -60,11 +60,17 @@ export default function GenerusUpdatePage({
 		data: updateData,
 		error: updateError,
 	} = api.generus.updateGenerus.useMutation({
-		onSuccess: () => {
-			utils.generus.getAllPaginated.invalidate();
-			utils.generus.getOneGenerus.invalidate({
-				id: id,
-			});
+		onError: (error) => {
+			toast.dismiss();
+			toast.error(error.message);
+		},
+		onMutate({ nama }) {
+			toast.loading(`Memperbarui Data Generus ${nama}`);
+		},
+		onSuccess: ({ message }) => {
+			toast.dismiss();
+			toast.success(message);
+			utils.generus.invalidate();
 			router.push("/admin/generus");
 		},
 	});
@@ -158,7 +164,7 @@ export default function GenerusUpdatePage({
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Kota Semarang"
 									type="text"
-									value={field.state.value}
+									value={field.state.value || ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -176,7 +182,7 @@ export default function GenerusUpdatePage({
 									placeholder="2000-01-01"
 									required={false}
 									type="date"
-									value={field.state.value}
+									value={field.state.value || ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -229,7 +235,7 @@ export default function GenerusUpdatePage({
 									}
 									options={pendidikanTerakhirOptions}
 									placeholder="Pilih Pendidikan Terakhir"
-									value={field.state.value}
+									value={field.state.value || ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -298,7 +304,7 @@ export default function GenerusUpdatePage({
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
 									type="text"
-									value={field.state.value}
+									value={field.state.value || ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -316,7 +322,7 @@ export default function GenerusUpdatePage({
 									}
 									options={keteranganOptions}
 									placeholder="Pilih Keterangan"
-									value={field.state.value || ""}
+									value={field.state.value}
 								/>
 								<TextError field={field} />
 							</>

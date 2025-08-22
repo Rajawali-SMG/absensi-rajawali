@@ -33,13 +33,18 @@ export default function GenerusCreatePage() {
 	const router = useRouter();
 	const utils = api.useUtils();
 
-	const {
-		mutateAsync,
-		data: createData,
-		error: createError,
-	} = api.generus.createGenerus.useMutation({
-		onSuccess: () => {
-			utils.generus.getAllPaginated.invalidate();
+	const { mutate } = api.generus.createGenerus.useMutation({
+		onError: (error) => {
+			toast.dismiss();
+			toast.error(error.message);
+		},
+		onMutate({ nama }) {
+			toast.loading(`Membuat Data Generus ${nama}`);
+		},
+		onSuccess: ({ message }) => {
+			toast.dismiss();
+			toast.success(message);
+			utils.generus.invalidate();
 			router.push("/admin/generus");
 		},
 	});
@@ -53,11 +58,7 @@ export default function GenerusCreatePage() {
 	const form = useForm({
 		defaultValues: defaultGenerus,
 		onSubmit: ({ value }) => {
-			toast.promise(mutateAsync(value), {
-				error: createError?.message,
-				loading: "Loading...",
-				success: createData?.message,
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: generusCreateSchema,
@@ -99,7 +100,7 @@ export default function GenerusCreatePage() {
 
 					<form.Field name="jenisKelamin">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									id="jenis_kelamin"
 									label="Jenis Kelamin"
@@ -110,7 +111,8 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Jenis Kelamin"
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -123,8 +125,9 @@ export default function GenerusCreatePage() {
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Kota Semarang"
+									required={false}
 									type="text"
-									value={field.state.value}
+									value={field.state.value || ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -140,8 +143,9 @@ export default function GenerusCreatePage() {
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="2000-01-01"
+									required={false}
 									type="date"
-									value={field.state.value}
+									value={field.state.value || ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -150,7 +154,7 @@ export default function GenerusCreatePage() {
 
 					<form.Field name="jenjang">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									id="jenjang"
 									label="Jenjang"
@@ -161,7 +165,8 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Jenjang"
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -174,6 +179,7 @@ export default function GenerusCreatePage() {
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="+628123456789"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -184,7 +190,7 @@ export default function GenerusCreatePage() {
 
 					<form.Field name="pendidikanTerakhir">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									id="pendidikan_terakhir"
 									label="Pendidikan Terakhir"
@@ -193,9 +199,11 @@ export default function GenerusCreatePage() {
 									}
 									options={pendidikanTerakhirOptions}
 									placeholder="Pilih Pendidikan Terakhir"
-									value={field.state.value}
+									required={false}
+									value={field.state.value || ""}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -208,6 +216,7 @@ export default function GenerusCreatePage() {
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -225,6 +234,7 @@ export default function GenerusCreatePage() {
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="+628123456789"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -235,7 +245,7 @@ export default function GenerusCreatePage() {
 
 					<form.Field name="sambung">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									id="sambung"
 									label="Sambung"
@@ -246,7 +256,8 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Sambung"
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -259,6 +270,7 @@ export default function GenerusCreatePage() {
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -269,7 +281,7 @@ export default function GenerusCreatePage() {
 
 					<form.Field name="keterangan">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<Select
 									id="keterangan"
 									label="Keterangan"
@@ -280,7 +292,8 @@ export default function GenerusCreatePage() {
 									placeholder="Pilih Keterangan"
 									value={field.state.value}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 
@@ -304,7 +317,7 @@ export default function GenerusCreatePage() {
 
 					<form.Field name="kelompokId">
 						{(field) => (
-							<div className="space-y-1">
+							<>
 								<CustomSelect
 									isDisabled={isPending}
 									label="Kelompok"
@@ -315,7 +328,8 @@ export default function GenerusCreatePage() {
 										(option) => option.value === field.state.value,
 									)}
 								/>
-							</div>
+								<TextError field={field} />
+							</>
 						)}
 					</form.Field>
 				</div>

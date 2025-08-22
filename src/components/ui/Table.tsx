@@ -93,7 +93,7 @@ export default function Table<T extends Record<string, unknown>>({
 								Next
 							</Button>
 							<Select
-								name="pageSize"
+								id="pageSize"
 								onChange={(e) => table.setPageSize(Number(e.target.value))}
 								options={[
 									{ label: "10", value: 10 },
@@ -102,6 +102,7 @@ export default function Table<T extends Record<string, unknown>>({
 									{ label: "100", value: 100 },
 								]}
 								placeholder="Select Page Size"
+								required={false}
 								value={table.getState().pagination.pageSize}
 							/>
 							<p className="pt-2 pb-1">Total Page: {table.getPageCount()}</p>
