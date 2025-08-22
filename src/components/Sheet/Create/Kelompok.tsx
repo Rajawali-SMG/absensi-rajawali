@@ -18,12 +18,17 @@ export default function SheetCreateKelompok({
 		isLoading: desaIsLoading,
 		error: desaError,
 	} = api.desa.getAll.useQuery();
-	const {
-		mutateAsync,
-		error,
-		data: createData,
-	} = api.kelompok.createKelompok.useMutation({
-		onSuccess: () => {
+	const { mutate } = api.kelompok.createKelompok.useMutation({
+		onError: (error) => {
+			toast.dismiss();
+			toast.error(error.message);
+		},
+		onMutate({ nama }) {
+			toast.loading(`Membuat Kelompok ${nama}`);
+		},
+		onSuccess: ({ message }) => {
+			toast.dismiss();
+			toast.success(message);
 			utils.kelompok.getAllPaginated.invalidate();
 			closeSheet();
 		},
@@ -32,11 +37,7 @@ export default function SheetCreateKelompok({
 	const form = useForm({
 		defaultValues: kelompokDefaultValue,
 		onSubmit: ({ value }) => {
-			toast.promise(mutateAsync(value), {
-				error: error?.message,
-				loading: "Loading...",
-				success: createData?.message,
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: kelompokCreateSchema,
@@ -54,7 +55,7 @@ export default function SheetCreateKelompok({
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">
 			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-				<h1 className=" font-bold mb-6 text-gray-800">Create Kelompok</h1>
+				<h1 className="font-bold mb-6 text-gray-800">Buat Kelompok</h1>
 
 				<form
 					className="space-y-4"
@@ -69,18 +70,14 @@ export default function SheetCreateKelompok({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
+										autoFocus
 										id={field.name}
 										label="Nama"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
+										placeholder="Kanguru"
 										type="text"
 										value={field.state.value}
-										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>
@@ -91,15 +88,11 @@ export default function SheetCreateKelompok({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Kode"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
+										placeholder="KGR"
 										type="text"
 										value={field.state.value}
 										variant="secondary"
@@ -115,10 +108,9 @@ export default function SheetCreateKelompok({
 									<CustomSelect
 										isLoading={desaIsLoading}
 										label="Desa"
-										onChange={(option) => {
-											field.handleChange(option?.value || "");
-											console.log(option);
-										}}
+										onChange={(option) =>
+											field.handleChange(option?.value || "")
+										}
 										options={desaOptions}
 										value={
 											desaOptions.find(

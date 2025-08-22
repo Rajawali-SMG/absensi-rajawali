@@ -14,7 +14,7 @@ type InputProps = DetailedHTMLProps<
 > & {
 	variant?: InputVariant;
 	label: ReactNode;
-	htmlFor: string | undefined;
+	required?: boolean;
 };
 
 export default function Input({
@@ -22,7 +22,7 @@ export default function Input({
 	label,
 	type,
 	className,
-	htmlFor,
+	required = true,
 	...props
 }: InputProps) {
 	const [showPassword, setShowPassword] = useState(false);
@@ -60,15 +60,18 @@ export default function Input({
 		<>
 			<label
 				className={`block mb-2 text-sm font-medium ${getLabelClasses(variant)}`}
-				htmlFor={htmlFor}
+				htmlFor={props.id}
 			>
 				{label}
+				{required && <span className="text-red-500"> *</span>}
 			</label>
 			<div
 				className={`flex space-x-2 border sm:text-sm rounded-lg w-full p-2.5 ring-offset-2 focus-within:ring-2 transition-colors ${getVariantClasses(variant)} ${className}`}
 			>
 				<input
 					className="focus:outline-none w-full bg-transparent"
+					name={props.id}
+					required={required}
 					type={type === "password" && showPassword ? "text" : type}
 					{...props}
 				/>

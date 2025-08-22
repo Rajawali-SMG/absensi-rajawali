@@ -41,7 +41,7 @@ export default function SheetCreateDesa({
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">
 			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-				<h1 className=" font-bold mb-6 text-gray-800">Buat Data Desa</h1>
+				<h1 className=" font-bold mb-6 text-gray-800">Buat Desa</h1>
 
 				<form
 					className="space-y-4"
@@ -56,18 +56,14 @@ export default function SheetCreateDesa({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
+										autoFocus
 										id={field.name}
 										label="Nama"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
+										placeholder="Sendang Mulyo"
 										type="text"
 										value={field.state.value}
-										variant="secondary"
 									/>
 									<TextError field={field} />
 								</>

@@ -116,15 +116,11 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Nama"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
-									required={true}
 									type="text"
 									value={field.state.value}
 									variant="secondary"
@@ -138,14 +134,13 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Select
+									id="jenis_kelamin"
 									label="Jenis Kelamin"
-									name={field.name}
 									onChange={(e) =>
 										field.handleChange(e.target.value as JenisKelaminType)
 									}
 									options={jenisKelaminOptions}
 									placeholder="Pilih Jenis Kelamin"
-									required={true}
 									value={field.state.value}
 								/>
 								<TextError field={field} />
@@ -157,15 +152,11 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Tempat Lahir"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Kota Semarang"
-									required={true}
 									type="text"
 									value={field.state.value}
 								/>
@@ -178,11 +169,8 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Tanggal Lahir"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="2000-01-01"
@@ -199,14 +187,13 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Select
+									id="jenjang"
 									label="Jenjang"
-									name={field.name}
 									onChange={(e) =>
 										field.handleChange(e.target.value as JenjangType)
 									}
 									options={jenjangOptions}
 									placeholder="Pilih Jenjang"
-									required={true}
 									value={field.state.value}
 								/>
 								<TextError field={field} />
@@ -218,15 +205,11 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Nomor WhatsApp"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="+628123456789"
-									required={true}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -239,14 +222,13 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Select
+									id="pendidikan_terakhir"
 									label="Pendidikan Terakhir"
-									name={field.name}
 									onChange={(e) =>
 										field.handleChange(e.target.value as PendidikanTerakhirType)
 									}
 									options={pendidikanTerakhirOptions}
 									placeholder="Pilih Pendidikan Terakhir"
-									required={true}
 									value={field.state.value}
 								/>
 								<TextError field={field} />
@@ -258,15 +240,11 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Nama Orang Tua"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
-									required={true}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -279,15 +257,11 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Nomor WhatsApp Orang Tua"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="+628123456789"
-									required={true}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -300,14 +274,13 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Select
+									id="sambung"
 									label="Sambung"
-									name={field.name}
 									onChange={(e) =>
 										field.handleChange(e.target.value as SambungType)
 									}
 									options={sambungOptions}
 									placeholder="Pilih Sambung"
-									required={true}
 									value={field.state.value}
 								/>
 								<TextError field={field} />
@@ -319,15 +292,11 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Alamat Tempat Tinggal"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
-									required={true}
 									type="text"
 									value={field.state.value}
 								/>
@@ -340,14 +309,13 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Select
+									id="keterangan"
 									label="Keterangan"
-									name={field.name}
 									onChange={(e) =>
 										field.handleChange(e.target.value as KeteranganType)
 									}
 									options={keteranganOptions}
 									placeholder="Pilih Keterangan"
-									required={true}
 									value={field.state.value || ""}
 								/>
 								<TextError field={field} />
@@ -359,11 +327,8 @@ export default function GenerusUpdatePage({
 						{(field) => (
 							<>
 								<Input
-									className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-									htmlFor={field.name}
 									id={field.name}
 									label="Alamat Asal"
-									name={field.name}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
@@ -381,11 +346,9 @@ export default function GenerusUpdatePage({
 								<CustomSelect
 									isDisabled={isPending}
 									label="Kelompok"
-									name={field.name}
 									onChange={(e) => field.handleChange(e?.value || "")}
 									options={kelompokOptions}
 									placeholder="Pilih Kelompok"
-									required={true}
 									value={kelompokOptions.find(
 										(option) => option.value === field.state.value,
 									)}

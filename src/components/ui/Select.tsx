@@ -10,30 +10,34 @@ type SelectProps = DetailedHTMLProps<
 	SelectHTMLAttributes<HTMLSelectElement>,
 	HTMLSelectElement
 > & {
-	name: string;
+	id: string;
 	label?: string;
 	options: SelectOption[];
 	placeHolderEnabled?: boolean;
 	placeholder: string;
+	required?: boolean;
 };
 
 export default function Select({
-	name,
+	id,
 	label,
 	options,
 	placeHolderEnabled,
 	placeholder,
+	required = true,
 	...props
 }: SelectProps) {
 	return (
 		<div className="space-y-2">
-			<label className="block text-sm font-medium text-gray-700" htmlFor={name}>
+			<label className="block text-sm font-medium text-gray-700" htmlFor={id}>
 				{label}
+				{required && <span className="text-red-500"> *</span>}
 			</label>
 
 			<select
-				id={name}
-				name={name}
+				id={id}
+				name={id}
+				required={required}
 				{...props}
 				className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 			>

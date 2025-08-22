@@ -52,15 +52,11 @@ export default function SheetCreateUser({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Nama"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
-										required={true}
 										type="text"
 										value={field.state.value}
 										variant="secondary"
@@ -74,15 +70,11 @@ export default function SheetCreateUser({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Email"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
-										required={true}
 										type="text"
 										value={field.state.value}
 										variant="secondary"
@@ -96,16 +88,12 @@ export default function SheetCreateUser({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Password"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={true}
-										type="text"
+										placeholder="Really Strong Password"
+										type="password"
 										value={field.state.value}
 										variant="secondary"
 									/>

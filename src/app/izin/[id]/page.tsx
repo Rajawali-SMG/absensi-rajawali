@@ -248,11 +248,9 @@ export default function IzinPage({
 											{(field) => (
 												<CustomSelect
 													label="Pilih Peserta"
-													name={field.name}
 													onChange={(e) => field.handleChange(e?.value || "")}
 													options={generusOptions}
 													placeholder="Pilih peserta..."
-													required={true}
 													value={generusOptions.find(
 														(option) => option.value === field.state.value,
 													)}

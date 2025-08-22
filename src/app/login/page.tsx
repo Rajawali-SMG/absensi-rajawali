@@ -63,14 +63,11 @@ export default function LoginPage() {
 							{(field) => (
 								<>
 									<Input
-										htmlFor={field.name}
 										id={field.name}
 										label="Email"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="JohnDoe"
-										required={true}
 										type="text"
 										value={field.state.value}
 									/>
@@ -85,14 +82,11 @@ export default function LoginPage() {
 								<>
 									<Input
 										className="flex-1"
-										htmlFor={field.name}
 										id={field.name}
 										label="Password"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="Password"
-										required={true}
 										type="password"
 										value={field.state.value}
 									/>

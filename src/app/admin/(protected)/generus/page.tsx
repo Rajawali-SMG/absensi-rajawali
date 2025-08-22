@@ -164,6 +164,7 @@ export default function GenerusPage() {
 					submitFilter={() => setSheetFilter(false)}
 				>
 					<Select
+						id="jenis_kelamin"
 						label="Jenis Kelamin"
 						name="jenis_kelamin"
 						onChange={(e) =>
@@ -175,6 +176,7 @@ export default function GenerusPage() {
 						value={jenisKelaminParam}
 					/>
 					<Select
+						id="jenjang"
 						label="Jenjang"
 						name="jenjang"
 						onChange={(e) => setJenjangParam(e.target.value as JenjangType)}
@@ -184,6 +186,7 @@ export default function GenerusPage() {
 						value={jenjangParam}
 					/>
 					<Select
+						id="pendidikan_terakhir"
 						label="Pendidikan Terakhir"
 						name="pendidikan_terakhir"
 						onChange={(e) =>
@@ -197,6 +200,7 @@ export default function GenerusPage() {
 						value={pendidikanTerakhirParam}
 					/>
 					<Select
+						id="sambung"
 						label="Sambung"
 						name="sambung"
 						onChange={(e) => setSambungParam(e.target.value as SambungType)}
@@ -206,6 +210,7 @@ export default function GenerusPage() {
 						value={sambungParam}
 					/>
 					<Select
+						id="keterangan"
 						label="Keterangan"
 						name="keterangan"
 						onChange={(e) =>

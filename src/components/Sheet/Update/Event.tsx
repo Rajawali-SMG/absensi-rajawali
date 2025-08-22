@@ -62,15 +62,11 @@ export default function SheetUpdateEvent({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Title"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
-										required={true}
 										type="text"
 										value={field.state.value}
 										variant="secondary"
@@ -84,15 +80,11 @@ export default function SheetUpdateEvent({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Start Date"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
-										required={true}
 										type="datetime-local"
 										value={field.state.value}
 										variant="secondary"
@@ -106,15 +98,11 @@ export default function SheetUpdateEvent({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="End Date"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"
-										required={true}
 										type="datetime-local"
 										value={field.state.value || ""}
 										variant="secondary"
@@ -127,15 +115,11 @@ export default function SheetUpdateEvent({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Latitude"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
-										required={true}
 										type="number"
 										value={field.state.value || ""}
 										variant="secondary"
@@ -149,15 +133,11 @@ export default function SheetUpdateEvent({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Longitude"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(Number(e.target.value))}
 										placeholder="John Doe"
-										required={true}
 										type="number"
 										value={field.state.value || ""}
 										variant="secondary"
@@ -171,11 +151,8 @@ export default function SheetUpdateEvent({
 							{(field) => (
 								<>
 									<Input
-										className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-										htmlFor={field.name}
 										id={field.name}
 										label="Description"
-										name={field.name}
 										onBlur={field.handleBlur}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="John Doe"

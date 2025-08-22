@@ -17,8 +17,9 @@ export default function CustomSelect<
 		<div className="flex flex-col space-y-1">
 			<label className="text-sm font-medium text-gray-700" htmlFor={label}>
 				{label}
+				{props.required && <span className="text-red-500"> *</span>}
 			</label>
-			<Select {...props} isClearable />
+			<Select {...props} isClearable required />
 		</div>
 	);
 }
