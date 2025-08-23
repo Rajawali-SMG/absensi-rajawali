@@ -84,7 +84,7 @@ export default function AbsenPage({
 			id,
 		},
 		{
-			enabled: eventData?.data.status === "started",
+			enabled: eventData?.data.status === "active",
 		},
 	);
 	const { data: presenceCount, error: presenceCountError } =
@@ -93,7 +93,7 @@ export default function AbsenPage({
 				id,
 			},
 			{
-				enabled: eventData?.data.status === "started",
+				enabled: eventData?.data.status === "active",
 			},
 		);
 

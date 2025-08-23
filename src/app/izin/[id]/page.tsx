@@ -64,7 +64,7 @@ export default function IzinPage({
 				id,
 			},
 			{
-				enabled: eventData?.data.status === "started",
+				enabled: eventData?.data.status === "active",
 			},
 		);
 	const { data: presenceCount, error: presenceCountError } =
@@ -73,7 +73,7 @@ export default function IzinPage({
 				id,
 			},
 			{
-				enabled: eventData?.data.status === "started",
+				enabled: eventData?.data.status === "active",
 			},
 		);
 
