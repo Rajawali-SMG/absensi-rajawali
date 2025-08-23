@@ -10,6 +10,7 @@ import Button from "./ui/Button";
 export default function UploadExcelDialog() {
 	const [open, setOpen] = useState(false);
 	const [file, setFile] = useState<File | null>(null);
+	const utils = api.useUtils();
 	const { mutate } = api.generus.uploadGenerus.useMutation({
 		onError: ({ message }) => {
 			toast.dismiss();
@@ -22,6 +23,7 @@ export default function UploadExcelDialog() {
 			toast.dismiss();
 			toast.success(message);
 			setOpen(false);
+			utils.generus.invalidate();
 		},
 	});
 

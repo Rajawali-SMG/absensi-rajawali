@@ -154,7 +154,7 @@ export default function GenerusUpdatePage({
 									placeholder="Kota Semarang"
 									required={false}
 									type="text"
-									value={field.state.value || ""}
+									value={field.state.value ?? ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -172,7 +172,7 @@ export default function GenerusUpdatePage({
 									placeholder="2000-01-01"
 									required={false}
 									type="date"
-									value={field.state.value || undefined}
+									value={field.state.value ?? ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -208,7 +208,7 @@ export default function GenerusUpdatePage({
 									placeholder="628123456789"
 									required={false}
 									type="text"
-									value={field.state.value || ""}
+									value={field.state.value ?? ""}
 								/>
 								<span className="text-xs text-gray-500">
 									ANGKA DEPAN WAJIB COUNTRY CODE (contoh 6281234567890)
@@ -229,7 +229,8 @@ export default function GenerusUpdatePage({
 									}
 									options={pendidikanTerakhirOptions}
 									placeholder="Pilih Pendidikan Terakhir"
-									value={field.state.value || ""}
+									required={false}
+									value={field.state.value ?? ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -247,7 +248,7 @@ export default function GenerusUpdatePage({
 									placeholder="John Doe"
 									required={false}
 									type="text"
-									value={field.state.value || ""}
+									value={field.state.value ?? ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -265,7 +266,7 @@ export default function GenerusUpdatePage({
 									placeholder="628123456789"
 									required={false}
 									type="text"
-									value={field.state.value || ""}
+									value={field.state.value ?? ""}
 								/>
 								<span className="text-xs text-gray-500">
 									ANGKA DEPAN WAJIB COUNTRY CODE (contoh 6281234567890)
@@ -304,7 +305,7 @@ export default function GenerusUpdatePage({
 									placeholder="Jl. Madukoro No. 1"
 									required={false}
 									type="text"
-									value={field.state.value || ""}
+									value={field.state.value ?? ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -340,7 +341,7 @@ export default function GenerusUpdatePage({
 									placeholder="Jl. Madukoro No. 1"
 									required={false}
 									type="text"
-									value={field.state.value || ""}
+									value={field.state.value ?? ""}
 								/>
 								<TextError field={field} />
 							</>
@@ -353,7 +354,7 @@ export default function GenerusUpdatePage({
 								<CustomSelect
 									isDisabled={isPending}
 									label="Kelompok"
-									onChange={(e) => field.handleChange(e?.value || "")}
+									onChange={(e) => field.handleChange(e?.value ?? "")}
 									options={kelompokOptions}
 									placeholder="Pilih Kelompok"
 									value={kelompokOptions.find(
