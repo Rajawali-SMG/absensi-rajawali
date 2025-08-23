@@ -26,8 +26,8 @@ export default function PresensiPage() {
 			header: "Event ID",
 		},
 		{
-			accessorKey: "generusId",
-			header: "Generus ID",
+			accessorKey: "generusName",
+			header: "Nama Generus",
 		},
 		{
 			accessorKey: "status",

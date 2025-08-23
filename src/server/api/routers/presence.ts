@@ -49,6 +49,8 @@ export const presenceRouter = createTRPCRouter({
 				generusName: generusData.nama,
 			});
 
+			console.log(generusData);
+
 			return formatResponse(
 				true,
 				"Berhasil menambahkan data Presensi",
@@ -77,8 +79,7 @@ export const presenceRouter = createTRPCRouter({
 		.query(async ({ ctx, input }) => {
 			const data = await ctx.db
 				.select({
-					generusId: presence.generusId,
-					generusName: generus.nama,
+					generusName: presence.generusName,
 					status: presence.status,
 				})
 				.from(presence)
@@ -100,24 +101,61 @@ export const presenceRouter = createTRPCRouter({
 			const [hadir] = await ctx.db
 				.select({ count: count() })
 				.from(presence)
+				.innerJoin(generus, eq(presence.generusId, generus.id))
 				.where(
 					and(
 						eq(presence.eventId, input.eventId),
 						eq(presence.status, "Hadir"),
+						eq(generus.kelompokId, input.kelompokId),
 					),
 				);
 
 			const [izin] = await ctx.db
 				.select({ count: count() })
 				.from(presence)
+				.innerJoin(generus, eq(presence.generusId, generus.id))
 				.where(
-					and(eq(presence.eventId, input.eventId), eq(presence.status, "Izin")),
+					and(
+						eq(presence.eventId, input.eventId),
+						eq(presence.status, "Izin"),
+						eq(generus.kelompokId, input.kelompokId),
+					),
 				);
+
+			const [totalGenerus] = await ctx.db
+				.select({ count: count() })
+				.from(generus)
+				.where(eq(generus.kelompokId, input.kelompokId));
+
+			const hadirCount = Number(hadir?.count ?? 0);
+			const izinCount = Number(izin?.count ?? 0);
+			const totalCount = Number(totalGenerus?.count ?? 0);
+			const alphaCount = totalCount - (hadirCount + izinCount);
+
+			const calculatePercentage = (count: number, total: number) => {
+				if (total === 0) return "0.00%";
+				return `${((count / total) * 100).toFixed(2)}%`;
+			};
+
+			const hadirPercentage = calculatePercentage(hadirCount, totalCount);
+			const izinPercentage = calculatePercentage(izinCount, totalCount);
+			const alphaPercentage = calculatePercentage(alphaCount, totalCount);
 
 			return formatResponse(
 				true,
 				"Berhasil mendapatkan data Presensi",
-				{ data, hadir: hadir?.count ?? 0, izin: izin?.count ?? 0 },
+				{
+					alpha: alphaCount,
+					data,
+					hadir: hadirCount,
+					izin: izinCount,
+					percentage: {
+						alpha: alphaPercentage,
+						hadir: hadirPercentage,
+						izin: izinPercentage,
+					},
+					total: totalCount,
+				},
 				null,
 			);
 		}),

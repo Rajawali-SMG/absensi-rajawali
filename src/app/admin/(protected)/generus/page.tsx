@@ -61,22 +61,24 @@ export default function GenerusPage() {
 	});
 	const utils = api.useUtils();
 
-	const {
-		mutateAsync,
-		data: deleteData,
-		error: deleteError,
-	} = api.generus.deleteGenerus.useMutation({
-		onSuccess: () => {
-			utils.generus.getAllPaginated.invalidate();
+	const { mutate } = api.generus.deleteGenerus.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
+			utils.generus.invalidate();
+			toast.dismiss();
+			toast.success(message);
 		},
 	});
 
 	const handleDeleteConfirm = () => {
-		toast.promise(mutateAsync({ id: deleteId }), {
-			error: deleteError?.message,
-			loading: "Loading...",
-			success: deleteData?.message,
-		});
+		mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};
@@ -98,11 +100,11 @@ export default function GenerusPage() {
 			accessorKey: "jenjang",
 		},
 		{
-			accessorKey: "alamatTempatTinggal",
-			header: "Alamat Tempat Tinggal",
+			accessorKey: "keterangan",
 		},
 		{
-			accessorKey: "keterangan",
+			accessorKey: "alamatTempatTinggal",
+			header: "Alamat Tempat Tinggal",
 		},
 		{
 			cell: (props) => {

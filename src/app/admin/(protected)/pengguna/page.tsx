@@ -35,13 +35,18 @@ export default function PenggunaPage() {
 	const [deleteId, setDeleteId] = useState("");
 	const utils = api.useUtils();
 
-	const {
-		mutateAsync,
-		data: deleteData,
-		error: deleteError,
-	} = api.user.deleteUser.useMutation({
-		onSuccess: () => {
-			utils.user.getAllPaginated.invalidate();
+	const { mutate } = api.user.deleteUser.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
+			utils.user.invalidate();
+			toast.dismiss();
+			toast.success(message);
 		},
 	});
 
@@ -56,11 +61,7 @@ export default function PenggunaPage() {
 	};
 
 	const handleDeleteConfirm = () => {
-		toast.promise(mutateAsync({ id: deleteId }), {
-			error: deleteError?.message,
-			loading: "Loading...",
-			success: deleteData?.message,
-		});
+		mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};

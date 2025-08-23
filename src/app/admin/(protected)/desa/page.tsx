@@ -40,7 +40,7 @@ export default function DesaPage() {
 			toast.loading("Menghapus desa");
 		},
 		onSuccess: ({ message }) => {
-			utils.desa.getAllPaginated.invalidate();
+			utils.desa.invalidate();
 			toast.dismiss();
 			toast.success(message);
 		},

@@ -23,7 +23,7 @@ export default function SheetCreateDesa({
 		onSuccess: ({ message }) => {
 			toast.dismiss();
 			toast.success(message);
-			utils.desa.getAllPaginated.invalidate();
+			utils.desa.invalidate();
 			closeSheet();
 		},
 	});

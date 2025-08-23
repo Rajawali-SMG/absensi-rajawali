@@ -9,7 +9,7 @@ export type PresenceInsert = InferInsertModel<typeof presence>;
 export const presenceCreateSchema = z.object({
 	eventId: z.string().nonempty("Event tidak boleh kosong"),
 	generusId: z.string().nonempty("Generus tidak boleh kosong"),
-	generusName: z.string().nonempty("Generus tidak boleh kosong"),
+	generusName: z.string(),
 	status: z
 		.enum(["Hadir", "Izin", "Tidak Hadir"], {
 			error: "Status tidak boleh kosong",

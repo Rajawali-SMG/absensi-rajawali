@@ -15,9 +15,18 @@ export default function SheetUpdateUser({
 }) {
 	const utils = api.useUtils();
 
-	const { mutateAsync, error, data } = api.user.updateUser.useMutation({
-		onSuccess: () => {
-			utils.user.getAllPaginated.invalidate();
+	const { mutate } = api.user.updateUser.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
+			utils.user.invalidate();
+			toast.dismiss();
+			toast.success(message);
 			closeSheet();
 		},
 	});
@@ -28,13 +37,8 @@ export default function SheetUpdateUser({
 			id: selectedData.id,
 			name: selectedData.name,
 		},
-		onSubmit: async ({ value }) => {
-			toast.promise(mutateAsync(value), {
-				error: error?.message,
-				loading: "Loading...",
-				success: data?.message,
-			});
-			closeSheet();
+		onSubmit: ({ value }) => {
+			mutate(value);
 		},
 		validators: {
 			onSubmit: userUpdateSchema,

@@ -29,7 +29,7 @@ export default function SheetCreateKelompok({
 		onSuccess: ({ message }) => {
 			toast.dismiss();
 			toast.success(message);
-			utils.kelompok.getAllPaginated.invalidate();
+			utils.kelompok.invalidate();
 			closeSheet();
 		},
 	});

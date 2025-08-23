@@ -42,22 +42,23 @@ export default function KelompokPage() {
 		page: pagination.pageIndex,
 		q: searchQuery,
 	});
-	const {
-		mutateAsync,
-		data: deleteData,
-		error: deleteError,
-	} = api.kelompok.deleteKelompok.useMutation({
-		onSuccess: () => {
-			utils.kelompok.getAllPaginated.invalidate();
+	const { mutate } = api.kelompok.deleteKelompok.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
+			utils.kelompok.invalidate();
+			toast.dismiss();
+			toast.success(message);
 		},
 	});
 	const utils = api.useUtils();
 	const handleDeleteConfirm = () => {
-		toast.promise(mutateAsync({ id: deleteId }), {
-			error: deleteError?.message,
-			loading: "Loading...",
-			success: deleteData?.message,
-		});
+		mutate({ id: deleteId });
 		setDialog(false);
 		setDeleteId("");
 	};

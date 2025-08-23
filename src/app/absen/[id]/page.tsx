@@ -27,14 +27,19 @@ export default function AbsenPage({
 	} = api.event.getOneEventPublic.useQuery({
 		id,
 	});
-	const {
-		mutateAsync,
-		data,
-		error: mutateError,
-	} = api.presence.createPresence.useMutation({
-		onSuccess: () => {
+	const { mutate } = api.presence.createPresence.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
 			utils.generus.withKelompok.invalidate();
 			utils.event.countGenerus.invalidate();
+			toast.dismiss();
+			toast.success(message);
 		},
 	});
 
@@ -46,19 +51,12 @@ export default function AbsenPage({
 			status: "Hadir",
 		},
 		onSubmit: ({ value }) => {
-			toast.promise(
-				mutateAsync({
-					eventId: id,
-					generusId: value.generusId,
-					generusName: value.generusName,
-					status: "Hadir",
-				}),
-				{
-					error: mutateError?.message,
-					loading: "Loading...",
-					success: data?.message,
-				},
-			);
+			mutate({
+				eventId: id,
+				generusId: value.generusId,
+				generusName: value.generusName,
+				status: "Hadir",
+			});
 		},
 	});
 
@@ -212,28 +210,49 @@ export default function AbsenPage({
 					</div>
 
 					{/* Location Error */}
-					{(!geo.isGeolocationAvailable && !geo.isGeolocationEnabled) ||
+					{!geo.isGeolocationAvailable ||
+					!geo.isGeolocationEnabled ||
+					geo.coords?.latitude === undefined ||
+					geo.coords?.longitude === undefined ||
 					distance > radius ? (
 						<div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 text-center text-red-700">
 							<Icon
 								className="w-12 h-12 mx-auto mb-3 text-red-500"
 								icon="material-symbols:warning"
 							/>
-							<div className="font-bold text-lg mb-2">Lokasi Tidak Valid</div>
+
+							{/* Show different messages based on error */}
+							<div className="font-bold text-lg mb-2">
+								{geo.positionError
+									? "Izin Lokasi Ditolak"
+									: !geo.isGeolocationAvailable
+										? "Geolokasi Tidak Didukung"
+										: geo.coords?.latitude === undefined ||
+												geo.coords?.longitude === undefined
+											? "Lokasi Tidak Valid"
+											: "Anda berada di luar radius dari lokasi kegiatan. Silakan mendekati lokasi acara untuk melakukan absensi."}
+							</div>
+
 							<p className="mb-4">
-								Anda berada di luar radius dari lokasi kegiatan. Silakan
-								mendekati lokasi acara untuk melakukan absensi.
+								{geo.positionError
+									? "Anda harus memberikan izin lokasi untuk melanjutkan. Periksa pengaturan browser Anda."
+									: !geo.isGeolocationAvailable
+										? "Browser Anda tidak mendukung geolokasi."
+										: geo.coords?.latitude === undefined ||
+												geo.coords?.longitude === undefined
+											? "Apakah anda sudah menyalakan izin lokasi?"
+											: "Anda berada di luar radius dari lokasi kegiatan. Silakan mendekati lokasi acara untuk melakukan absensi."}
 							</p>
+
+							{/* Retry Button */}
 							<button
 								className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-								disabled={
-									!geo.isGeolocationAvailable || !geo.isGeolocationEnabled
-								}
+								disabled={!geo.isGeolocationAvailable}
 								onClick={geo.getPosition}
 								type="button"
 							>
-								<Icon className={`w-4 h-4`} icon="material-symbols:refresh" />
-								Periksa Lokasi Lagi
+								<Icon className="w-4 h-4" icon="material-symbols:refresh" />
+								{geo.positionError ? "Coba Lagi" : "Periksa Lokasi Lagi"}
 							</button>
 						</div>
 					) : (
@@ -248,6 +267,7 @@ export default function AbsenPage({
 								<div
 									className={`space-y-6 transition-opacity ${geo.isGeolocationAvailable && geo.isGeolocationEnabled ? "" : "opacity-50 pointer-events-none"}`}
 								>
+									{/* Form Select */}
 									<div className="bg-gray-50 rounded-xl p-6">
 										<h2 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
 											<Icon

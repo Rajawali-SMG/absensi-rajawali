@@ -34,33 +34,24 @@ export default function ExportKegiatan() {
 			return;
 		}
 
-		const total = presenceData?.data.data.length || 0;
-		const hadirCount = presenceData?.data.hadir || 0;
-		const izinCount = presenceData?.data.izin || 0;
-		const tidakHadirCount = total - hadirCount - izinCount;
-
 		const rows = [
 			{
-				Count: hadirCount,
-				Percentage: total
-					? `${((hadirCount / total) * 100).toFixed(2)}%`
-					: "0%",
+				Count: presenceData?.data.hadir,
+				Percentage: presenceData?.data.percentage.hadir,
 				Rekap: "Hadir",
 			},
 			{
-				Count: izinCount,
-				Percentage: total ? `${((izinCount / total) * 100).toFixed(2)}%` : "0%",
+				Count: presenceData?.data.izin,
+				Percentage: presenceData?.data.percentage.izin,
 				Rekap: "Izin",
 			},
 			{
-				Count: tidakHadirCount,
-				Percentage: total
-					? `${((tidakHadirCount / total) * 100).toFixed(2)}%`
-					: "0%",
-				Rekap: "Tidak Hadir",
+				Count: presenceData?.data.alpha,
+				Percentage: presenceData?.data.percentage.alpha,
+				Rekap: "Alpha",
 			},
 			{
-				Count: total,
+				Count: presenceData?.data.total,
 				Rekap: "Total",
 			},
 		];

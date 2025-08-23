@@ -56,9 +56,7 @@ export default function GenerusUpdatePage({
 	const utils = api.useUtils();
 
 	const {
-		mutateAsync,
-		data: updateData,
-		error: updateError,
+		mutate,
 	} = api.generus.updateGenerus.useMutation({
 		onError: (error) => {
 			toast.dismiss();
@@ -78,17 +76,10 @@ export default function GenerusUpdatePage({
 	const form = useForm({
 		defaultValues: generusData?.data || defaultGenerus,
 		onSubmit: ({ value }) => {
-			toast.promise(
-				mutateAsync({
-					...value,
-					id: id,
-				}),
-				{
-					error: updateError?.message,
-					loading: "Loading...",
-					success: updateData?.message,
-				},
-			);
+			mutate({
+				...value,
+				id: id,
+			});
 		},
 
 		validators: {

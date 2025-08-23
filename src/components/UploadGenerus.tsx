@@ -10,12 +10,20 @@ import Button from "./ui/Button";
 export default function UploadExcelDialog() {
 	const [open, setOpen] = useState(false);
 	const [file, setFile] = useState<File | null>(null);
-	const { mutateAsync, error: uploadError } =
-		api.generus.uploadGenerus.useMutation({
-			onSuccess: () => {
-				setOpen(false);
-			},
-		});
+	const { mutate } = api.generus.uploadGenerus.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
+			toast.dismiss();
+			toast.success(message);
+			setOpen(false);
+		},
+	});
 
 	const handleUpload = async () => {
 		if (!file) return;
@@ -24,13 +32,18 @@ export default function UploadExcelDialog() {
 		const workbook = XLSX.read(data, { type: "array" });
 		const sheetName = workbook.SheetNames[0];
 		const worksheet = workbook.Sheets[sheetName!];
-		const json = XLSX.utils.sheet_to_json<GenerusUploadRow>(worksheet!);
-
-		toast.promise(mutateAsync(json), {
-			error: uploadError?.message,
-			loading: "Loading...",
-			success: "Data Generus berhasil diupload",
+		const json = XLSX.utils.sheet_to_json<GenerusUploadRow>(worksheet!, {
+			raw: false,
 		});
+		const processedJson = json.map((row) => ({
+			...row,
+			nomerWhatsapp: row.nomerWhatsapp ? String(row.nomerWhatsapp) : "",
+			nomerWhatsappOrangTua: row.nomerWhatsappOrangTua
+				? String(row.nomerWhatsappOrangTua)
+				: "",
+		}));
+
+		mutate(processedJson);
 	};
 
 	const handleDownloadTemplate = () => {

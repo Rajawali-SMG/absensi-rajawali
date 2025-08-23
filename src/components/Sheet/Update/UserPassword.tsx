@@ -14,9 +14,18 @@ export default function SheetUpdateUserPassword({
 }) {
 	const utils = api.useUtils();
 
-	const { mutateAsync, error, data } = api.user.updatePasswordUser.useMutation({
-		onSuccess: () => {
-			utils.user.getAllPaginated.invalidate();
+	const { mutate } = api.user.updatePasswordUser.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
+			utils.user.invalidate();
+			toast.dismiss();
+			toast.success(message);
 			closeSheet();
 		},
 	});
@@ -27,13 +36,8 @@ export default function SheetUpdateUserPassword({
 			id: selectedData.id,
 			password: "",
 		},
-		onSubmit: async ({ value }) => {
-			toast.promise(mutateAsync(value), {
-				error: error?.message,
-				loading: "Loading...",
-				success: data?.message,
-			});
-			closeSheet();
+		onSubmit: ({ value }) => {
+			mutate(value);
 		},
 		validators: {
 			onSubmit: userUpdatePasswordSchema,

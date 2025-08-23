@@ -13,9 +13,18 @@ export default function SheetCreateUser({
 }) {
 	const utils = api.useUtils();
 
-	const { mutateAsync, error, data } = api.user.createUser.useMutation({
-		onSuccess: () => {
-			utils.user.getAllPaginated.invalidate();
+	const { mutate } = api.user.createUser.useMutation({
+		onError: ({ message }) => {
+			toast.dismiss();
+			toast.error(message);
+		},
+		onMutate: () => {
+			toast.loading("Loading...");
+		},
+		onSuccess: ({ message }) => {
+			utils.user.invalidate();
+			toast.dismiss();
+			toast.success(message);
 			closeSheet();
 		},
 	});
@@ -23,11 +32,7 @@ export default function SheetCreateUser({
 	const form = useForm({
 		defaultValues: defaultValueUser,
 		onSubmit: ({ value }) => {
-			toast.promise(mutateAsync(value), {
-				error: error?.message,
-				loading: "Loading...",
-				success: data?.message,
-			});
+			mutate(value);
 		},
 		validators: {
 			onSubmit: userCreateSchema,
