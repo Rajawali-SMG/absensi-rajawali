@@ -12,7 +12,7 @@ export default function NotFoundPage() {
 					<br />
 					atau sudah dihapus.
 				</p>
-				<Link href="/admin/dashboard">Kembali</Link>
+				<Link href="/">Kembali</Link>
 			</div>
 			<Image
 				alt="404 ilustration"

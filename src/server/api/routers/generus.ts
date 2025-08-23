@@ -35,6 +35,19 @@ export const generusRouter = createTRPCRouter({
 			);
 		}),
 
+	createGenerusPublic: publicProcedure
+		.input(generusCreateSchema)
+		.mutation(async ({ ctx, input }) => {
+			const data = await ctx.db.insert(generus).values(input);
+
+			return formatResponse(
+				true,
+				"Berhasil menambahkan data Generus",
+				data,
+				null,
+			);
+		}),
+
 	deleteGenerus: protectedProcedure
 		.input(idBase)
 		.mutation(async ({ ctx, input }) => {

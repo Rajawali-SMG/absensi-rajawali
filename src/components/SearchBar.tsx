@@ -25,7 +25,7 @@ export default function SearchBar({
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
-	const [debouncedSearch] = useDebounce(searchInput, 1000);
+	const [debouncedSearch] = useDebounce(searchInput, 500);
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
