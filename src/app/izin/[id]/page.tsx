@@ -20,9 +20,14 @@ export default function IzinPage({
 		data: eventData,
 		error,
 		isPending,
-	} = api.event.getOneEventPublic.useQuery({
-		id,
-	});
+	} = api.event.getOneEventPublic.useQuery(
+		{
+			id,
+		},
+		{
+			enabled: !!id,
+		},
+	);
 	const { mutate } = api.presence.createPresence.useMutation({
 		onError: ({ message }) => {
 			toast.error(message);
@@ -54,13 +59,23 @@ export default function IzinPage({
 		},
 	});
 	const { data: presenceData, error: presenceError } =
-		api.generus.withKelompok.useQuery({
-			id,
-		});
+		api.generus.withKelompok.useQuery(
+			{
+				id,
+			},
+			{
+				enabled: eventData?.data.status === "started",
+			},
+		);
 	const { data: presenceCount, error: presenceCountError } =
-		api.event.countGenerus.useQuery({
-			id,
-		});
+		api.event.countGenerus.useQuery(
+			{
+				id,
+			},
+			{
+				enabled: eventData?.data.status === "started",
+			},
+		);
 
 	useToastError(error);
 	useToastError(presenceError);
