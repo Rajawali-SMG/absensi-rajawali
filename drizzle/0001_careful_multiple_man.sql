@@ -1,0 +1,2 @@
+ALTER TABLE "absensi-rajawali_generus" ALTER COLUMN "nomer_whatsapp" SET DATA TYPE varchar(20);--> statement-breakpoint
+ALTER TABLE "absensi-rajawali_generus" ALTER COLUMN "nomer_whatsapp_orang_tua" SET DATA TYPE varchar(20);

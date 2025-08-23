@@ -55,9 +55,7 @@ export default function GenerusUpdatePage({
 	} = api.kelompok.getAll.useQuery();
 	const utils = api.useUtils();
 
-	const {
-		mutate,
-	} = api.generus.updateGenerus.useMutation({
+	const { mutate } = api.generus.updateGenerus.useMutation({
 		onError: (error) => {
 			toast.dismiss();
 			toast.error(error.message);
@@ -154,6 +152,7 @@ export default function GenerusUpdatePage({
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Kota Semarang"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -173,7 +172,7 @@ export default function GenerusUpdatePage({
 									placeholder="2000-01-01"
 									required={false}
 									type="date"
-									value={field.state.value || ""}
+									value={field.state.value || undefined}
 								/>
 								<TextError field={field} />
 							</>
@@ -206,10 +205,14 @@ export default function GenerusUpdatePage({
 									label="Nomor WhatsApp"
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="+628123456789"
+									placeholder="628123456789"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
+								<span className="text-xs text-gray-500">
+									ANGKA DEPAN WAJIB COUNTRY CODE (contoh 6281234567890)
+								</span>
 								<TextError field={field} />
 							</>
 						)}
@@ -242,6 +245,7 @@ export default function GenerusUpdatePage({
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="John Doe"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -258,10 +262,14 @@ export default function GenerusUpdatePage({
 									label="Nomor WhatsApp Orang Tua"
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="+628123456789"
+									placeholder="628123456789"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
+								<span className="text-xs text-gray-500">
+									ANGKA DEPAN WAJIB COUNTRY CODE (contoh 6281234567890)
+								</span>
 								<TextError field={field} />
 							</>
 						)}
@@ -294,6 +302,7 @@ export default function GenerusUpdatePage({
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
@@ -329,6 +338,7 @@ export default function GenerusUpdatePage({
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									placeholder="Jl. Madukoro No. 1"
+									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>

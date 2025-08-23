@@ -48,23 +48,24 @@ export default function UploadExcelDialog() {
 
 	const handleDownloadTemplate = () => {
 		const ws = XLSX.utils.json_to_sheet([
+			// biome-ignore assist/source/useSortedKeys: Template excel
 			{
-				alamatAsal:
-					"Jl. Kanguru Utara VII, Gayamsari, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50248",
+				nama: "Abdul Rahman",
+				jenisKelamin: "Laki-laki",
+				tempatLahir: "Yogyakarta",
+				tanggalLahir: "2006-01-01",
+				jenjang: "Paud",
+				nomerWhatsapp: "628123456789",
+				pendidikanTerakhir: "SD",
+				namaOrangTua: "Orang Tua",
+				nomerWhatsappOrangTua: "628123456789",
+				sambung: "Aktif",
 				alamatTempatTinggal:
 					"Jl. Kanguru Utara VII, Gayamsari, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50248",
-				code: "001",
-				jenisKelamin: "Laki-laki",
-				jenjang: "Paud",
 				keterangan: "Pendatang",
-				nama: "Abdul Rahman",
-				namaOrangTua: "Orang Tua",
-				nomerWhatsapp: "+628123456789",
-				nomerWhatsappOrangTua: "+628123456789",
-				pendidikanTerakhir: "SD",
-				sambung: "Aktif",
-				tanggalLahir: "2006-01-01",
-				tempatLahir: "Yogyakarta",
+				alamatAsal:
+					"Jl. HOS. Cokroaminoto No.195, RT.002/RW.007, Burengan, Kec. Pesantren, Kabupaten Kediri, Jawa Timur 64131",
+				code: "KGR",
 			},
 		]);
 		const wb = XLSX.utils.book_new();

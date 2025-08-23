@@ -43,10 +43,14 @@ export const generusCreateSchema = z.object({
 	namaOrangTua: z.string().nullable().optional(),
 	nomerWhatsapp: z
 		.string()
-		.max(15, "Nomor WhatsApp maksimal 15 karakter")
+		.max(20, "Nomor WhatsApp maksimal 20 karakter")
 		.nullable()
 		.optional(),
-	nomerWhatsappOrangTua: z.string().nullable().optional(),
+	nomerWhatsappOrangTua: z
+		.string()
+		.max(20, "Nomor WhatsApp Orang Tua maksimal 20 karakter")
+		.nullable()
+		.optional(),
 	pendidikanTerakhir: pendidikanTerakhirSchema.nullable().optional(),
 	sambung: sambungSchema,
 	tanggalLahir: z.iso.date().nullable().optional(),
@@ -88,6 +92,6 @@ export const defaultGenerus: GenerusInsert = {
 	nomerWhatsappOrangTua: "",
 	pendidikanTerakhir: "PAUD",
 	sambung: "Tidak Aktif",
-	tanggalLahir: new Date().toDateString(),
+	tanggalLahir: undefined,
 	tempatLahir: "",
 };

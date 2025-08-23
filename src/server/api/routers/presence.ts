@@ -7,11 +7,7 @@ import {
 	formatResponsePagination,
 } from "@/helper/response.helper";
 import { idBase } from "@/types";
-import {
-	presenceCreateSchema,
-	presenceFilter,
-	presenceUpdateSchema,
-} from "@/types/presence";
+import { presenceCreateSchema, presenceFilter } from "@/types/presence";
 import { generus, presence } from "../../db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -49,26 +45,9 @@ export const presenceRouter = createTRPCRouter({
 				generusName: generusData.nama,
 			});
 
-			console.log(generusData);
-
 			return formatResponse(
 				true,
 				"Berhasil menambahkan data Presensi",
-				data,
-				null,
-			);
-		}),
-
-	deletePresence: protectedProcedure
-		.input(idBase)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db
-				.delete(presence)
-				.where(eq(presence.id, input.id));
-
-			return formatResponse(
-				true,
-				"Berhasil menghapus data Presensi",
 				data,
 				null,
 			);
@@ -220,29 +199,6 @@ export const presenceRouter = createTRPCRouter({
 			return formatResponse(
 				true,
 				"Berhasil mendapatkan data Presensi",
-				data,
-				null,
-			);
-		}),
-
-	updatePresence: protectedProcedure
-		.input(presenceUpdateSchema)
-		.mutation(async ({ ctx, input }) => {
-			if (!input.id) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "ID tidak ditemukan",
-				});
-			}
-
-			const data = await ctx.db
-				.update(presence)
-				.set(input)
-				.where(eq(presence.id, input.id));
-
-			return formatResponse(
-				true,
-				"Berhasil mengubah data Presensi",
 				data,
 				null,
 			);

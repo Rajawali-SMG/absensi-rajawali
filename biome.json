@@ -12,7 +12,7 @@
 		"enabled": true
 	},
 	"files": {
-		"experimentalScannerIgnores": ["node_modules", "dist", ".next"]
+		"experimentalScannerIgnores": ["node_modules", "dist", ".next", "drizzle"]
 	},
 	"formatter": {
 		"enabled": true,

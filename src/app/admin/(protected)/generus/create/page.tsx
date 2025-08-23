@@ -145,7 +145,7 @@ export default function GenerusCreatePage() {
 									placeholder="2000-01-01"
 									required={false}
 									type="date"
-									value={field.state.value || ""}
+									value={field.state.value || undefined}
 								/>
 								<TextError field={field} />
 							</>
@@ -178,11 +178,14 @@ export default function GenerusCreatePage() {
 									label="Nomor WhatsApp"
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="+628123456789"
+									placeholder="628123456789"
 									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
+								<span className="text-gray-500">
+									ANGKA DEPAN WAJIB COUNTRY CODE (contoh 6281234567890)
+								</span>
 								<TextError field={field} />
 							</>
 						)}
@@ -233,11 +236,14 @@ export default function GenerusCreatePage() {
 									label="Nomor WhatsApp Orang Tua"
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="+628123456789"
+									placeholder="628123456789"
 									required={false}
 									type="text"
 									value={field.state.value || ""}
 								/>
+								<span className="text-gray-500">
+									ANGKA DEPAN WAJIB COUNTRY CODE (contoh 6281234567890)
+								</span>
 								<TextError field={field} />
 							</>
 						)}
