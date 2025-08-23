@@ -2,7 +2,7 @@
 
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import navigation from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { use } from "react";
 import toast from "react-hot-toast";
 import CustomSelect from "@/components/CustomSelect";
@@ -35,7 +35,7 @@ export default function GenerusUpdatePage({
 	params: Promise<{ id: string }>;
 }) {
 	const { id } = use(params);
-	const router = navigation.useRouter();
+	const router = useRouter();
 	const { data: generusData, error: generusError } =
 		api.generus.getOneGenerus.useQuery(
 			{
@@ -44,7 +44,7 @@ export default function GenerusUpdatePage({
 			{
 				enabled: !!id,
 				throwOnError: () => {
-					navigation.notFound();
+					notFound();
 				},
 			},
 		);
