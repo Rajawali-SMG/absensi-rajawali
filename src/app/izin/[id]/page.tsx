@@ -30,6 +30,7 @@ export default function IzinPage({
 	);
 	const { mutate } = api.presence.createPresence.useMutation({
 		onError: ({ message }) => {
+			toast.dismiss();
 			toast.error(message);
 		},
 		onMutate: () => {

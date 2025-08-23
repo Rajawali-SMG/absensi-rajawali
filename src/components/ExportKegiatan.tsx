@@ -105,6 +105,7 @@ export default function ExportKegiatan() {
 							onChange={(e) => setKelompokIdParam(e?.value || "")}
 							options={kelompokOptions}
 							placeholder="Pilih Kelompok"
+							required={false}
 							value={
 								kelompokOptions.find(
 									(option) => option.value === kelompokIdParam,

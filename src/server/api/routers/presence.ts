@@ -85,7 +85,9 @@ export const presenceRouter = createTRPCRouter({
 					and(
 						eq(presence.eventId, input.eventId),
 						eq(presence.status, "Hadir"),
-						eq(generus.kelompokId, input.kelompokId),
+						input.kelompokId
+							? eq(generus.kelompokId, input.kelompokId)
+							: undefined,
 					),
 				);
 
@@ -97,14 +99,20 @@ export const presenceRouter = createTRPCRouter({
 					and(
 						eq(presence.eventId, input.eventId),
 						eq(presence.status, "Izin"),
-						eq(generus.kelompokId, input.kelompokId),
+						input.kelompokId
+							? eq(generus.kelompokId, input.kelompokId)
+							: undefined,
 					),
 				);
 
 			const [totalGenerus] = await ctx.db
 				.select({ count: count() })
 				.from(generus)
-				.where(eq(generus.kelompokId, input.kelompokId));
+				.where(
+					input.kelompokId
+						? eq(generus.kelompokId, input.kelompokId)
+						: undefined,
+				);
 
 			const hadirCount = Number(hadir?.count ?? 0);
 			const izinCount = Number(izin?.count ?? 0);

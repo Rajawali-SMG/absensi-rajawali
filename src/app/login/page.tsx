@@ -15,9 +15,14 @@ export default function LoginPage() {
 	async function login(value: { email: string; password: string }) {
 		return await signIn.email(value, {
 			onError: ({ error }) => {
+				toast.dismiss();
 				toast.error(error.message);
 			},
+			onMutate: () => {
+				toast.loading("Loading...");
+			},
 			onSuccess: () => {
+				toast.dismiss();
 				navigate.push("/admin/dashboard");
 				toast.success("Berhasil login");
 			},

@@ -19,9 +19,14 @@ export default function Sidebar() {
 		await signOut({
 			fetchOptions: {
 				onError(context) {
+					toast.dismiss();
 					toast.error(context.error.message || "Gagal logout");
 				},
+				onMutate: () => {
+					toast.loading("Loading...");
+				},
 				onSuccess(context) {
+					toast.dismiss();
 					toast.success(context.data.message || "Berhasil logout");
 					navigate.push("/login");
 				},
