@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { use } from "react";
 import toast from "react-hot-toast";
+import CustomSelect from "@/components/CustomSelect";
 import TextError from "@/components/TextError";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -350,14 +351,15 @@ export default function GenerusUpdatePage({
 					<form.Field name="kelompokId">
 						{(field) => (
 							<>
-								<Select
-									id="kelompokId"
-									// isDisabled={isPending}
+								<CustomSelect
+									isDisabled={isPending}
 									label="Kelompok"
-									onChange={(e) => field.handleChange(e.target.value ?? "")}
+									onChange={(e) => field.handleChange(e?.value ?? "")}
 									options={kelompokOptions}
 									placeholder="Pilih Kelompok"
-									value={field.state.value}
+									value={kelompokOptions.find(
+										(option) => option.value === field.state.value,
+									)}
 								/>
 								<TextError field={field} />
 							</>
