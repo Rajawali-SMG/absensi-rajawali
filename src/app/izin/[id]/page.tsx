@@ -58,15 +58,18 @@ export default function IzinPage({
 			});
 		},
 	});
-	const { data: presenceData, error: presenceError } =
-		api.generus.withKelompok.useQuery(
-			{
-				id,
-			},
-			{
-				enabled: eventData?.data.status === "active",
-			},
-		);
+	const {
+		data: presenceData,
+		error: presenceError,
+		isLoading: presenceLoading,
+	} = api.generus.withKelompok.useQuery(
+		{
+			id,
+		},
+		{
+			enabled: eventData?.data.status === "active",
+		},
+	);
 	const { data: presenceCount, error: presenceCountError } =
 		api.event.countGenerus.useQuery(
 			{
@@ -176,6 +179,7 @@ export default function IzinPage({
 								<form.Field name="generusId">
 									{(field) => (
 										<CustomSelect
+											isLoading={presenceLoading}
 											label="Pilih Peserta"
 											onChange={(e) => field.handleChange(e?.value || "")}
 											options={generusOptions}
