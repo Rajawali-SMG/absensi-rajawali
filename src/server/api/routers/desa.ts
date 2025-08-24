@@ -32,7 +32,12 @@ export const desaRouter = createTRPCRouter({
 				userId: ctx.session.user.email,
 			});
 
-			return formatResponse(true, "Berhasil menambahkan data Desa", data, null);
+			return formatResponse(
+				true,
+				`Berhasil menambahkan Desa: ${input.nama}`,
+				data,
+				null,
+			);
 		}),
 
 	deleteDesa: protectedProcedure
@@ -59,6 +64,7 @@ export const desaRouter = createTRPCRouter({
 
 			return formatResponse(true, "Berhasil menghapus data Desa", data, null);
 		}),
+
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.desa.findMany();
 
@@ -128,7 +134,7 @@ export const desaRouter = createTRPCRouter({
 			if (existingDesa) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Data Desa sudah ada",
+					message: `Data Desa ${input.nama} sudah ada`,
 				});
 			}
 
@@ -150,6 +156,11 @@ export const desaRouter = createTRPCRouter({
 				userId: ctx.session.user.email,
 			});
 
-			return formatResponse(true, "Berhasil mengubah data Desa", data, null);
+			return formatResponse(
+				true,
+				`Berhasil mengubah Desa: ${input.nama}`,
+				data,
+				null,
+			);
 		}),
 });

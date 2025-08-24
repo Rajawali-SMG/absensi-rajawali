@@ -30,8 +30,16 @@ export type SambungType = z.infer<typeof sambungSchema>;
 export type KeteranganType = z.infer<typeof keteranganSchema>;
 
 export const generusCreateSchema = z.object({
-	alamatAsal: z.string().nullable().optional(),
-	alamatTempatTinggal: z.string().nullable().optional(),
+	alamatAsal: z
+		.string()
+		.max(255, "Alamat Asal maksimal 255 karakter")
+		.nullable()
+		.optional(),
+	alamatTempatTinggal: z
+		.string()
+		.max(255, "Alamat Tempat Tinggal maksimal 255 karakter")
+		.nullable()
+		.optional(),
 	jenisKelamin: jenisKelaminSchema,
 	jenjang: jenjangSchema,
 	kelompokId: z.string().nonempty("Kelompok tidak boleh kosong"),
@@ -40,7 +48,11 @@ export const generusCreateSchema = z.object({
 		.string()
 		.nonempty("Nama tidak boleh kosong")
 		.max(255, "Nama maksimal 255 karakter"),
-	namaOrangTua: z.string().nullable().optional(),
+	namaOrangTua: z
+		.string()
+		.max(255, "Nama Orang Tua maksimal 255 karakter")
+		.nullable()
+		.optional(),
 	nomerWhatsapp: z
 		.string()
 		.max(20, "Nomor WhatsApp maksimal 20 karakter")

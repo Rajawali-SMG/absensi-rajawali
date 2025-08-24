@@ -25,7 +25,7 @@ export const kelompokRouter = createTRPCRouter({
 			if (existingKelompok) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Nama sudah didaftarkan, silahkan gunakan nama lain",
+					message: `Kelompok ${input.nama} sudah ada`,
 				});
 			}
 			const data = await ctx.db.insert(kelompok).values(input);
@@ -38,7 +38,7 @@ export const kelompokRouter = createTRPCRouter({
 
 			return formatResponse(
 				true,
-				"Berhasil menambahkan data Kelompok",
+				`Berhasil menambahkan Kelompok: ${input.nama}`,
 				data,
 				null,
 			);
@@ -154,7 +154,7 @@ export const kelompokRouter = createTRPCRouter({
 			if (existingKelompok) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Data Kelompok sudah ada",
+					message: `Data Kelompok ${input.nama} sudah ada`,
 				});
 			}
 
@@ -178,7 +178,7 @@ export const kelompokRouter = createTRPCRouter({
 
 			return formatResponse(
 				true,
-				"Berhasil mengubah data Kelompok",
+				`Berhasil mengubah Kelompok: ${input.nama}`,
 				data,
 				null,
 			);

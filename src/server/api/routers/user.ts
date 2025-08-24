@@ -31,7 +31,7 @@ export const userRouter = createTRPCRouter({
 			if (existingUser.length > 0) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Email sudah terdaftar",
+					message: `Email ${input.email} sudah terdaftar`,
 				});
 			}
 
@@ -54,7 +54,12 @@ export const userRouter = createTRPCRouter({
 				userId: ctx.session.user.email,
 			});
 
-			return formatResponse(true, "Berhasil menambahkan data User", data, null);
+			return formatResponse(
+				true,
+				`Berhasil menambahkan User: ${input.email}`,
+				data,
+				null,
+			);
 		}),
 
 	deleteUser: protectedProcedure
@@ -179,7 +184,7 @@ export const userRouter = createTRPCRouter({
 			if (existingUser) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Email sudah terdaftar",
+					message: `Email ${input.email} sudah terdaftar`,
 				});
 			}
 
@@ -197,6 +202,11 @@ export const userRouter = createTRPCRouter({
 				userId: ctx.session.user.email,
 			});
 
-			return formatResponse(true, "Berhasil mengupdate data User", data, null);
+			return formatResponse(
+				true,
+				`Berhasil mengupdate User: ${input.email}`,
+				data,
+				null,
+			);
 		}),
 });

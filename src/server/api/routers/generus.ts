@@ -29,20 +29,7 @@ export const generusRouter = createTRPCRouter({
 
 			return formatResponse(
 				true,
-				"Berhasil menambahkan data Generus",
-				data,
-				null,
-			);
-		}),
-
-	createGenerusPublic: publicProcedure
-		.input(generusCreateSchema)
-		.mutation(async ({ ctx, input }) => {
-			const data = await ctx.db.insert(generus).values(input);
-
-			return formatResponse(
-				true,
-				"Berhasil menambahkan data Generus",
+				`Berhasil menambahkan Generus: ${input.nama}`,
 				data,
 				null,
 			);
@@ -66,6 +53,7 @@ export const generusRouter = createTRPCRouter({
 				null,
 			);
 		}),
+
 	getAll: protectedProcedure
 		.input(generusFilter.omit({ limit: true, page: true, q: true }))
 		.query(async ({ ctx, input }) => {
@@ -110,6 +98,7 @@ export const generusRouter = createTRPCRouter({
 					: undefined,
 				input.sambung ? eq(generus.sambung, input.sambung) : undefined,
 				input.keterangan ? eq(generus.keterangan, input.keterangan) : undefined,
+				input.kelompokId ? eq(generus.kelompokId, input.kelompokId) : undefined,
 			);
 
 			const limit = input.limit ?? 9;
@@ -194,7 +183,12 @@ export const generusRouter = createTRPCRouter({
 				userId: ctx.session.user.email,
 			});
 
-			return formatResponse(true, "Berhasil mengubah data Generus", data, null);
+			return formatResponse(
+				true,
+				`Berhasil mengubah Generus: ${input.nama}`,
+				data,
+				null,
+			);
 		}),
 
 	uploadGenerus: protectedProcedure

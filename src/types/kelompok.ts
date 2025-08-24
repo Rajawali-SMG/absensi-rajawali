@@ -10,6 +10,7 @@ export const kelompokCreateSchema = z.object({
 	code: z
 		.string()
 		.nonempty("Kode tidak boleh kosong")
+		.min(3, "Kode minimal 3 karakter")
 		.max(3, "Kode maksimal 3 karakter"),
 	desaId: z.string().nonempty("Desa tidak boleh kosong"),
 	nama: z

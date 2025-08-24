@@ -330,23 +330,29 @@ export default function GenerusUpdatePage({
 						)}
 					</form.Field>
 
-					<form.Field name="alamatAsal">
-						{(field) => (
-							<>
-								<Input
-									id={field.name}
-									label="Alamat Asal"
-									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="Jl. Madukoro No. 1"
-									required={false}
-									type="text"
-									value={field.state.value ?? ""}
-								/>
-								<TextError field={field} />
-							</>
-						)}
-					</form.Field>
+					<form.Subscribe selector={(state) => state.values.keterangan}>
+						{(keterangan) =>
+							keterangan === "Pendatang" && (
+								<form.Field name="alamatAsal">
+									{(field) => (
+										<>
+											<Input
+												id={field.name}
+												label="Alamat Asal"
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="Jl. Madukoro No. 1"
+												required={false}
+												type="text"
+												value={field.state.value ?? ""}
+											/>
+											<TextError field={field} />
+										</>
+									)}
+								</form.Field>
+							)
+						}
+					</form.Subscribe>
 
 					<form.Field name="kelompokId">
 						{(field) => (

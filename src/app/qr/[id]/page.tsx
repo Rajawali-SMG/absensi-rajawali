@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { use, useEffect } from "react";
 import toast from "react-hot-toast";
 import QRCode from "react-qr-code";
@@ -39,6 +40,10 @@ export default function QrPage({
 					<QRCode
 						value={`${env.NEXT_PUBLIC_BASE_URL}/absen/${eventData?.data.id}`}
 					/>
+					<span>Link Absensi</span>
+					<Link href={`/absen/${eventData?.data.id}`}>
+						{env.NEXT_PUBLIC_BASE_URL}/absen/{eventData?.data.id}
+					</Link>
 				</>
 			)}
 			{isError && <h1 className="font-bold text-ellipsis">{error?.message}</h1>}

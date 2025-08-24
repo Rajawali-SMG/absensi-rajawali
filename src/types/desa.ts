@@ -11,7 +11,7 @@ export const desaCreateSchema = z.object({
 	nama: z
 		.string()
 		.nonempty("Nama tidak boleh kosong")
-		.max(50, "Nama maksimal 50 karakter"),
+		.max(256, "Nama maksimal 256 karakter"),
 });
 
 export const desaUpdateSchema = desaCreateSchema.extend({

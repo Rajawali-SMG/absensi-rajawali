@@ -49,9 +49,11 @@ export default function GenerusPage() {
 		useState<PendidikanTerakhirType>();
 	const [sambungParam, setSambungParam] = useState<SambungType>();
 	const [keteranganParam, setKeteranganParam] = useState<KeteranganType>();
+	const [kelompokIdParam, setKelompokIdParam] = useState<string>();
 	const { data, isPending, error } = api.generus.getAllPaginated.useQuery({
 		jenisKelamin: jenisKelaminParam,
 		jenjang: jenjangParam,
+		kelompokId: kelompokIdParam,
 		keterangan: keteranganParam,
 		limit: pagination.pageSize,
 		page: pagination.pageIndex,
@@ -59,6 +61,11 @@ export default function GenerusPage() {
 		q: searchQuery,
 		sambung: sambungParam,
 	});
+	const {
+		data: kelompokData,
+		isPending: kelompokIsPending,
+		error: kelompokError,
+	} = api.kelompok.getAll.useQuery();
 	const utils = api.useUtils();
 
 	const { mutate } = api.generus.deleteGenerus.useMutation({
@@ -139,6 +146,12 @@ export default function GenerusPage() {
 	];
 
 	useToastError(error);
+	useToastError(kelompokError);
+
+	const kelompokOptions = kelompokData?.data.map((item) => ({
+		label: item.nama,
+		value: item.id,
+	}));
 
 	return (
 		<>
@@ -161,6 +174,7 @@ export default function GenerusPage() {
 						setPendidikanTerakhirParam(undefined);
 						setSambungParam(undefined);
 						setKeteranganParam(undefined);
+						setKelompokIdParam(undefined);
 						setSheetFilter(false);
 					}}
 					submitFilter={() => setSheetFilter(false)}
@@ -222,6 +236,17 @@ export default function GenerusPage() {
 						placeHolderEnabled={true}
 						placeholder="Pilih Keterangan"
 						value={keteranganParam}
+					/>
+					<Select
+						disabled={kelompokIsPending}
+						id="kelompok_id"
+						label="Kelompok"
+						name="kelompok_id"
+						onChange={(e) => setKelompokIdParam(e.target.value)}
+						options={kelompokOptions || []}
+						placeHolderEnabled={true}
+						placeholder="Pilih Kelompok"
+						value={kelompokIdParam}
 					/>
 				</SheetFilter>
 			)}

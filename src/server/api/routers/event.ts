@@ -44,7 +44,7 @@ export const eventRouter = createTRPCRouter({
 			if (existingEvent) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Judul sudah didaftarkan, silahkan gunakan judul lain",
+					message: `Judul ${input.title} sudah didaftarkan, silahkan gunakan judul lain`,
 				});
 			}
 
@@ -167,7 +167,7 @@ export const eventRouter = createTRPCRouter({
 			if (existingEvent) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "Judul sudah didaftarkan, silahkan gunakan judul lain",
+					message: `Judul ${input.title} sudah didaftarkan, silahkan gunakan judul lain`,
 				});
 			}
 
@@ -188,6 +188,11 @@ export const eventRouter = createTRPCRouter({
 				userId: ctx.session.user.email,
 			});
 
-			return formatResponse(true, "Berhasil mengubah data Event", data, null);
+			return formatResponse(
+				true,
+				`Berhasil mengubah Event: ${input.title}`,
+				data,
+				null,
+			);
 		}),
 });
