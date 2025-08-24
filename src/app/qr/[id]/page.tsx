@@ -44,6 +44,9 @@ export default function QrPage({
 					<Link href={`/absen/${eventData?.data.id}`}>
 						{env.NEXT_PUBLIC_BASE_URL}/absen/{eventData?.data.id}
 					</Link>
+					<Link href={`/izin/${eventData?.data.id}`}>
+						{env.NEXT_PUBLIC_BASE_URL}/izin/{eventData?.data.id}
+					</Link>
 				</>
 			)}
 			{isError && <h1 className="font-bold text-ellipsis">{error?.message}</h1>}
