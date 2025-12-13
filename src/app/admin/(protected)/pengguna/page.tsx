@@ -73,7 +73,14 @@ export default function PenggunaPage() {
 
 	const columns: ColumnDef<UserSelect>[] = [
 		{
-			accessorKey: "id",
+			header: "No",
+			cell: ({ row }) => {
+			return (
+				pagination.pageIndex * pagination.pageSize +
+				row.index +
+				1
+			);
+			},
 		},
 		{
 			accessorKey: "name",

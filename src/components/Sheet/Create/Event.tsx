@@ -4,6 +4,7 @@ import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { eventCreateSchema, eventDefaultValue } from "@/types/event";
+import dynamic from "next/dynamic";
 
 export default function SheetCreateEvent({
 	closeSheet,
@@ -11,6 +12,10 @@ export default function SheetCreateEvent({
 	closeSheet: () => void;
 }) {
 	const utils = api.useUtils();
+
+	const MapPicker = dynamic(() => import("@/components/MapPicker"), {
+		ssr: false,
+	});
 
 	const { mutate } = api.event.createEvent.useMutation({
 		onError: ({ message }) => {
@@ -39,8 +44,10 @@ export default function SheetCreateEvent({
 	});
 
 	return (
-		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">
-			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+		<div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto">
+			<div className="flex min-h-screen items-start justify-center p-4">
+				<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+					<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
 				<h1 className=" font-bold mb-6 text-gray-800">Buat Data Event</h1>
 
 				<form
@@ -105,7 +112,7 @@ export default function SheetCreateEvent({
 								</>
 							)}
 						</form.Field>
-						<form.Field name="latitude">
+						{/* <form.Field name="latitude">
 							{(field) => (
 								<>
 									<Input
@@ -139,7 +146,50 @@ export default function SheetCreateEvent({
 									<TextError field={field} />
 								</>
 							)}
+						</form.Field> */}
+
+						{/* Map Picker */}
+						<form.Field name="latitude">
+							{(latField) => (
+								<form.Field name="longitude">
+								{(lngField) => (
+									<>
+									<label className="text-sm font-medium">Lokasi Event</label>
+
+									<MapPicker
+										lat={latField.state.value}
+										lng={lngField.state.value}
+										onChange={(lat, lng) => {
+										latField.handleChange(lat);
+										lngField.handleChange(lng);
+										}}
+									/>
+
+									<div className="grid grid-cols-2 gap-2 mt-2">
+										<Input
+										label="Latitude"
+										type="number"
+										value={latField.state.value || ""}
+										readOnly
+										variant="secondary"
+										/>
+										<Input
+										label="Longitude"
+										type="number"
+										value={lngField.state.value || ""}
+										readOnly
+										variant="secondary"
+										/>
+									</div>
+
+									<TextError field={latField} />
+									<TextError field={lngField} />
+									</>
+								)}
+								</form.Field>
+							)}
 						</form.Field>
+
 
 						<form.Field name="description">
 							{(field) => (
@@ -185,6 +235,8 @@ export default function SheetCreateEvent({
 						</button>
 					</div>
 				</form>
+			</div>
+				</div>
 			</div>
 		</div>
 	);

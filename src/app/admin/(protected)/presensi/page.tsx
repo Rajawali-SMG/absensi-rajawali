@@ -19,7 +19,14 @@ export default function PresensiPage() {
 
 	const columns: ColumnDef<PresenceSelect>[] = [
 		{
-			accessorKey: "id",
+			header: "No",
+			cell: ({ row }) => {
+			return (
+				pagination.pageIndex * pagination.pageSize +
+				row.index +
+				1
+			);
+			},
 		},
 		{
 			accessorKey: "eventId",

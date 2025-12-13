@@ -68,7 +68,14 @@ export default function KegiatanPage() {
 
 	const columns: ColumnDef<EventSelect>[] = [
 		{
-			accessorKey: "id",
+			header: "No",
+			cell: ({ row }) => {
+			return (
+				pagination.pageIndex * pagination.pageSize +
+				row.index +
+				1
+			);
+			},
 		},
 		{
 			accessorKey: "title",

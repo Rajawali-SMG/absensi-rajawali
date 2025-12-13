@@ -31,4 +31,10 @@
   span {
     font-size: clamp(0.817rem, 0.149vw + 0.78rem, 0.899rem);
   }
+
+  /* Leaflet z-index fix */
+  .leaflet-container {
+    z-index: 0 !important;
+  }
+
 }

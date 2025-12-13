@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { TRPCReactProvider } from "@/trpc/react";
+import "leaflet/dist/leaflet.css";
 
 export const metadata: Metadata = {
 	applicationName: "Absensi Rajawali",

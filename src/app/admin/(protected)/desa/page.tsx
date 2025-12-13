@@ -64,7 +64,14 @@ export default function DesaPage() {
 
 	const columns: ColumnDef<DesaSelect>[] = [
 		{
-			accessorKey: "id",
+			header: "No",
+			cell: ({ row }) => {
+			return (
+				pagination.pageIndex * pagination.pageSize +
+				row.index +
+				1
+			);
+			},
 		},
 		{
 			accessorKey: "nama",

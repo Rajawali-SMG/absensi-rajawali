@@ -1,201 +1,212 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import { useForm } from "@tanstack/react-form";
 import toast from "react-hot-toast";
+
 import TextError from "@/components/TextError";
 import Input from "@/components/ui/Input";
 import { api } from "@/trpc/react";
 import { type EventSelect, eventUpdateSchema } from "@/types/event";
 
+// Leaflet MAP (client only)
+const MapPicker = dynamic(() => import("@/components/MapPicker"), {
+  ssr: false,
+});
+
 export default function SheetUpdateEvent({
-	closeSheet,
-	selectedData,
+  closeSheet,
+  selectedData,
 }: {
-	closeSheet: () => void;
-	selectedData: EventSelect;
+  closeSheet: () => void;
+  selectedData: EventSelect;
 }) {
-	const utils = api.useUtils();
+  const utils = api.useUtils();
 
-	const { mutate } = api.event.updateEvent.useMutation({
-		onError: ({ message }) => {
-			toast.dismiss();
-			toast.error(message);
-		},
-		onMutate: () => {
-			toast.loading("Loading...");
-		},
-		onSuccess: ({ message }) => {
-			utils.event.invalidate();
-			toast.dismiss();
-			toast.success(message);
-			closeSheet();
-		},
-	});
+  const { mutate } = api.event.updateEvent.useMutation({
+    onError: ({ message }) => {
+      toast.dismiss();
+      toast.error(message);
+    },
+    onMutate: () => {
+      toast.loading("Loading...");
+    },
+    onSuccess: ({ message }) => {
+      utils.event.invalidate();
+      toast.dismiss();
+      toast.success(message);
+      closeSheet();
+    },
+  });
 
-	const form = useForm({
-		defaultValues: {
-			description: selectedData.description,
-			endDate: selectedData.endDate,
-			id: selectedData.id,
-			latitude: selectedData.latitude,
-			longitude: selectedData.longitude,
-			startDate: selectedData.startDate,
-			title: selectedData.title,
-		},
-		onSubmit: ({ value }) => {
-			mutate(value);
-		},
-		validators: {
-			onSubmit: eventUpdateSchema,
-		},
-	});
+  const form = useForm({
+    defaultValues: {
+      id: selectedData.id,
+      title: selectedData.title,
+      startDate: selectedData.startDate,
+      endDate: selectedData.endDate,
+      latitude: selectedData.latitude,
+      longitude: selectedData.longitude,
+      description: selectedData.description,
+    },
+    validators: {
+      onSubmit: eventUpdateSchema,
+    },
+    onSubmit: ({ value }) => {
+      mutate(value);
+    },
+  });
 
-	return (
-		<div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 transform transition-transform duration-300">
-			<div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-				<h1 className=" font-bold mb-6 text-gray-800">Update Event</h1>
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="flex min-h-screen items-start justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+          <h1 className="font-bold mb-6 text-gray-800">Update Event</h1>
 
-				<form
-					className="space-y-4"
-					onSubmit={(e) => {
-						e.preventDefault();
-						e.stopPropagation();
-						form.handleSubmit();
-					}}
-				>
-					<div className="space-y-4">
-						<form.Field name="title">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										label="Title"
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										type="text"
-										value={field.state.value}
-										variant="secondary"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
+          <form
+            className="space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+          >
+            {/* TITLE */}
+            <form.Field name="title">
+              {(field) => (
+                <>
+                  <Input
+                    label="Title"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    variant="secondary"
+                  />
+                  <TextError field={field} />
+                </>
+              )}
+            </form.Field>
 
-						<form.Field name="startDate">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										label="Start Date"
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										type="datetime-local"
-										value={field.state.value}
-										variant="secondary"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
+            {/* START DATE */}
+            <form.Field name="startDate">
+              {(field) => (
+                <>
+                  <Input
+                    label="Start Date"
+                    type="datetime-local"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    variant="secondary"
+                  />
+                  <TextError field={field} />
+                </>
+              )}
+            </form.Field>
 
-						<form.Field name="endDate">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										label="End Date"
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										type="datetime-local"
-										value={field.state.value || ""}
-										variant="secondary"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
-						<form.Field name="latitude">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										label="Latitude"
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(Number(e.target.value))}
-										placeholder="John Doe"
-										type="number"
-										value={field.state.value || ""}
-										variant="secondary"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
+            {/* END DATE */}
+            <form.Field name="endDate">
+              {(field) => (
+                <>
+                  <Input
+                    label="End Date"
+                    type="datetime-local"
+                    value={field.state.value || ""}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    variant="secondary"
+                  />
+                  <TextError field={field} />
+                </>
+              )}
+            </form.Field>
 
-						<form.Field name="longitude">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										label="Longitude"
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(Number(e.target.value))}
-										placeholder="John Doe"
-										type="number"
-										value={field.state.value || ""}
-										variant="secondary"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
+            {/* MAP + LOCATION */}
+            <form.Field name="latitude">
+              {(latField) => (
+                <form.Field name="longitude">
+                  {(lngField) => (
+                    <>
+                      <label className="text-sm font-medium">
+                        Lokasi Event
+                      </label>
 
-						<form.Field name="description">
-							{(field) => (
-								<>
-									<Input
-										id={field.name}
-										label="Description"
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										placeholder="John Doe"
-										required={false}
-										type="text"
-										value={field.state.value || ""}
-										variant="secondary"
-									/>
-									<TextError field={field} />
-								</>
-							)}
-						</form.Field>
-					</div>
+                      <MapPicker
+                        lat={latField.state.value}
+                        lng={lngField.state.value}
+                        onChange={(lat, lng) => {
+                          latField.handleChange(lat);
+                          lngField.handleChange(lng);
+                        }}
+                      />
 
-					<div className="flex justify-end space-x-4 mt-6">
-						<form.Subscribe
-							selector={(state) => [state.canSubmit, state.isSubmitting]}
-						>
-							{([canSubmit, isSubmitting]) => (
-								<button
-									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-									disabled={!canSubmit}
-									type="submit"
-								>
-									{isSubmitting ? "Memproses..." : "Update"}
-								</button>
-							)}
-						</form.Subscribe>
+                      {/* READ ONLY COORDINATE */}
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        <Input
+                          label="Latitude"
+                          value={latField.state.value || ""}
+                          readOnly
+                          variant="secondary"
+                        />
+                        <Input
+                          label="Longitude"
+                          value={lngField.state.value || ""}
+                          readOnly
+                          variant="secondary"
+                        />
+                      </div>
 
-						<button
-							className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-							onClick={closeSheet}
-							type="button"
-						>
-							Close
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	);
+                      <TextError field={latField} />
+                      <TextError field={lngField} />
+                    </>
+                  )}
+                </form.Field>
+              )}
+            </form.Field>
+
+            {/* DESCRIPTION */}
+            <form.Field name="description">
+              {(field) => (
+                <>
+                  <Input
+                    label="Description"
+                    value={field.state.value || ""}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    variant="secondary"
+                  />
+                  <TextError field={field} />
+                </>
+              )}
+            </form.Field>
+
+            {/* ACTIONS */}
+            <div className="flex justify-end gap-3 pt-4">
+              <form.Subscribe
+                selector={(state) => [state.canSubmit, state.isSubmitting]}
+              >
+                {([canSubmit, isSubmitting]) => (
+                  <button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    {isSubmitting ? "Memproses..." : "Update"}
+                  </button>
+                )}
+              </form.Subscribe>
+
+              <button
+                type="button"
+                onClick={closeSheet}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Close
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }

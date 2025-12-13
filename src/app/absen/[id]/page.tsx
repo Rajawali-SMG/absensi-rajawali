@@ -295,7 +295,7 @@ export default function AbsenPage({
 											{(field) => (
 												<CustomSelect
 													isLoading={presenceLoading}
-													label={field.name}
+													label='Nama Generus - Kelompok'
 													onChange={(e) => field.handleChange(e?.value || "")}
 													options={generusOptions}
 													placeholder="Pilih peserta..."
