@@ -35,9 +35,16 @@ export default function SheetCreateEvent({
 
 	const form = useForm({
 		defaultValues: eventDefaultValue,
-		onSubmit: ({ value }) => {
-			mutate(value);
-		},
+			onSubmit: ({ value }) => {
+				// Normalize datetime-local (local wall time without timezone) to ISO string (UTC)
+				const payload = {
+					...value,
+					startDate: value.startDate ? new Date(value.startDate).toISOString() : value.startDate,
+					endDate: value.endDate ? new Date(value.endDate).toISOString() : value.endDate,
+				};
+
+				mutate(payload);
+			},
 		validators: {
 			onSubmit: eventCreateSchema,
 		},
