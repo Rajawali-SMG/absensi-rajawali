@@ -129,31 +129,34 @@ export const eventRouter = createTRPCRouter({
 		.input(idBase)
 		.query(async ({ ctx, input }) => {
 			const data = await ctx.db.query.event.findFirst({
-				where: eq(event.id, input.id),
+			where: eq(event.id, input.id),
 			});
 
 			if (!data) {
-				throw new TRPCError({
-					code: "NOT_FOUND",
-					message: "Data Event tidak ditemukan",
-				});
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Data Event tidak ditemukan",
+			});
 			}
-			let status = "not-started";
-			if (
-				new Date(data.startDate) <= new Date() &&
-				new Date(data.endDate) >= new Date()
-			) {
-				status = "active";
-			}
-			if (new Date(data.endDate) <= new Date()) {
-				status = "ended";
+
+			// 🔥 Pakai waktu WIB
+			const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+			const start = new Date(data.startDate);
+			const end = new Date(data.endDate);
+
+			let status: "not-started" | "active" | "ended" = "not-started";
+
+			if (now >= start && now <= end) {
+			status = "active";
+			} else if (now > end) {
+			status = "ended";
 			}
 
 			return formatResponse(
-				true,
-				"Berhasil mendapatkan data Event",
-				{ ...data, status },
-				null,
+			true,
+			"Berhasil mendapatkan data Event",
+			{ ...data, status },
+			null,
 			);
 		}),
 
