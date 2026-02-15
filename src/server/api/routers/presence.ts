@@ -54,98 +54,94 @@ export const presenceRouter = createTRPCRouter({
 		}),
 
 	exportPresence: publicProcedure
-		.input(z.object({ eventId: z.string(), kelompokId: z.string() }))
-		.query(async ({ ctx, input }) => {
-			const data = await ctx.db
-				.select({
-					generusName: presence.generusName,
-					status: presence.status,
-				})
-				.from(presence)
-				.leftJoin(generus, eq(presence.generusId, generus.id))
-				.where(
-					or(
-						eq(presence.eventId, input.eventId),
-						eq(generus.kelompokId, input.kelompokId),
-					),
-				);
+  .input(
+    z.object({
+      eventId: z.string(),
+      kelompokId: z.string().optional(),
+    })
+  )
+  .query(async ({ ctx, input }) => {
 
-			if (!data) {
-				throw new TRPCError({
-					code: "NOT_FOUND",
-					message: "Data Presensi tidak ditemukan",
-				});
-			}
+    const conditions = [
+      eq(presence.eventId, input.eventId),
+    ];
 
-			const [hadir] = await ctx.db
-				.select({ count: count() })
-				.from(presence)
-				.innerJoin(generus, eq(presence.generusId, generus.id))
-				.where(
-					and(
-						eq(presence.eventId, input.eventId),
-						eq(presence.status, "Hadir"),
-						input.kelompokId
-							? eq(generus.kelompokId, input.kelompokId)
-							: undefined,
-					),
-				);
+    if (input.kelompokId) {
+      conditions.push(eq(generus.kelompokId, input.kelompokId));
+    }
 
-			const [izin] = await ctx.db
-				.select({ count: count() })
-				.from(presence)
-				.innerJoin(generus, eq(presence.generusId, generus.id))
-				.where(
-					and(
-						eq(presence.eventId, input.eventId),
-						eq(presence.status, "Izin"),
-						input.kelompokId
-							? eq(generus.kelompokId, input.kelompokId)
-							: undefined,
-					),
-				);
+    const data = await ctx.db
+      .select({
+        generusName: presence.generusName,
+        status: presence.status,
+      })
+      .from(presence)
+      .leftJoin(generus, eq(presence.generusId, generus.id))
+      .where(and(...conditions));
 
-			const [totalGenerus] = await ctx.db
-				.select({ count: count() })
-				.from(generus)
-				.where(
-					input.kelompokId
-						? eq(generus.kelompokId, input.kelompokId)
-						: undefined,
-				);
+    if (data.length === 0) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Data Presensi tidak ditemukan",
+      });
+    }
 
-			const hadirCount = Number(hadir?.count ?? 0);
-			const izinCount = Number(izin?.count ?? 0);
-			const totalCount = Number(totalGenerus?.count ?? 0);
-			const alphaCount = totalCount - (hadirCount + izinCount);
+    // ==========================
+    // HITUNG REKAP BERDASARKAN FILTER
+    // ==========================
 
-			const calculatePercentage = (count: number, total: number) => {
-				if (total === 0) return "0.00%";
-				return `${((count / total) * 100).toFixed(2)}%`;
-			};
+    const [hadir] = await ctx.db
+      .select({ count: count() })
+      .from(presence)
+      .leftJoin(generus, eq(presence.generusId, generus.id))
+      .where(
+        and(
+          ...conditions,
+          eq(presence.status, "Hadir")
+        )
+      );
 
-			const hadirPercentage = calculatePercentage(hadirCount, totalCount);
-			const izinPercentage = calculatePercentage(izinCount, totalCount);
-			const alphaPercentage = calculatePercentage(alphaCount, totalCount);
+    const [izin] = await ctx.db
+      .select({ count: count() })
+      .from(presence)
+      .leftJoin(generus, eq(presence.generusId, generus.id))
+      .where(
+        and(
+          ...conditions,
+          eq(presence.status, "Izin")
+        )
+      );
 
-			return formatResponse(
-				true,
-				"Berhasil mendapatkan data Presensi",
-				{
-					alpha: alphaCount,
-					data,
-					hadir: hadirCount,
-					izin: izinCount,
-					percentage: {
-						alpha: alphaPercentage,
-						hadir: hadirPercentage,
-						izin: izinPercentage,
-					},
-					total: totalCount,
-				},
-				null,
-			);
-		}),
+    const totalCount = data.length;
+
+    const hadirCount = Number(hadir?.count ?? 0);
+    const izinCount = Number(izin?.count ?? 0);
+    const alphaCount = totalCount - (hadirCount + izinCount);
+
+    const calculatePercentage = (count: number, total: number) => {
+      if (total === 0) return "0.00%";
+      return `${((count / total) * 100).toFixed(2)}%`;
+    };
+
+    return formatResponse(
+      true,
+      "Berhasil mendapatkan data Presensi",
+      {
+        alpha: alphaCount,
+        data,
+        hadir: hadirCount,
+        izin: izinCount,
+        percentage: {
+          alpha: calculatePercentage(alphaCount, totalCount),
+          hadir: calculatePercentage(hadirCount, totalCount),
+          izin: calculatePercentage(izinCount, totalCount),
+        },
+        total: totalCount,
+      },
+      null,
+    );
+  }),
+
 
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const data = await ctx.db.query.presence.findMany();
